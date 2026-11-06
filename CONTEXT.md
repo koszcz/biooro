@@ -1,0 +1,73 @@
+# Biooro
+
+A story-driven office satire game. The player is an intern at a toilet equipment company and tries not to get fired.
+
+## People
+
+**Intern**:
+The player character, newly hired at the company.
+_Avoid_: Player (in story text), employee, hero
+
+**Boss**:
+A superior who hands the Intern Tasks.
+_Avoid_: Manager, supervisor
+
+**Colleague**:
+A fellow employee at the Intern's level, each one strange in their own way.
+_Avoid_: Coworker, NPC, teammate
+
+**Faction**:
+A group led by one Boss, with Colleagues who share its agenda. Siding with one Faction angers another. The Intern may stay neutral, at a cost.
+_Avoid_: Clique, team, group
+
+**Launch Team**:
+The Faction that buries Smart range complaints to protect the launch. Its name is official.
+_Avoid_: Bury side, the cover-up
+
+**Paper Trail**:
+The Faction that escalates Smart range complaints so blame lands elsewhere. The name began as the Launch Team's mocking nickname.
+_Avoid_: Escalate side, whistleblowers
+
+## Work
+
+**Task**:
+A piece of work a Boss assigns to the Intern. The more Tasks the Intern finishes, the more Tasks the Bosses assign.
+_Avoid_: Job, assignment, quest, mission
+
+**Task choice**:
+How the Intern handles a Task: do it, fake it, delegate it, or sabotage it.
+_Avoid_: Action, option
+
+**Pressure**:
+One of several visible measures of the Intern's standing, such as Boss patience, Colleague goodwill, or sanity. If any Pressure runs out, the Intern is fired.
+_Avoid_: Meter, stat, health
+
+**Firing**:
+The failure state. The Intern loses the job and the run ends.
+_Avoid_: Game over, death
+
+## World
+
+**Escalation**:
+The office becoming more absurd over time. It rises each day and rises further with the Intern's choices.
+_Avoid_: Chaos level, weirdness
+
+**Biooro**:
+The toilet equipment company where the Intern works. It is a mid-size regional firm that looks wholesome on the surface.
+_Avoid_: The company, the firm, the corporation
+
+**Head office**:
+Biooro's distant headquarters, which the Bosses fear. It never appears on the Intern's floor.
+_Avoid_: HQ, management, upstairs
+
+**Customer Complaints**:
+The department the Intern joins. It handles complaints and returns about Biooro products.
+_Avoid_: Support, customer service, helpdesk
+
+**Product Safety**:
+The department that tests Biooro products. It shares the Intern's floor and leads the Paper Trail.
+_Avoid_: QA, quality control, compliance
+
+**Smart range**:
+Biooro's new line of toilet seats that measure things. Complaints about it grow stranger as Escalation rises.
+_Avoid_: Smart toilets, smart line, IoT products

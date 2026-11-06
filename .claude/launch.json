@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "office-look-prototype", "runtimeExecutable": "pnpm", "runtimeArgs": ["--dir", "prototype/office-look", "dev", "--port", "5174", "--strictPort"], "port": 5174 }
+  ]
+}

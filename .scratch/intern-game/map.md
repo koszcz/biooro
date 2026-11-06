@@ -1,0 +1,49 @@
+# Map: Intern game vertical slice
+
+Label: wayfinder:map
+
+## Destination
+
+A spec for the vertical slice plus a locked tech plan. The slice covers one in-game week on one office floor, with one or two Bosses and two or three Colleagues. Someone can build it from the spec without asking anything.
+
+## Notes
+
+- Domain: a story-driven, absurd office satire game. The Intern works at a toilet equipment company and tries not to get fired. See `CONTEXT.md` for terms.
+- Builders: the user and AI agents together. Write decisions sharply enough for an agent to act on.
+- Purpose: a hobby or portfolio piece. There is no deadline.
+- Settled during charting:
+  - The game is isometric low-poly 3D with an orthographic camera, like a dollhouse cutaway. It uses Three.js.
+  - The player moves by point-and-click.
+  - It runs in the browser only.
+  - Several visible Pressures exist. If any Pressure runs out, the Intern is fired.
+  - Tasks have no minigames. Each Task is a Task choice: do it, fake it, delegate it, or sabotage it.
+  - Colleagues belong to Factions. Joining one Faction angers another.
+  - Escalation rises each day and rises further with the Intern's choices.
+- Skills: for grilling tickets, use `grilling` and `domain-modeling`. Keep `CONTEXT.md` up to date.
+
+## Decisions so far
+
+<!-- one line per resolved ticket: [title](issues/NN-slug.md): gist -->
+
+- [Three.js stack](issues/04-threejs-stack.md): vanilla Three.js with Vite and TypeScript, HTML overlays, and grid A* pathfinding.
+- [Branching dialogue tool](issues/03-branching-dialogue-tool.md): Ink through inkjs. It is TypeScript-native, MIT-licensed, and maintained. It needs a small compile step in the build.
+- [Free low-poly office assets](issues/05-free-office-assets.md): the Kenney Furniture Kit for the office and bathroom, and Kenney Mini Characters for people. Both are CC0 GLB files. Quaternius Ultimate House Interior fills any gaps.
+- [Company identity](issues/01-company-identity.md): Biooro, a mid-size toilet firm. Mundane tone with a sinister leak. The Intern joins Customer Complaints. The Smart range secretly harvests data, which only writers know.
+- [Isometric office look](issues/02-isometric-office-look.md): a fixed true-isometric camera with clamped wheel zoom and low near-wall stubs. The Kenney kits match at native scale, and Mini Characters has a `sit` clip.
+- [Cast](issues/06-cast.md): the Launch Team (Pan Zbigniew Pogodny, Ryszard Szablon, Wiola Ufna) buries Smart range complaints. The Paper Trail (Pani Halina Teczka, Kamil Przeciek) escalates them. Polish speaking names, English text.
+
+## Not yet specified
+
+- Character and art direction beyond the single room the look prototype covers.
+- UI for the Pressures and the Task inbox.
+- Audio: music, sound effects, and whether there is any voice.
+- Saving and loading progress.
+- Assembling the final spec document from the resolved tickets.
+
+## Out of scope
+
+- Anything past one in-game week. The slice stops at the end of the first week.
+- Desktop builds and a commercial release.
+- Building the game. The map ends at the spec and tech plan.
+- A Polish translation. The slice ships in English only, with text ready for translation.
+- Colleagues switching Faction. Factions stay fixed in the slice.
