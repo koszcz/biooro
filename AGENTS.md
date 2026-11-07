@@ -14,6 +14,7 @@ The game is a Vite and TypeScript project at the repository root. Run `npm run d
 - `src/ui/`: DOM overlays.
 - `src/audio/`: Web Audio and the audio manifest.
 - `src/locales/`: string tables.
+- `public/models/`: the Kenney GLB files the game loads at boot. Copy in only the models the game uses.
 - `scripts/`: the file size check, the backlog page builder and their tests.
 
 ## Agent skills
