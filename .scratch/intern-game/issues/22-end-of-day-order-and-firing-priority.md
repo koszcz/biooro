@@ -19,3 +19,7 @@ Decide:
 Write the answer as two numbered lists, one for morning and one for end of day.
 
 Sources: [Pressures and Task choices](07-pressures-and-task-choices.md), [The week](08-the-week.md).
+
+## Comments
+
+- From [Task choices on a Fallout Task](20-task-choices-on-a-fallout-task.md): an ignored Fallout Task costs Performance 2 and Escalation 1, then expires. It does not also pay the unhandled-Task cost. Place the expiry step in the end-of-day order.

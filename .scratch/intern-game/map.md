@@ -44,6 +44,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [Retry after a morning Firing](issues/17-retry-after-a-morning-firing.md): retry restores the latest snapshot, taken after the morning steps. A morning Firing therefore offers "Retry yesterday", and the snapshot lives in the save record.
 - [Ink state across saves](issues/18-ink-state-across-saves.md): the game saves only between Conversations, not after each Ink choice. The save and the day-start snapshot hold Ink's state JSON, so writers may use visit counts and once-only choices but no global `VAR` memory.
 - [What sabotage does to a Task](issues/19-what-sabotage-does-to-a-task.md): sabotage closes the Task for good. It is handled but not finished, so it never rolls over, never returns, and adds nothing to Task growth.
+- [Task choices on a Fallout Task](issues/20-task-choices-on-a-fallout-task.md): a Fallout Task cannot be faked or given to Ryszard. Doing, delegating, and sabotage work as normal. If it is unhandled at the end of its arrival day, it costs Performance 2 and Escalation 1, then expires.
 
 ## Not yet specified
 

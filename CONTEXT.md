@@ -39,8 +39,12 @@ The Faction a Task serves, set by whoever assigns it. Some Tasks serve no Factio
 _Avoid_: Alignment, allegiance
 
 **Fallout**:
-A Task that returns two days after the Intern fakes one. It takes longer than the original.
+A Task that returns two days after the Intern fakes one. It takes longer than the original. The Intern cannot fake a Fallout Task. If the Intern ignores it on the day it arrives, it expires.
 _Avoid_: Consequence, penalty, callback
+
+**Expired**:
+A Fallout Task the Intern left unhandled at the end of the day it arrived. An expired Task closes for good. It is neither handled nor finished.
+_Avoid_: Missed, lapsed, dropped
 
 **Break**:
 An hour the Intern spends away from Tasks to recover Sanity.
