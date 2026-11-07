@@ -8,7 +8,7 @@ import {
   type Pressure,
   taskChoiceLockedReason,
 } from "../rules/index";
-import type { GameStore } from "./store";
+import { type GameStore, REPLACE_STATE } from "./store";
 
 const canChoose = (state: GameState, task: OpenTask, choice: "do" | "fake"): boolean =>
   taskChoiceLockedReason(state, task, choice) === null;
@@ -60,15 +60,15 @@ function playDefaultStep(store: GameStore): void {
 export function jumpToDay(store: GameStore, day: number): void {
   store.startOver();
   while (store.state.day < day && store.state.phase.kind === "workday") playDefaultDay(store);
-  store.devReplaceState(store.state);
+  store[REPLACE_STATE](store.state);
 }
 
 export function setDebugPressure(store: GameStore, pressure: Pressure, value: number): void {
   const clamped = Math.min(PRESSURE_MAX, Math.max(PRESSURE_MIN, Math.round(value)));
-  store.devReplaceState({ ...store.state, pressures: { ...store.state.pressures, [pressure]: clamped } });
+  store[REPLACE_STATE]({ ...store.state, pressures: { ...store.state.pressures, [pressure]: clamped } });
 }
 
 export function setDebugFlag(store: GameStore, name: string, on: boolean): void {
   const rest = store.state.flags.filter((flag) => flag !== name);
-  store.devReplaceState({ ...store.state, flags: on ? [...rest, name] : rest });
+  store[REPLACE_STATE]({ ...store.state, flags: on ? [...rest, name] : rest });
 }

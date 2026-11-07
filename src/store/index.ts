@@ -12,4 +12,5 @@ export {
   SETTINGS_KEY,
   type Settings,
 } from "./save";
+export { createSettings, SettingsStore } from "./settings";
 export { createStore, GameStore } from "./store";

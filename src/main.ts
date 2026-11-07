@@ -4,7 +4,7 @@ import { blipsBetween, loadAudio } from "./audio/index";
 import { Conversations, Dialogue, Scenes } from "./dialogue/index";
 import { tierOf } from "./rules/index";
 import { loadModels, startOfficeScene } from "./scene/index";
-import { createStore, hasSave } from "./store/index";
+import { createSettings, createStore, hasSave } from "./store/index";
 import { story } from "./story/index";
 import {
   mountDebugPanel,
@@ -22,7 +22,7 @@ if (!container) throw new Error("index.html needs an element with id 'app'");
 const loading = showLoadingScreen(container);
 const models = await loadModels((share) => loading.setProgress(share));
 const store = createStore(window.localStorage);
-const audio = await loadAudio(store, import.meta.env.BASE_URL);
+const audio = await loadAudio(store, createSettings(window.localStorage), import.meta.env.BASE_URL);
 const dialogue = new Dialogue(store, story);
 // Audio resumes on the first click, so either title screen button unlocks it.
 const choice = await loading.toTitle({ canContinue: hasSave(window.localStorage) });

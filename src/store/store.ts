@@ -31,16 +31,10 @@ function isColleague(person: CastId): person is ColleagueId {
   return person in COLLEAGUES;
 }
 
-import {
-  type DayStartSnapshot,
-  readSave,
-  readSettings,
-  SAVE_KEY,
-  type SaveStorage,
-  type Settings,
-  writeSave,
-  writeSettings,
-} from "./save";
+import { type DayStartSnapshot, readSave, SAVE_KEY, type SaveStorage, writeSave } from "./save";
+
+/** The dev hook's key. The folder's index.ts leaves it out, so only src/store/debug.ts can call it. */
+export const REPLACE_STATE = Symbol("replaceState");
 
 interface TaskAction {
   task: OpenTask;
@@ -56,11 +50,7 @@ export class GameStore {
   private snapshot: DayStartSnapshot | null = null;
   private readonly emitter = new Emitter();
 
-  private currentSettings: Settings;
-
-  constructor(private readonly storage: SaveStorage) {
-    this.currentSettings = readSettings(storage);
-  }
+  constructor(private readonly storage: SaveStorage) {}
 
   get state(): GameState {
     return this.current;
@@ -229,17 +219,8 @@ export class GameStore {
     this.emitAll(result);
   }
 
-  get settings(): Settings {
-    return this.currentSettings;
-  }
-
-  updateSettings(changes: Partial<Settings>): void {
-    this.currentSettings = { ...this.currentSettings, ...changes };
-    writeSettings(this.storage, this.currentSettings);
-  }
-
-  /** Dev-only hook for the debug panel. Swaps the state, autosaves and tells the HUD and the office to redraw. */
-  devReplaceState(state: GameState): void {
+  /** Dev-only hook for src/store/debug.ts. Swaps the state, autosaves and tells the HUD and the office to redraw. */
+  [REPLACE_STATE](state: GameState): void {
     this.current = state;
     this.autosave();
     this.emitter.emit({ type: "tierChanged", tier: tierOf(state.escalation) });

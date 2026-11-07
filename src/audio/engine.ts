@@ -1,7 +1,7 @@
 // The audio engine: raw Web Audio. It plays the music loops, the hum, the cues and the blips.
 import type { CastId } from "../content/index";
 import { type Tier, tierOf } from "../rules/index";
-import type { GameStore } from "../store/index";
+import type { GameStore, SettingsStore } from "../store/index";
 import { cueFor, musicLevels } from "./cues";
 import type { SoundId } from "./manifest";
 
@@ -12,7 +12,8 @@ export type SoundContext = Pick<
 >;
 
 export type Buffers = Readonly<Record<SoundId, AudioBuffer>>;
-export type AudioStore = Pick<GameStore, "on" | "settings" | "updateSettings" | "state">;
+export type AudioStore = Pick<GameStore, "on" | "state">;
+export type AudioSettings = Pick<SettingsStore, "settings" | "update">;
 
 /** Seconds a crossfade takes to settle. */
 const FADE = 0.6;
@@ -36,10 +37,10 @@ export interface Audio {
   blip(speaker: keyof typeof BLIP_PITCH, count: number): void;
 }
 
-export function createAudio(store: AudioStore, ctx: SoundContext, buffers: Buffers): Audio {
+export function createAudio(store: AudioStore, settings: AudioSettings, ctx: SoundContext, buffers: Buffers): Audio {
   const master = ctx.createGain();
   master.connect(ctx.destination);
-  let muted = store.settings.muted;
+  let muted = settings.settings.muted;
   master.gain.value = muted ? 0 : 1;
 
   const loop = (id: SoundId, level: number) => {
@@ -112,7 +113,7 @@ export function createAudio(store: AudioStore, ctx: SoundContext, buffers: Buffe
     setMuted(value) {
       muted = value;
       master.gain.value = value ? 0 : 1;
-      store.updateSettings({ muted: value });
+      settings.update({ muted: value });
     },
     blip(speaker, count) {
       for (let i = 0; i < count; i++) play("blip", BLIP_PITCH[speaker]);
