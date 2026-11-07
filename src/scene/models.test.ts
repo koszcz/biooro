@@ -1,0 +1,31 @@
+import { existsSync, readdirSync } from "node:fs";
+import { describe, expect, it } from "vitest";
+import { glbPaths } from "./models";
+
+const publicPath = (path: string) => new URL(`../../public/${path}`, import.meta.url);
+
+describe("glbPaths", () => {
+  it("lists every furniture model in the layout and the Intern", () => {
+    const paths = glbPaths();
+    expect(paths).toContain("models/furniture/desk.glb");
+    expect(paths).toContain("models/furniture/toiletSquare.glb");
+    expect(paths).toContain("models/characters/character-male-c.glb");
+    expect(paths.some((p) => p.includes("printer"))).toBe(false);
+  });
+
+  it("names only files that exist in public/", () => {
+    for (const path of glbPaths()) expect(existsSync(publicPath(path)), path).toBe(true);
+  });
+
+  it("ships only the GLB files the game loads", () => {
+    const shipped = (folder: string) =>
+      readdirSync(publicPath(`models/${folder}`))
+        .filter((f) => f.endsWith(".glb"))
+        .map((f) => `models/${folder}/${f}`);
+    expect([...shipped("furniture"), ...shipped("characters")].sort()).toEqual([...glbPaths()].sort());
+  });
+
+  it("ships the colour map the Mini Characters need beside them", () => {
+    expect(existsSync(publicPath("models/characters/Textures/colormap.png"))).toBe(true);
+  });
+});
