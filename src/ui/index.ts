@@ -4,5 +4,7 @@ export { mountDebugPanel } from "./debugPanel";
 export { type BubbleOwner, type HeadLocator, mountGameUi } from "./game";
 export { type LoadingScreen, showLoadingScreen } from "./loading";
 export { mountMuteButton } from "./muteButton";
+export { mountSceneFrame } from "./sceneFrame";
 export { mountTalk, type RevealListener, type TalkOverlay } from "./talk";
 export type { TalkOffice } from "./talkLayer";
+export type { TitleChoice } from "./title";

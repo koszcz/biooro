@@ -6,6 +6,7 @@ INCLUDE halina.ink
 INCLUDE ryszard.ink
 INCLUDE wiola.ink
 INCLUDE kamil.ink
+INCLUDE scenes.ink
 
 EXTERNAL pressure(name)
 EXTERNAL tier()

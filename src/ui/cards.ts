@@ -1,18 +1,16 @@
-// Plain full-screen cards: the day card between days, and placeholders for the end of the week.
-// The scripted scenes replace the end-of-week cards later.
+// Plain full-screen cards: the day card between days, the screen after a Firing scene, and the card
+// after the survival scene. The scene frame hides them while a scripted scene plays.
 import { endCardText, hudText, WEEKDAY_NAMES } from "../locales";
-import type { AuditAnswer, GameState } from "../rules";
+import type { GameState } from "../rules";
 import type { GameStore } from "../store";
 import { button, el } from "./dom";
 
 export interface Cards {
   /** Shows the day card for the day that just started. */
   showDay(day: number): void;
-  /** Shows an end-of-week card when the phase leaves the Workday. Returns true while any card shows. */
+  /** Shows the card for a phase outside the Workday. Returns true while the Workday is paused. */
   render(state: GameState): boolean;
 }
-
-const AUDIT_ANSWERS: AuditAnswer[] = ["bury", "escalate", "deflect"];
 
 export function createCards(root: HTMLElement, store: GameStore, onDismiss: () => void): Cards {
   const card = el("div", "hud-card");
@@ -37,10 +35,8 @@ export function createCards(root: HTMLElement, store: GameStore, onDismiss: () =
         button(endCardText.startOver, () => store.startOver()),
       ]);
     } else if (phase.kind === "audit") {
-      const answers = AUDIT_ANSWERS.map((answer) =>
-        button(endCardText.auditAnswers[answer], () => store.answerAudit(answer)),
-      );
-      show(endCardText.auditTitle, null, answers);
+      // The audit scene asks the question. Nothing else shows until it ends.
+      card.hidden = true;
     } else if (phase.kind === "weekSurvived") {
       show(endCardText.survivedTitle, null, [button(endCardText.startOver, () => store.startOver())]);
     } else return false;

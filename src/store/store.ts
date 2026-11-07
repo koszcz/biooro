@@ -221,12 +221,11 @@ export class GameStore {
     this.emitAll(result);
   }
 
-  /** Applies the Friday audit answer. A finished week removes the save, so Continue goes away. */
+  /** Applies the Friday audit answer and runs the second Firing check. */
   answerAudit(answer: AuditAnswer): void {
     const result = answerAudit(this.current, answer);
     this.current = result.state;
-    if (this.current.phase.kind === "weekSurvived") this.storage.removeItem(SAVE_KEY);
-    else this.autosave();
+    this.autosave();
     this.emitAll(result);
   }
 
@@ -269,10 +268,11 @@ export class GameStore {
     this.emitAll(result);
   }
 
-  /** Saves the slot, except inside a Conversation. */
+  /** Saves the slot, except inside a Conversation. A finished week removes the save, so Continue goes away. */
   private autosave(): void {
     if (this.conversation) return;
-    writeSave(this.storage, { state: this.current, inkState: this.inkStateJson, snapshot: this.snapshot });
+    if (this.current.phase.kind === "weekSurvived") this.storage.removeItem(SAVE_KEY);
+    else writeSave(this.storage, { state: this.current, inkState: this.inkStateJson, snapshot: this.snapshot });
   }
 
   private emitAll(result: RuleResult | { events: StoreEvent[] }): void {
