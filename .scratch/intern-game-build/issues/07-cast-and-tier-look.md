@@ -1,6 +1,6 @@
 # Cast and tier look
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 05, 06
 
 ## What to build
@@ -22,3 +22,7 @@ Put the five cast members in the office, and make the office change with the tie
 
 - [7. Look and art](../../intern-game/spec.md#7-look-and-art): "People" and "Palette by tier".
 - [3. Cast and Factions](../../intern-game/spec.md#3-cast-and-factions).
+
+## Comments
+
+Built on branch ticket-07, merged into intern-game-build at 6eeb442. Choices where the spec is silent: Wiola plays `idle`; all five face the camera; glasses sit at (0, 0.07, 0.1) from the head bone; LED glow is off / 0.6 steady / 1.8 ± 0.8 pulsing with a small red point light. `main.ts` creates the store from Escalation and does not load the save; loading is left to ticket 13. The Kenney bench is narrow and Przeciek hides it.
