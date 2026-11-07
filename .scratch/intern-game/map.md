@@ -37,10 +37,10 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [Writing workflow](issues/10-writing-workflow.md): the user writes one voice anchor per character and the Firings. Agents draft the rest against `docs/writing/voice.md`, and the user reads every line. Ink lives in `src/story/` with one file per character, and translation-safe writing rules apply.
 - [Pressures and Task inbox UI](issues/11-pressures-and-inbox-ui.md): Tasks are full-text speech bubbles over whoever assigned them. A popover beside them lists the four Task choices, with "Delegate it" collapsed. Pressures are slim gauges on the left, and hours are 8 blocks at the bottom.
 - [Crowded Task bubbles](issues/12-crowded-task-bubbles.md): with 3 or more Tasks, a person shows their two most urgent bubbles and a "+N more" pill that opens a list. The popover flips sides at the edge and never covers the gauges or hours.
+- [Character and art direction](issues/13-character-and-art-direction.md): faction-coloured vests plus one prop each (teal Launch Team, manila Paper Trail), an orange Intern with ring and marker, three rooms off one corridor with low inner walls, and a palette that greys with Escalation.
 
 ## Not yet specified
 
-- Character and art direction beyond the single room the look prototype covers.
 - Audio: music, sound effects, and whether there is any voice.
 - Saving and loading progress.
 - Assembling the final spec document from the resolved tickets.
