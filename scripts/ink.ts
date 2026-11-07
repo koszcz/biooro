@@ -46,8 +46,11 @@ export function compileInk(mainPath: string, source = readFileSync(mainPath, "ut
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split(sep).join("/"))) {
-  const result = compileInk(resolve(process.cwd(), "src/story/main.ink"));
-  for (const line of result.warnings) console.warn(`warning: ${line}`);
-  for (const line of result.errors) console.error(`error: ${line}`);
-  if (result.json === null) process.exit(1);
+  // main.ink is the game story. test.ink adds the test knots to it.
+  const results = ["main.ink", "test.ink"].map((name) => compileInk(resolve(process.cwd(), "src/story", name)));
+  for (const result of results) {
+    for (const line of result.warnings) console.warn(`warning: ${line}`);
+    for (const line of result.errors) console.error(`error: ${line}`);
+  }
+  if (results.some((result) => result.json === null)) process.exit(1);
 }
