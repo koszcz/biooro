@@ -1,11 +1,12 @@
 // Game entry point: loads every GLB behind the loading screen, shows the title screen, then starts the office
 // scene, the HUD, Conversations and the scripted scenes.
+import { blipsBetween, loadAudio } from "./audio";
 import { Conversations, Dialogue, Scenes } from "./dialogue";
 import { tierOf } from "./rules";
 import { loadModels, startOfficeScene } from "./scene";
 import { createStore, hasSave } from "./store";
 import { story } from "./story";
-import { mountDebugPanel, mountGameUi, mountSceneFrame, mountTalk, showLoadingScreen } from "./ui";
+import { mountDebugPanel, mountGameUi, mountMuteButton, mountSceneFrame, mountTalk, showLoadingScreen } from "./ui";
 
 const container = document.getElementById("app");
 if (!container) throw new Error("index.html needs an element with id 'app'");
@@ -13,15 +14,19 @@ if (!container) throw new Error("index.html needs an element with id 'app'");
 const loading = showLoadingScreen(container);
 const models = await loadModels((share) => loading.setProgress(share));
 const store = createStore(window.localStorage);
+const audio = await loadAudio(store, import.meta.env.BASE_URL);
 const dialogue = new Dialogue(store, story);
-// The audio ticket plugs its unlock in here. It must run inside the title screen's click.
-const choice = await loading.toTitle({ canContinue: hasSave(window.localStorage), unlockAudio: () => {} });
+// Audio resumes on the first click, so either title screen button unlocks it.
+const choice = await loading.toTitle({ canContinue: hasSave(window.localStorage) });
 // Continuing the save lets a reload in the middle of a Conversation replay it from its start.
 // The HUD draws a loaded save when it mounts. If the save fails to load, a new game starts.
 const continued = choice === "continue" && store.continueGame(dialogue.loadInk);
 const office = startOfficeScene(container, models, store, tierOf(store.state.escalation));
 mountGameUi(container, store, office.headAt, office.onActionCue);
-const talk = mountTalk(container, office, store);
+mountMuteButton(container, audio);
+const talk = mountTalk(container, office, store, (speaker, text, from, to) =>
+  audio.blip(speaker, blipsBetween(text, from, to)),
+);
 const conversations = new Conversations(store, dialogue, office, talk.view);
 talk.connect((person) => conversations.availability(person));
 const scenes = new Scenes(store, dialogue, office, talk.view, mountSceneFrame(container));

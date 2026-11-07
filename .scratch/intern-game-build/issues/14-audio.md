@@ -1,6 +1,6 @@
 # Audio
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 12
 
 ## What to build
@@ -26,3 +26,7 @@ Use CC0 files only, such as the Kenney audio packs. Ask before you download anyt
 ## Spec
 
 - [8. Audio](../../intern-game/spec.md#8-audio).
+
+## Comments
+
+Built on branch ticket-14, merged into intern-game-build at 8be3cf8. No sound files were downloaded: all 13 sounds are placeholder WAVs made by scripts/make-audio.sh, with provenance in public/audio/SOURCES.md. The user should approve downloading the real CC0 files. Blips play only through the `say` bubble in src/ui/talk.ts; scripted scenes must use `say` or call `audio.blip`. Choices where the spec is silent: the Task bubble sound plays on `taskAssigned`; music resumes on `dayStarted` after a Firing; the mute button sits bottom-right. Not checked in a browser.

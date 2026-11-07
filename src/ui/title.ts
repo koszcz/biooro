@@ -7,17 +7,12 @@ export type TitleChoice = "continue" | "newGame";
 export interface TitleOptions {
   /** True when the slot holds a save. Without one, Continue is gone and New game needs no confirmation. */
   canContinue: boolean;
-  /** Runs inside the button's click, so the browser lets audio start. */
-  unlockAudio(): void;
 }
 
 /** Replaces the contents of `screen` with the title screen. Resolves with the player's pick. */
 export function showTitle(screen: HTMLElement, options: TitleOptions): Promise<TitleChoice> {
   return new Promise((resolve) => {
-    const pick = (choice: TitleChoice) => {
-      options.unlockAudio();
-      resolve(choice);
-    };
+    const pick = (choice: TitleChoice) => resolve(choice);
     const heading = el("div", "", titleText.gameTitle);
     heading.style.font = "700 48px system-ui, sans-serif";
     const row = el("div");

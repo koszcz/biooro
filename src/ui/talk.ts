@@ -21,10 +21,11 @@ const BUBBLE_LIFT = -26;
  * Reveals `text` at the reveal pace. A click, Space or Enter completes the line, and the next one moves on.
  * Listening starts after the current event, so the click that opened the line never counts.
  */
-function reveal(target: HTMLElement, text: string): Promise<void> {
+function reveal(target: HTMLElement, text: string, onShown?: (from: number, to: number) => void): Promise<void> {
   return new Promise((resolve) => {
     const started = performance.now();
     let complete = false;
+    let blipped = 0;
     const finish = () => {
       complete = true;
       target.textContent = text;
@@ -35,6 +36,8 @@ function reveal(target: HTMLElement, text: string): Promise<void> {
       const shown = revealedLength(performance.now() - started, text.length);
       if (shown >= text.length) finish();
       else {
+        onShown?.(blipped, shown);
+        blipped = shown;
         target.textContent = text.slice(0, shown);
         requestAnimationFrame(tick);
       }
@@ -56,7 +59,15 @@ function reveal(target: HTMLElement, text: string): Promise<void> {
   });
 }
 
-export function mountTalk(container: HTMLElement, office: TalkOffice, store: GameStore): TalkOverlay {
+/** Called as a line is revealed: how many characters of `text` were shown before and now. */
+export type RevealListener = (speaker: Speaker, text: string, from: number, to: number) => void;
+
+export function mountTalk(
+  container: HTMLElement,
+  office: TalkOffice,
+  store: GameStore,
+  onReveal?: RevealListener,
+): TalkOverlay {
   const layer = createTalkLayer(container, office);
   const connect = mountTalkMarks(container, layer, office, store);
 
@@ -79,7 +90,7 @@ export function mountTalk(container: HTMLElement, office: TalkOffice, store: Gam
       const body = element("span", "text");
       el.append(body);
       show(el, speaker);
-      await reveal(body, text);
+      await reveal(body, text, (from, to) => onReveal?.(speaker, text, from, to));
       layer.remove(el);
     },
     choose(choices) {
