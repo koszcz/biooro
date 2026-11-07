@@ -46,6 +46,10 @@ _Avoid_: Consequence, penalty, callback
 An hour the Intern spends away from Tasks to recover Sanity.
 _Avoid_: Rest, pause, downtime
 
+**Conversation**:
+A talk between the Intern and a Boss or Colleague, from its first line to its last. A Conversation that is cut off midway counts as never held.
+_Avoid_: Chat, dialogue, talk
+
 **Task choice**:
 How the Intern handles a Task: do it, fake it, delegate it, or sabotage it. Doing, faking, and delegating finish the Task. Sabotage does not.
 _Avoid_: Action, option
