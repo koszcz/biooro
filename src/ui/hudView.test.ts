@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type GameState, newGame, startDay } from "../rules";
-import { bubbleViews, hudView } from "./hudView";
+import { bubbleGroups, bubbleViews, hudView, urgentTasks } from "./hudView";
 
 function monday(): GameState {
   return startDay(newGame()).state;
@@ -92,5 +92,44 @@ describe("bubbleViews", () => {
     expect(bubble.text).toBe(
       "The mugs are back, and the teabag has grown something. Scrub every mug properly this time.",
     );
+  });
+});
+
+describe("bubbleGroups", () => {
+  const zbigniew = (...fallout: boolean[]) => ({
+    ...monday(),
+    openTasks: fallout.map((isFallout, i) => ({
+      id: i % 2 ? ("tue-zbigniew" as const) : ("mon-zbigniew" as const),
+      fallout: isFallout,
+    })),
+  });
+
+  it("shows every bubble and no pill for a person with fewer than 3 Tasks", () => {
+    const [group] = bubbleGroups(zbigniew(false, false));
+    expect(group.bubbles).toHaveLength(2);
+    expect(group.pill).toBeNull();
+  });
+
+  it("shows two bubbles and a pill with the hidden count for five Tasks on one person", () => {
+    const groups = bubbleGroups(zbigniew(false, false, false, false, false));
+    expect(groups).toHaveLength(1);
+    expect(groups[0].bubbles).toHaveLength(2);
+    expect(groups[0].pill).toEqual({ text: "+3 more from Pan Zbigniew", fallout: null });
+  });
+
+  it("adds a warning count to the pill when a hidden Task is Fallout", () => {
+    const [group] = bubbleGroups(zbigniew(false, false, false, true, true, true));
+    expect(group.bubbles.map((bubble) => bubble.fallout)).toEqual([true, true]);
+    expect(group.pill).toEqual({ text: "+4 more from Pan Zbigniew", fallout: "⚠ 1" });
+  });
+
+  it("sorts Fallout first, then oldest first", () => {
+    const state = zbigniew(false, true, false);
+    const [group] = bubbleGroups(state);
+    expect(group.bubbles.map((bubble) => [bubble.task.id, bubble.fallout])).toEqual([
+      ["tue-zbigniew", true],
+      ["mon-zbigniew", false],
+    ]);
+    expect(urgentTasks(state, "zbigniew").map((bubble) => bubble.fallout)).toEqual([true, false, false]);
   });
 });

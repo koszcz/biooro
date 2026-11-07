@@ -1,6 +1,7 @@
 // What the gauges, the hour blocks and the Task bubbles show for a GameState, with an optional preview.
 import { type Faction, taskById } from "../content";
 import {
+  ASSIGNER_NAMES,
   FALLOUT_WORDING,
   GAUGE_LABELS,
   hudText,
@@ -91,6 +92,51 @@ export interface BubbleView {
 export function taskText(task: OpenTask): string {
   if (task.fallout) return FALLOUT_WORDING[`${(task.strange ?? task.id) as ReturningTaskId}.fallout`];
   return task.strange ? STRANGE_TASK_WORDING[task.strange] : TASK_WORDING[task.id];
+}
+
+/** A person with this many open Tasks or more shows a pill instead of every bubble. */
+export const CROWD_FROM = 3;
+export const SHOWN_WHEN_CROWDED = 2;
+
+export interface MorePill {
+  text: string;
+  /** "⚠ N" when N hidden Tasks are Fallout, otherwise null. */
+  fallout: string | null;
+}
+
+export interface BubbleGroup {
+  over: BubbleOwner;
+  bubbles: BubbleView[];
+  pill: MorePill | null;
+}
+
+export function ownerName(over: BubbleOwner): string {
+  return ASSIGNER_NAMES[over === "intern" ? "anyone" : over];
+}
+
+/** A person's Tasks, most urgent first: Fallout first, then oldest first (the open-list order). */
+export function urgentTasks(state: GameState, over: BubbleOwner): BubbleView[] {
+  const own = bubbleViews(state).filter((view) => view.over === over);
+  return [...own.filter((view) => view.fallout), ...own.filter((view) => !view.fallout)];
+}
+
+/** The bubbles to draw, one group per person, in the order each person first has a Task. */
+export function bubbleGroups(state: GameState): BubbleGroup[] {
+  const owners = [...new Set(bubbleViews(state).map((view) => view.over))];
+  return owners.map((over) => {
+    const sorted = urgentTasks(state, over);
+    if (sorted.length < CROWD_FROM) return { over, bubbles: sorted, pill: null };
+    const hidden = sorted.slice(SHOWN_WHEN_CROWDED);
+    const falloutHidden = hidden.filter((view) => view.fallout).length;
+    return {
+      over,
+      bubbles: sorted.slice(0, SHOWN_WHEN_CROWDED),
+      pill: {
+        text: hudText.morePill(hidden.length, ownerName(over)),
+        fallout: falloutHidden > 0 ? hudText.pillFallout(falloutHidden) : null,
+      },
+    };
+  });
 }
 
 /** One bubble per open Task, in open-list order. */

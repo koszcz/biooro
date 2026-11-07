@@ -36,10 +36,18 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
   let preview: Preview | undefined;
   let queued = false;
 
-  const bubbles = createBubbles(root, headAt, (task, over) => {
-    popover.open(task, over);
-    redraw();
-  });
+  const bubbles = createBubbles(
+    root,
+    headAt,
+    (task, over) => {
+      popover.open(task, over);
+      redraw();
+    },
+    (over) => {
+      popover.openList(over);
+      redraw();
+    },
+  );
   const cards = createCards(root, store, () => redraw());
   const hud = createHud(root, {
     takeBreak: () => act(() => play.takeBreak()),
@@ -77,7 +85,7 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
     hud.render(state, { preview, confirming: confirming && !carded, revealGoodwill });
     hud.hours.hidden = carded;
     revealGoodwill = false;
-    bubbles.render(state, !carded);
+    bubbles.render(state, !carded, popover.owner);
     popover.render(state);
   }
 

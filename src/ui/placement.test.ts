@@ -1,5 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { placePopover } from "./placement";
+import { placePopover, slideGroupIn } from "./placement";
+
+describe("slideGroupIn", () => {
+  const screen = { width: 1200, height: 800 };
+  const group = { x: 600, bottom: 400, width: 200, height: 150 };
+  const fits = (g: typeof group, shift: { dx: number; dy: number }) => {
+    const left = g.x + shift.dx - g.width / 2;
+    const top = g.bottom + shift.dy - g.height;
+    return left >= 0 && left + g.width <= screen.width && top >= 0 && g.bottom + shift.dy <= screen.height;
+  };
+
+  it("leaves a group in the middle of the screen where it is", () => {
+    expect(slideGroupIn(group, screen)).toEqual({ dx: 0, dy: 0 });
+  });
+
+  it.each([
+    ["left", { ...group, x: 5 }],
+    ["right", { ...group, x: 1195 }],
+    ["top", { ...group, bottom: 20 }],
+    ["bottom", { ...group, bottom: 799 }],
+  ])("slides a group at the %s edge fully on screen", (_edge, edgeGroup) => {
+    expect(fits(edgeGroup, slideGroupIn(edgeGroup, screen))).toBe(true);
+  });
+});
 
 const viewport = { width: 1200, height: 800 };
 // The gauges sit on the left edge. The hour blocks sit at the bottom.
