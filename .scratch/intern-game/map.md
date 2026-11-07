@@ -42,7 +42,6 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 
 ## Not yet specified
 
-- Saving and loading progress.
 - Assembling the final spec document from the resolved tickets.
 
 ## Out of scope
