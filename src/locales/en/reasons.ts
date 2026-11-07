@@ -3,6 +3,8 @@ import type { LockedReason } from "../../content/index";
 
 export const LOCKED_REASONS: Record<LockedReason, string> = {
   notEnoughHours: "Not enough hours left today.",
+  alreadyFaked: "You already faked this once.",
+  ryszardAlreadyFaked: "Ryszard already faked this once.",
   ryszardDoesntTrust: "Ryszard doesn't trust you yet",
   wiolaDoesntTrust: "Wiola doesn't trust you yet",
   kamilDoesntTrust: "Kamil doesn't trust you yet",

@@ -1,5 +1,5 @@
 // The one serialisable GameState object and the events rule functions return.
-import type { ColleagueId, Faction, TaskId } from "../content/index";
+import type { ColleagueId, Faction, StrangeTaskId, TaskId } from "../content/index";
 
 export type { ColleagueId };
 
@@ -15,22 +15,33 @@ export const WORKDAY_HOURS = 8;
 export type Tier = "mundane" | "odd" | "wrong";
 export type TaskChoice = "do" | "fake" | "delegate" | "sabotage";
 export type RetryKind = "thisDay" | "yesterday";
+/** Which Friday-evening scene plays: the Faction with higher goodwill, or both equal. */
+export type SurvivalVariant = Faction | "equal";
 
-/** One entry in the open list. A Fallout Task returns with the same Task ID. */
+export const FRIDAY = 5;
+export const FRIDAY_TASK_HOURS = 5;
+
+/**
+ * One entry in the open list. A Fallout Task returns with the same Task ID.
+ * A strange Task keeps the ID of the slot it replaced, which gives its assigner and Task side.
+ */
 export interface OpenTask {
   id: TaskId;
   fallout: boolean;
+  strange?: StrangeTaskId;
 }
 
 export interface PendingFallout {
   id: TaskId;
   dueDay: number;
+  strange?: StrangeTaskId;
 }
 
 export type Phase =
   | { kind: "workday" }
   | { kind: "fired"; pressure: Pressure; retry: RetryKind }
-  | { kind: "weekSurvived" };
+  | { kind: "audit" }
+  | { kind: "weekSurvived"; variant: SurvivalVariant };
 
 export interface GameState {
   pressures: Record<Pressure, number>;
@@ -53,7 +64,13 @@ export type GameEvent =
   | { type: "pressureChanged"; pressure: Pressure; from: number; to: number }
   | { type: "tierChanged"; tier: Tier }
   | { type: "taskResolved"; task: OpenTask; choice: TaskChoice; colleague?: ColleagueId }
-  | { type: "fired"; pressure: Pressure; retry: RetryKind };
+  | { type: "fired"; pressure: Pressure; retry: RetryKind }
+  | { type: "goodwillRevealed" }
+  | { type: "falloutArrived"; task: OpenTask }
+  | { type: "taskAssigned"; task: OpenTask }
+  | { type: "dayStarted"; day: number }
+  | { type: "dayEnded"; day: number }
+  | { type: "weekSurvived"; variant: SurvivalVariant };
 
 export interface RuleResult {
   state: GameState;
