@@ -1,6 +1,7 @@
 // The office layout: a hand-authored tile grid with walls, doorways, furniture, rugs,
 // Colleague spots and the seven Task places. Tile (col, row) is centred on world (col, 0, row).
 // Rows grow toward the camera. Row 0 is against the back wall. The corridor is rows 9 and 10.
+import type { Assigner, Faction, TaskPlaceId } from "./tasks";
 
 export type Cell = { readonly col: number; readonly row: number };
 
@@ -178,7 +179,6 @@ export const FURNITURE: readonly Piece[] = [...COMPLAINTS, ...SAFETY, ...SHOWROO
 /** The middle Showroom toilet, from the Smart range. */
 export const SMART_TOILET: Cell = cell(18, 1);
 
-export type Faction = "launch" | "paper";
 /** A Faction rug. Edges are in world units. */
 export type Rug = {
   readonly faction: Faction;
@@ -188,8 +188,8 @@ export type Rug = {
   readonly depth: number;
 };
 export const FACTION_RUGS: readonly Rug[] = [
-  { faction: "launch", minX: 0.7, minZ: 0.6, width: 6.6, depth: 4.9 },
-  { faction: "paper", minX: 8.7, minZ: 0.6, width: 4.6, depth: 4.9 },
+  { faction: "launchTeam", minX: 0.7, minZ: 0.6, width: 6.6, depth: 4.9 },
+  { faction: "paperTrail", minX: 8.7, minZ: 0.6, width: 4.6, depth: 4.9 },
 ];
 
 const blockedByFurniture = new Set(FURNITURE.filter((p) => p.blocks).map((p) => `${p.cell.col},${p.cell.row}`));
@@ -204,26 +204,27 @@ export function isWalkable(c: Cell): boolean {
 /** A spot the Intern walks to: the thing itself, and the free cell the Intern stands on beside it. */
 export type Spot = { readonly cell: Cell; readonly stand: Cell };
 
-export type TaskPlaceId = "desk" | "printer" | "sink" | "plant" | "shredder" | "toilet" | "shelf";
-export const TASK_PLACES: Readonly<Record<TaskPlaceId, Spot>> = {
+/** Where each Task place is on the office grid. */
+export const PLACE_SPOTS: Readonly<Record<TaskPlaceId, Spot>> = {
   desk: { cell: cell(2, 2), stand: cell(2, 1) },
   printer: { cell: cell(0, 2), stand: cell(0, 3) },
   sink: { cell: cell(16, 5), stand: cell(16, 4) },
   plant: { cell: cell(7, 0), stand: cell(7, 1) },
   shredder: { cell: cell(0, 7), stand: cell(0, 6) },
-  toilet: { cell: SMART_TOILET, stand: cell(18, 2) },
-  shelf: { cell: cell(11, 6), stand: cell(11, 5) },
+  room4: { cell: SMART_TOILET, stand: cell(18, 2) },
+  evidenceShelf: { cell: cell(11, 6), stand: cell(11, 5) },
 };
 
-export type CastId = "pogodny" | "teczka" | "szablon" | "ufna" | "przeciek";
+/** The five cast members, by the IDs Tasks use for their assigner. */
+export type CastId = Exclude<Assigner, "anyone">;
 /** Where a cast member sits or stands, and the cell the Intern stands on to talk to them. */
 export type ColleagueSpot = Spot & { readonly seated: boolean; readonly offset?: { readonly z: number } };
 export const COLLEAGUE_SPOTS: Readonly<Record<CastId, ColleagueSpot>> = {
-  pogodny: { cell: cell(1, 5), offset: { z: -0.5 }, seated: true, stand: cell(1, 4) },
-  szablon: { cell: cell(4, 2), offset: { z: CHAIR_OFFSET }, seated: true, stand: cell(4, 1) },
-  teczka: { cell: cell(10, 2), offset: { z: CHAIR_OFFSET }, seated: true, stand: cell(10, 1) },
-  ufna: { cell: cell(17, 3), seated: false, stand: cell(17, 4) },
-  przeciek: { cell: cell(2, 10), seated: true, stand: cell(3, 10) },
+  zbigniew: { cell: cell(1, 5), offset: { z: -0.5 }, seated: true, stand: cell(1, 4) },
+  ryszard: { cell: cell(4, 2), offset: { z: CHAIR_OFFSET }, seated: true, stand: cell(4, 1) },
+  halina: { cell: cell(10, 2), offset: { z: CHAIR_OFFSET }, seated: true, stand: cell(10, 1) },
+  wiola: { cell: cell(17, 3), seated: false, stand: cell(17, 4) },
+  kamil: { cell: cell(2, 10), seated: true, stand: cell(3, 10) },
 };
 
 /** Where the Intern stands when the office loads. */

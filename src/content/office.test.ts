@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COLLEAGUE_SPOTS, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS, TASK_PLACES } from "./office";
+import { COLLEAGUE_SPOTS, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS, PLACE_SPOTS } from "./office";
 
 const cell = (col: number, row: number) => ({ col, row });
 
@@ -33,13 +33,13 @@ describe("the office grid", () => {
 
 describe("Task places and Colleague spots", () => {
   it("marks the seven Task places", () => {
-    expect(Object.keys(TASK_PLACES).sort()).toEqual(
-      ["desk", "plant", "printer", "shelf", "shredder", "sink", "toilet"].sort(),
+    expect(Object.keys(PLACE_SPOTS).sort()).toEqual(
+      ["desk", "evidenceShelf", "plant", "printer", "room4", "shredder", "sink"].sort(),
     );
   });
 
   it("gives every place and spot a walkable stand cell next to it", () => {
-    for (const spot of [...Object.values(TASK_PLACES), ...Object.values(COLLEAGUE_SPOTS)]) {
+    for (const spot of [...Object.values(PLACE_SPOTS), ...Object.values(COLLEAGUE_SPOTS)]) {
       expect(isWalkable(spot.stand)).toBe(true);
       const reach = Math.max(Math.abs(spot.stand.col - spot.cell.col), Math.abs(spot.stand.row - spot.cell.row));
       expect(reach).toBe(1);
@@ -47,6 +47,6 @@ describe("Task places and Colleague spots", () => {
   });
 
   it("has a spot for each of the five cast members", () => {
-    expect(Object.keys(COLLEAGUE_SPOTS).sort()).toEqual(["przeciek", "pogodny", "szablon", "teczka", "ufna"].sort());
+    expect(Object.keys(COLLEAGUE_SPOTS).sort()).toEqual(["halina", "kamil", "ryszard", "wiola", "zbigniew"].sort());
   });
 });

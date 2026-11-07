@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Cell, COLLEAGUE_SPOTS, isWalkable, TASK_PLACES } from "../content";
+import { type Cell, COLLEAGUE_SPOTS, isWalkable, PLACE_SPOTS } from "../content";
 import { findPath } from "./pathfinding";
 
 const cell = (col: number, row: number): Cell => ({ col, row });
@@ -51,8 +51,8 @@ describe("findPath", () => {
   });
 
   it("reaches every Task place and Colleague spot from the Intern's desk", () => {
-    const desk = TASK_PLACES.desk.stand;
-    for (const spot of [...Object.values(TASK_PLACES), ...Object.values(COLLEAGUE_SPOTS)]) {
+    const desk = PLACE_SPOTS.desk.stand;
+    for (const spot of [...Object.values(PLACE_SPOTS), ...Object.values(COLLEAGUE_SPOTS)]) {
       expect(findPath(desk, spot.stand), `${spot.stand.col},${spot.stand.row}`).not.toBeNull();
     }
   });

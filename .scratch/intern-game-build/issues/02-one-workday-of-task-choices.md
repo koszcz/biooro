@@ -1,6 +1,6 @@
 # One Workday of Task choices
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 ## What to build
@@ -32,3 +32,7 @@ Leave delegation out. The "Delegation" ticket adds it.
 - [4. Game rules](../../intern-game/spec.md#4-game-rules): "Pressures", "The Workday", "Task choices", "Helping a Faction" and "Escalation".
 - [5. The week](../../intern-game/spec.md#5-the-week): "Firings" and "Task slots".
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "Game state".
+
+## Comments
+
+Built on branch ticket-02, merged into intern-game-build at 67fbc2999ba7d97161e6784545d8a10a71ca2787. Left for ticket 04: Fake it does not queue pending Fallout yet, and Fallout limits are not in. newGame() starts at day 0 before Monday's morning steps.

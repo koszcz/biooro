@@ -40,7 +40,7 @@ const CORRIDOR_TILES = ["#97988f", "#8e8f8b"];
 const INNER_WALL = "#cfc9bb";
 const NEAR_WALL = "#8e8f8b";
 const THRESHOLD = "#5a554c";
-const RUG_COLOURS = { launch: "#a7c8c6", paper: "#c9ab6b" } as const;
+const RUG_COLOURS = { launchTeam: "#a7c8c6", paperTrail: "#c9ab6b" } as const;
 const BRAND_TEAL = "#18b6c8";
 
 const material = (color: string, extra: MeshStandardMaterialParameters = {}) =>
