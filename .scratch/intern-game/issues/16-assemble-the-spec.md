@@ -1,7 +1,7 @@
 # Assemble the spec
 
 Type: task
-Status: open
+Status: resolved
 Blocked by:
 
 ## Question
@@ -16,6 +16,45 @@ Do this:
 - Keep each sentence short and sharp enough for an agent to act on.
 
 Done when `spec.md` exists, covers all 15 tickets, and lists the gaps found.
+
+## Answer
+
+The spec is at [spec.md](../spec.md). It covers all 15 resolved tickets, organised by what a builder needs, and links each section to its source ticket.
+
+### Small fixes resolved in the spec
+
+The spec's section "Fixes made in this spec" lists each one. In short:
+
+- New Tasks never exceed the day's slot count. Fallout is not capped.
+- A new `tierChanged` event fires whenever Escalation crosses a tier boundary, even mid-day.
+- One event table lists all 11 events, including the new `weekSurvived`.
+- The palette follows the tier: Mundane, Odd and Wrong replace Monday, Wednesday and Friday.
+- The code layout adds `src/story/`, `src/audio/` and `src/store/`. Save code lives in `src/store/`.
+- Task bubbles show full text at once with no blips. Blips belong to conversation text.
+- The game uses npm. The prototypes keep pnpm.
+- A table gives the net effects of delegating a Launch Team Task to each Colleague.
+- The first Fallout can land on Wednesday.
+- The loading screen becomes the title screen. Continue or New game unlocks audio.
+- Each Task that can return needs Fallout wording: 11 strings, keyed `<taskId>.fallout`. No ticket had counted these.
+- Free fakes on Thursday and Friday are treated as an intended late-week release, unless the survivability ticket finds they break the balance.
+
+### Housekeeping
+
+- Both prototypes are now on `main`, so the spec points at `prototype/office-look` and `prototype/pressures-ui` there.
+- The three research branches stay unmerged. The spec names each branch and file.
+
+### New tickets for the real decisions
+
+- [Retry after a morning Firing](17-retry-after-a-morning-firing.md) (review item 1)
+- [Ink state across saves](18-ink-state-across-saves.md) (items 2 and 3, merged because they share one cause)
+- [What sabotage does to a Task](19-what-sabotage-does-to-a-task.md) (item 8)
+- [Task choices on a Fallout Task](20-task-choices-on-a-fallout-task.md) (item 9)
+- [What helps a Faction](21-what-helps-a-faction.md) (item 11)
+- [End-of-day order and Firing priority](22-end-of-day-order-and-firing-priority.md) (item 10)
+- [How often the Intern can talk](23-how-often-the-intern-can-talk.md) (item 7)
+- [Conversation interface](24-conversation-interface.md) (item 6)
+- [Survivability and the scripted week](25-survivability-and-the-scripted-week.md) (item 5)
+- [Fold the open decisions into the spec](26-fold-the-open-decisions-into-the-spec.md), blocked by all of the above
 
 ## Comments
 
