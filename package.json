@@ -15,7 +15,7 @@
     "ink:ids": "node --experimental-strip-types --no-warnings scripts/line-ids.ts --fix",
     "check:size": "node --experimental-strip-types --no-warnings scripts/check-file-size.ts",
     "check:deps": "depcruise --config .dependency-cruiser.cjs src",
-    "check:audio": "echo 'Audio check: no audio manifest yet. The audio ticket adds this check.'"
+    "check:audio": "node --experimental-strip-types --no-warnings scripts/audio.ts"
   },
   "engines": {
     "node": ">=22.18"
