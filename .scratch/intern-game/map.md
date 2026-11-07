@@ -35,6 +35,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [The week](issues/08-the-week.md): five fixed day beats ending in a Friday Head office audit. Hidden Escalation with three tiers, fixed Task slots per day, four Firing scenes, and three survival variants.
 - [Lock the tech plan](issues/09-lock-the-tech-plan.md): TypeScript owns one pure `GameState`. Ink reads and writes it through seven game functions. Typed events drive the scene and DOM overlays. One `npm run check` enforces file sizes, folder boundaries, and Ink line IDs.
 - [Writing workflow](issues/10-writing-workflow.md): the user writes one voice anchor per character and the Firings. Agents draft the rest against `docs/writing/voice.md`, and the user reads every line. Ink lives in `src/story/` with one file per character, and translation-safe writing rules apply.
+- [Pressures and Task inbox UI](issues/11-pressures-and-inbox-ui.md): Tasks are full-text speech bubbles over whoever assigned them. A popover beside them lists the four Task choices, with "Delegate it" collapsed. Pressures are slim gauges on the left, and hours are 8 blocks at the bottom.
 
 ## Not yet specified
 
