@@ -6,7 +6,15 @@ import { tierOf } from "./rules";
 import { loadModels, startOfficeScene } from "./scene";
 import { createStore, hasSave } from "./store";
 import { story } from "./story";
-import { mountDebugPanel, mountGameUi, mountMuteButton, mountSceneFrame, mountTalk, showLoadingScreen } from "./ui";
+import {
+  mountDebugPanel,
+  mountGameUi,
+  mountMuteButton,
+  mountSceneFrame,
+  mountTalk,
+  type RevealListener,
+  showLoadingScreen,
+} from "./ui";
 
 const container = document.getElementById("app");
 if (!container) throw new Error("index.html needs an element with id 'app'");
@@ -22,11 +30,10 @@ const choice = await loading.toTitle({ canContinue: hasSave(window.localStorage)
 // The HUD draws a loaded save when it mounts. If the save fails to load, a new game starts.
 const continued = choice === "continue" && store.continueGame(dialogue.loadInk);
 const office = startOfficeScene(container, models, store, tierOf(store.state.escalation));
-mountGameUi(container, store, office.headAt, office.onActionCue);
+const blip: RevealListener = (speaker, text, from, to) => audio.blip(speaker, blipsBetween(text, from, to));
+mountGameUi(container, store, office.headAt, office.onActionCue, blip);
 mountMuteButton(container, audio);
-const talk = mountTalk(container, office, store, (speaker, text, from, to) =>
-  audio.blip(speaker, blipsBetween(text, from, to)),
-);
+const talk = mountTalk(container, office, store, blip);
 const conversations = new Conversations(store, dialogue, office, talk.view);
 talk.connect((person) => conversations.availability(person));
 const scenes = new Scenes(store, dialogue, office, talk.view, mountSceneFrame(container));

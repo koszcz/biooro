@@ -7,6 +7,7 @@ import type { HeadLocator } from "./bubbles";
 import { el } from "./dom";
 import type { BubbleOwner } from "./hudView";
 import { PRESSURE_COLOURS } from "./styles";
+import { type RevealListener, typeLine } from "./talkText";
 
 const SPARKLE_MS = 1600;
 const SAY_MS = 1800;
@@ -46,7 +47,7 @@ export interface ActionLayer {
   follow(): void;
 }
 
-export function createActionLayer(root: HTMLElement, headAt: HeadLocator): ActionLayer {
+export function createActionLayer(root: HTMLElement, headAt: HeadLocator, onReveal?: RevealListener): ActionLayer {
   const layer = el("div", "hud-acts");
   root.append(layer);
   const pinned = new Map<HTMLElement, { over: BubbleOwner; lift: number }>();
@@ -95,8 +96,11 @@ export function createActionLayer(root: HTMLElement, headAt: HeadLocator): Actio
     },
     handOff(colleague) {
       const node = el("div", "hud-say");
-      node.append(el("b", "", ASSIGNER_NAMES[colleague]), el("span", "", HAND_OFF_LINES[colleague]));
+      const text = HAND_OFF_LINES[colleague];
+      const body = el("span", "");
+      node.append(el("b", "", ASSIGNER_NAMES[colleague]), body);
       pin(node, colleague, LIFT.say, SAY_MS);
+      typeLine(body, text, (from, to) => onReveal?.(colleague, text, from, to));
     },
     floats(floats) {
       floats.forEach((float, index) => {

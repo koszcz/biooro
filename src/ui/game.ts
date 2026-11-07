@@ -12,6 +12,7 @@ import type { BubbleOwner, Preview } from "./hudView";
 import { createPlay } from "./play";
 import { createPopover } from "./popover";
 import { HUD_CSS } from "./styles";
+import type { RevealListener } from "./talkText";
 
 /** Every store event that changes what the HUD shows. */
 const REDRAW_ON: StoreEventType[] = [
@@ -37,13 +38,14 @@ export type ActionCue =
 
 /**
  * Mounts the HUD over `container`. Mount it before the first morning, so it sees Monday's `dayStarted`.
- * `onActionCue` subscribes to the scene's cues for Task actions.
+ * `onActionCue` subscribes to the scene's cues for Task actions. `onReveal` hears hand-off lines as they reveal.
  */
 export function mountGameUi(
   container: HTMLElement,
   store: GameStore,
   headAt: HeadLocator,
   onActionCue: (listener: (cue: ActionCue) => void) => void,
+  onReveal?: RevealListener,
 ): void {
   const style = el("style", "", HUD_CSS + ACTION_CSS);
   const root = el("div", "hud");
@@ -81,7 +83,7 @@ export function mountGameUi(
       redraw();
     },
   });
-  const labels = createActionLayer(root, headAt);
+  const labels = createActionLayer(root, headAt, onReveal);
   const popover = createPopover(root, headAt, {
     pick: (task, pick) => act(() => play.pick(task, pick)),
     preview: (next) => {

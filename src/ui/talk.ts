@@ -6,7 +6,7 @@ import type { GameStore } from "../store/index";
 import { createTalkLayer, element, type TalkOffice } from "./talkLayer";
 import { mountTalkMarks } from "./talkMarks";
 import { BRUSH_OFF_MS, SPEAKER_COLOURS } from "./talkStyles";
-import { revealedLength } from "./talkText";
+import { type RevealListener, typeLine } from "./talkText";
 
 export interface TalkOverlay {
   readonly view: TalkView;
@@ -23,30 +23,12 @@ const BUBBLE_LIFT = -26;
  */
 function reveal(target: HTMLElement, text: string, onShown?: (from: number, to: number) => void): Promise<void> {
   return new Promise((resolve) => {
-    const started = performance.now();
-    let complete = false;
-    let blipped = 0;
-    const finish = () => {
-      complete = true;
-      target.textContent = text;
-      target.classList.add("done");
-    };
-    const tick = () => {
-      if (complete) return;
-      const shown = revealedLength(performance.now() - started, text.length);
-      if (shown >= text.length) finish();
-      else {
-        onShown?.(blipped, shown);
-        blipped = shown;
-        target.textContent = text.slice(0, shown);
-        requestAnimationFrame(tick);
-      }
-    };
+    const line = typeLine(target, text, onShown, () => target.classList.add("done"));
     const press = (event: Event) => {
       if (event instanceof KeyboardEvent && event.key !== " " && event.key !== "Enter") return;
       event.preventDefault();
       event.stopPropagation();
-      if (!complete) return finish();
+      if (!line.done) return line.complete();
       window.removeEventListener("pointerdown", press, true);
       window.removeEventListener("keydown", press, true);
       resolve();
@@ -55,12 +37,8 @@ function reveal(target: HTMLElement, text: string, onShown?: (from: number, to: 
       window.addEventListener("pointerdown", press, true);
       window.addEventListener("keydown", press, true);
     });
-    tick();
   });
 }
-
-/** Called as a line is revealed: how many characters of `text` were shown before and now. */
-export type RevealListener = (speaker: Speaker, text: string, from: number, to: number) => void;
 
 export function mountTalk(
   container: HTMLElement,
@@ -126,8 +104,10 @@ export function mountTalk(
     brushOff(person, text) {
       if (brushOff) layer.remove(brushOff);
       const el = bubble(person, " brush-off");
-      el.append(text);
+      const body = element("span", "text");
+      el.append(body);
       layer.anchor(el, person, BUBBLE_LIFT);
+      typeLine(body, text, (from, to) => onReveal?.(person, text, from, to));
       brushOff = el;
       setTimeout(() => layer.remove(el), BRUSH_OFF_MS);
     },
