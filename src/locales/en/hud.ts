@@ -81,6 +81,10 @@ export const hudText = {
   pickColleague: "Pick a Colleague",
   nobodyWillTakeIt: "Nobody will take it",
   close: "Close",
+  morePill: (count: number, name: string) => `+${count} more from ${name}`,
+  pillFallout: (count: number) => `⚠ ${count}`,
+  backToList: "Back",
+  taskListTitle: (name: string) => `Tasks from ${name}`,
   fallout: "Fallout",
   startDay: "Start the day",
 } as const;
