@@ -68,3 +68,4 @@ Doing or delegating a Fallout Task finishes it, so it counts toward Task growth 
 - **Ignored on any day, not only the arrival day.** Fallout is urgent by design, so it gets one day.
 
 Glossary terms updated in `CONTEXT.md`: Fallout (cannot be faked, expires if ignored) and Expired (new).
+- From [Survivability and the scripted week](25-survivability-and-the-scripted-week.md): an ignored Fallout Task now costs Performance 3, not 2. With 2, a player who fakes everything survived the week.

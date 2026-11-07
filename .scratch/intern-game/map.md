@@ -49,6 +49,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [End-of-day order and Firing priority](issues/22-end-of-day-order-and-firing-priority.md): fixed morning and end-of-day step lists with one Firing check at the end of the night. Friday runs the end-of-day steps before the audit. Ties go Performance, Launch Team, Paper Trail, Sanity. A "Go home" button ends the day early.
 - [How often the Intern can talk](issues/23-how-often-the-intern-can-talk.md): each Colleague offers one Conversation a day, and Bosses have none outside scripted scenes. A Conversation changes at most one non-Performance Pressure by 1, never below 1, and never counts as helping. Otherwise a click shows a tier-varied brush-off.
 - [Conversation interface](issues/24-conversation-interface.md): click a person to talk. The Intern walks up first. Lines are Faction-coloured speech bubbles over the speaker, revealed at 45 characters a second. Choices are numbered bubbles over the Intern, with effects hidden. "…" badges show who can still talk, and brush-offs are short fading bubbles. Scripted scenes add letterbox bars.
+- [Survivability and the scripted week](issues/25-survivability-and-the-scripted-week.md): ignored Fallout now costs Performance 3, so faking everything gets the Intern fired. Other numbers stay. Naive policies are fired, and a mixed policy survives at Sanity 1. Late fakes stay free, and Conversations should net zero. Vitest holds three scripted weeks with exact asserts. No "Retry yesterday" trap was found.
 
 ## Not yet specified
 
