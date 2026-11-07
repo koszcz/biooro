@@ -3,18 +3,17 @@
 import {
   type AnimationAction,
   AnimationMixer,
-  BoxGeometry,
   ConeGeometry,
   DoubleSide,
   Group,
   Mesh,
   MeshBasicMaterial,
-  MeshStandardMaterial,
   type Object3D,
   RingGeometry,
 } from "three";
 import { type Cell, INTERN_START } from "../content";
-import { type Character, INTERN_MODEL, type ModelLibrary } from "./models";
+import { INTERN_MODEL, type ModelLibrary } from "./models";
+import { addVest } from "./outfit";
 import { Walker } from "./walker";
 
 export const INTERN_ORANGE = "#ff7a1a";
@@ -36,32 +35,9 @@ const ignoreClicks = (o: Object3D) => {
   o.raycast = () => {};
 };
 
-function addVest(character: Character): void {
-  let torso: Object3D | undefined;
-  character.model.traverse((o) => {
-    if (o.name === "torso") torso = o;
-  });
-  if (!torso) return;
-  // The torso bone sits at the hip, so offsets are in torso space.
-  const vest = new Mesh(
-    new BoxGeometry(0.3, 0.19, 0.32),
-    new MeshStandardMaterial({ color: INTERN_ORANGE, flatShading: true, roughness: 0.8 }),
-  );
-  vest.position.set(0, 0.09, -0.02);
-  const stripe = new Mesh(
-    new BoxGeometry(0.31, 0.03, 0.33),
-    new MeshStandardMaterial({ color: STRIPE, flatShading: true, roughness: 0.8 }),
-  );
-  stripe.position.set(0, 0.07, -0.02);
-  for (const part of [vest, stripe]) {
-    part.castShadow = true;
-    torso.add(part);
-  }
-}
-
 export function createIntern(models: ModelLibrary, start: Cell = INTERN_START): Intern {
   const character = models.character(INTERN_MODEL);
-  addVest(character);
+  addVest(character, INTERN_ORANGE, STRIPE);
   const root = new Group();
   root.name = "intern";
   root.add(character.model);

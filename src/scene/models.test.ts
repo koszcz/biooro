@@ -5,6 +5,21 @@ import { glbPaths } from "./models";
 const publicPath = (path: string) => new URL(`../../public/${path}`, import.meta.url);
 
 describe("glbPaths", () => {
+  it("lists every person's base model and the glasses the cast wear", () => {
+    const paths = glbPaths();
+    for (const name of [
+      "character-male-c",
+      "character-male-d",
+      "character-male-a",
+      "character-female-b",
+      "character-female-e",
+      "character-male-f",
+      "aid-glasses",
+      "aid-sunglasses",
+    ])
+      expect(paths).toContain(`models/characters/${name}.glb`);
+  });
+
   it("lists every furniture model in the layout and the Intern", () => {
     const paths = glbPaths();
     expect(paths).toContain("models/furniture/desk.glb");
