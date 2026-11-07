@@ -1,6 +1,6 @@
 # The week and the scripted weeks
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02
 
 ## What to build
@@ -29,3 +29,7 @@ Turn one Workday into a full week from Monday to Friday, then prove the balance 
 - [4. Game rules](../../intern-game/spec.md#4-game-rules): "Fallout", "Neutrality", "Task growth", "Escalation" and "Balance".
 - [5. The week](../../intern-game/spec.md#5-the-week): all of it.
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "The scripted weeks".
+
+## Comments
+
+Built on branch ticket-04, merged into intern-game-build at 9495f6392a3d50be5580e1d8f171b229f60b94af. Also built the 'Ryszard already faked this once' lock left over from ticket 03. Choices where the spec is silent: an `audit` phase holds the game between Friday's end-of-day steps and `answerAudit`; an end-of-day Firing does not emit `dayEnded`; a strange Task keeps its slot's Task ID with an optional `strange` field.
