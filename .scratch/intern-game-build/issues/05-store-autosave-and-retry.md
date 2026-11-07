@@ -1,6 +1,6 @@
 # Store, autosave and retry
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 04
 
 ## What to build
@@ -24,3 +24,7 @@ The state store in `src/store/`. It is the only way the scene, UI, audio and dia
 
 - [9. Save and load](../../intern-game/spec.md#9-save-and-load): all of it.
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "Store commands" and "Events".
+
+## Comments
+
+Built on branch ticket-05, merged into intern-game-build at 4c318fb. Choices where the spec is silent: added an `answerAudit(answer)` command; a survived week deletes the save; `retry()` emits `dayStarted`; `continueGame(loadInk?)` discards the save if `loadInk` throws; a Break that spends the last hour runs the end-of-day steps; only an unscripted Conversation marks a Colleague as talked today; keys are `biooro.save` and `biooro.settings` (`{ muted }`). Left for ticket 11: the save when a Firing ends a Conversation, which needs Ink writes.
