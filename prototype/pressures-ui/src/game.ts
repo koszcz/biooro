@@ -126,9 +126,18 @@ export function choicesFor(t: Task): ChoiceView[] {
   return out;
 }
 
+/** Ticket "How Task choices play out": a variant may take over what a Task choice does on screen. */
+export const choiceHook: { run: ((t: Task, c: ChoiceView) => void) | null } = { run: null };
 export function choose(t: Task, c: ChoiceView) {
   if (c.locked || state.firedBy || state.dayOver) return;
-  setHours(state.hours - c.hours);
+  if (choiceHook.run) { choiceHook.run(t, c); return; }
+  applyChoice(t, c, { spend: true, endCheck: true });
+}
+/** Spend (or, with a negative n, refund) hours without ending the day. */
+export function spendHours(n: number) { setHours(state.hours - n); }
+export function applyChoice(t: Task, c: ChoiceView, o: { spend: boolean; endCheck: boolean }) {
+  if (state.firedBy || state.dayOver) return;
+  if (o.spend) setHours(state.hours - c.hours);
   for (const [k, v] of Object.entries(c.deltas) as [PressureKey, number][]) if (v) setP(k, state.p[k] + v);
   if (state.firedBy) return;
   if (c.key === 'sabotage') { if (t.side) state.helpedToday.add(rival(t.side)); }
@@ -140,7 +149,7 @@ export function choose(t: Task, c: ChoiceView) {
     if (c.key === 'fake' || c.delegateTo === 'ryszard') state.pendingFallout.push({ due: state.day + 2, task: { ...t, fallout: true, title: `Fallout: ${t.title}` } });
   }
   emit({ type: 'taskResolved', task: t, choice: c.key });
-  if (state.hours <= 0) endDay();
+  if (o.endCheck && state.hours <= 0) endDay();
 }
 
 export function takeBreak() {

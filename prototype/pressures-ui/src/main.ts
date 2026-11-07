@@ -5,6 +5,7 @@
 //   C In the world: Task bubbles over whoever assigned them, a popover per Task, slim gauges.
 //   D/E/F: variant C with three answers to the 'Crowded Task bubbles' ticket (see variants/crowd.ts).
 //   G/H/I: variant E with three answers to the 'Conversation interface' ticket (see variants/talk.ts).
+//   J/K/L: variant G with three answers to the 'How Task choices play out' ticket (see variants/act.ts).
 // The pink controls (top left) are prototype-only: jump days, stress the inbox, show state.
 import './scene';
 import { BASE_CSS } from './shared';
@@ -14,6 +15,7 @@ import { mountB } from './variants/b';
 import { mountC } from './variants/c';
 import { mountCrowd } from './variants/crowd';
 import { mountTalk } from './variants/talk';
+import { mountAct } from './variants/act';
 
 const VARIANTS = [
   { key: 'A', name: 'Top bar + inbox drawer', mount: mountA },
@@ -25,6 +27,9 @@ const VARIANTS = [
   { key: 'G', name: 'Talk: walk up, speech bubbles in the world', mount: (r: HTMLElement) => mountTalk(r, 'world') },
   { key: 'H', name: 'Talk: from anywhere, bottom panel', mount: (r: HTMLElement) => mountTalk(r, 'panel') },
   { key: 'I', name: 'Talk: walk up, transcript column', mount: (r: HTMLElement) => mountTalk(r, 'log') },
+  { key: 'J', name: 'Act: go there and wait it out', mount: (r: HTMLElement) => mountAct(r, 'wait') },
+  { key: 'K', name: 'Act: instant, played out in the background', mount: (r: HTMLElement) => mountAct(r, 'bg') },
+  { key: 'L', name: 'Act: a work queue', mount: (r: HTMLElement) => mountAct(r, 'queue') },
 ];
 const params = new URLSearchParams(location.search);
 let i = Math.max(0, VARIANTS.findIndex((v) => v.key === (params.get('variant') ?? 'A')));

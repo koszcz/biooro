@@ -34,6 +34,10 @@ _Avoid_: Escalate side, whistleblowers
 A piece of work a Boss or Colleague assigns to the Intern. The more Tasks the Intern finishes, the more Tasks the Bosses assign.
 _Avoid_: Job, assignment, quest, mission
 
+**Task place**:
+The spot in the office where a Task happens, such as the printer, the sink, or Room 4. A Task with no clear spot happens at the Intern's desk.
+_Avoid_: Location, station, target
+
 **Task side**:
 The Faction a Task serves, set by whoever assigns it. Some Tasks serve no Faction.
 _Avoid_: Alignment, allegiance

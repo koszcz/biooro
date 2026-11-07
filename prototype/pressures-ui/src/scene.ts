@@ -155,6 +155,8 @@ const ITEMS: Item[] = [
   { kind: 'plant', candidates: ['pottedPlant', 'plant'], fallback: [0.4, 0.9, 0.4, '#4a7'], cell: [9, 0], rot: 0, blocks: true },
   { kind: 'bookcase', candidates: ['bookcaseClosed', 'bookcase'], fallback: [1, 1.8, 0.4, '#8a6a4a'], cell: [0, 0], rot: 0, blocks: true },
   { kind: 'trash', candidates: ['trashcan', 'trash'], fallback: [0.3, 0.4, 0.3, '#777'], cell: [7, 2], rot: 0, blocks: true },
+  // ticket "How Task choices play out": the kits have no printer, so a grey box stands in.
+  { kind: 'printer', candidates: [], fallback: [0.7, 0.75, 0.55, '#c9ced6'], cell: [9, 4], rot: 0, blocks: true },
 ];
 
 const blocked = new Set<string>();
@@ -256,6 +258,7 @@ let arrived: (() => void) | null = null;
 
 function cellOf(p: THREE.Vector3): Cell { return [Math.floor(p.x), Math.floor(p.z)]; }
 function walkTo(goal: Cell, chair: (typeof chairs)[number] | null = null) {
+  arrived = null; // a new walk drops whoever waited on the old one
   const from = cellOf(intern.root.position);
   const cells = astar(from, goal);
   if (!cells.length) return;
@@ -312,10 +315,11 @@ renderer.domElement.addEventListener('pointerdown', (e) => {
     // approach from the cell behind the chair (away from desk)
     const behind: Cell = [chair.cell[0], chair.cell[1] + (chair.rot === 0 ? 1 : 1)];
     const approach: Cell = behind[1] < D && !blocked.has(key(behind)) ? behind : chair.cell;
+    hooks.onPlayerWalk?.();
     walkTo(approach, chair);
   } else {
     const c = cellOf(hit.point);
-    if (!blocked.has(key(c))) walkTo(c);
+    if (!blocked.has(key(c))) { hooks.onPlayerWalk?.(); walkTo(c); }
   }
 });
 // Hover: pointer cursor over people, and tell the UI who is under the mouse.
@@ -401,7 +405,7 @@ async function boot() {
   intern.root.position.set(4.5, 0, 5.5);
   colleague.root.position.set(6.5, 0, 5.5); colleague.root.rotation.y = -Math.PI / 2;
   boss.root.position.set(8.5, 0, 7.5); boss.root.rotation.y = Math.PI;
-  for (const a of [intern, colleague, boss, halina, wiola, kamil]) { a.root.scale.setScalar(charScale); scene.add(a.root); play(a, /idle/i); }
+  for (const a of [intern, colleague, boss, halina, wiola, kamil]) { a.root.scale.setScalar(charScale); scene.add(a.root); play(a, /idle/i); homes.set(a, { pos: a.root.position.clone(), rot: a.root.rotation.y }); }
   marker = new THREE.Mesh(new THREE.RingGeometry(0.25, 0.35, 24), new THREE.MeshBasicMaterial({ color: '#ff2bd6' }));
   marker.rotation.x = -Math.PI / 2; marker.visible = false; scene.add(marker);
   setVariant(vIndex);
@@ -411,6 +415,7 @@ async function boot() {
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.05);
     updateIntern(dt);
+    updateNpcs(dt);
     fadeWalls(dt);
     for (const a of [intern, colleague, boss, halina, wiola, kamil]) a.mixer?.update(dt);
     onFrame.forEach((f) => f());
@@ -431,7 +436,7 @@ export function screenPos(who: Who): { x: number; y: number } | null {
 }
 
 // ---------- conversation hooks (ticket "Conversation interface") ----------
-export const hooks: { locked: boolean; onActorClick: ((who: Who) => void) | null; onActorHover?: (who: Who | null) => void } = { locked: false, onActorClick: null };
+export const hooks: { locked: boolean; onActorClick: ((who: Who) => void) | null; onActorHover?: (who: Who | null) => void; onPlayerWalk?: () => void } = { locked: false, onActorClick: null };
 function actorMap(): Record<Who, Actor> { return { intern, zbigniew: boss, ryszard: colleague, halina, wiola, kamil }; }
 /** Walk the Intern to a free cell next to `who`, then face them. Resolves on arrival. */
 export function walkNear(who: Who): Promise<void> {
@@ -463,3 +468,89 @@ export function internDistance(who: Who) {
   const a = actorMap()[who].root.position, b = intern.root.position;
   return Math.hypot(a.x - b.x, a.z - b.z);
 }
+
+// ---------- Task action hooks (ticket "How Task choices play out") ----------
+export type PlaceKey = 'desk' | 'printer' | 'sink' | 'toilet' | 'plant' | 'shredder' | 'shelf';
+export const PLACES: Record<PlaceKey, { label: string; cell: Cell }> = {
+  desk: { label: "the Intern's desk", cell: [4, 2] },
+  printer: { label: 'the printer', cell: [9, 4] },
+  sink: { label: 'the sink', cell: [0, 4] },
+  toilet: { label: 'Room 4', cell: [1, 6] },
+  plant: { label: 'the plant', cell: [9, 0] },
+  shredder: { label: 'the shredder', cell: [7, 2] },
+  shelf: { label: 'the evidence shelf', cell: [0, 0] },
+};
+const homes = new Map<Actor, { pos: THREE.Vector3; rot: number }>();
+const npcs = new Map<Actor, { path: THREE.Vector3[]; done: (() => void) | null }>();
+function stopNear(from: Cell, target: Cell): Cell | undefined {
+  const was = blocked.delete(key(target));
+  const route = astar(from, target);
+  if (was) blocked.add(key(target));
+  const near = (c: Cell) => Math.max(Math.abs(c[0] - target[0]), Math.abs(c[1] - target[1])) <= 1;
+  return route.find((c) => near(c) && key(c) !== key(target)) ?? (route.length ? route[route.length - 1] : undefined);
+}
+const faceTo = (o: THREE.Object3D, x: number, z: number) => { o.rotation.y = Math.atan2(x - o.position.x, z - o.position.z); };
+/** Walk the Intern to a Task's place and face it. The desk means: sit in the Intern's chair. */
+export function internTo(place: PlaceKey): Promise<void> {
+  const cell = PLACES[place].cell;
+  return new Promise((res) => {
+    if (place === 'desk') {
+      const chair = chairs.find((c) => c.cell[0] === cell[0] && c.cell[1] === cell[1] + 1)!;
+      if (seated && sitOn === chair) { res(); return; }
+      walkTo([chair.cell[0], chair.cell[1] + 1], chair);
+      if (!path.length) { res(); return; }
+      arrived = res; return;
+    }
+    const here = cellOf(intern.root.position);
+    const stop = stopNear(here, cell);
+    const face = () => faceTo(intern.root, cell[0] + 0.5, cell[1] + 0.5);
+    if (!stop || key(stop) === key(here)) { if (seated) { seated = false; intern.root.position.y = 0; } face(); res(); return; }
+    walkTo(stop);
+    if (!path.length) { face(); res(); return; }
+    arrived = () => { face(); res(); };
+  });
+}
+/** Walk a non-Intern person next to a place or a person, or back home. Resolves on arrival. */
+export function npcTo(who: Who, to: PlaceKey | Who | 'home'): Promise<void> {
+  const a = actorMap()[who];
+  const home = homes.get(a)!;
+  let goal: Cell | undefined, look: [number, number] | null = null;
+  if (to === 'home') goal = cellOf(home.pos);
+  else {
+    const t: Cell = to in PLACES ? PLACES[to as PlaceKey].cell : cellOf(actorMap()[to as Who].root.position);
+    goal = stopNear(cellOf(a.root.position), t);
+    look = [t[0] + 0.5, t[1] + 0.5];
+  }
+  if (!goal) return Promise.resolve();
+  const was = blocked.delete(key(goal));
+  const cells = astar(cellOf(a.root.position), goal);
+  if (was) blocked.add(key(goal));
+  return new Promise((res) => {
+    const finish = () => {
+      if (to === 'home') { a.root.position.copy(home.pos); a.root.rotation.y = home.rot; } else if (look) faceTo(a.root, look[0], look[1]);
+      play(a, /^idle$/); res();
+    };
+    if (cells.length < 2) { finish(); return; }
+    const pts = cells.slice(1).map((c) => new THREE.Vector3(c[0] + 0.5, 0, c[1] + 0.5));
+    if (to === 'home') pts[pts.length - 1] = home.pos.clone();
+    npcs.set(a, { path: pts, done: finish });
+  });
+}
+function updateNpcs(dt: number) {
+  for (const [a, n] of npcs) {
+    const p = a.root.position, next = n.path[0];
+    const to = next.clone().sub(p); to.y = 0;
+    const dist = to.length(), step = SPEED * 0.8 * dt;
+    if (dist > 0.001) a.root.rotation.y = Math.atan2(to.x, to.z);
+    play(a, /^walk$/);
+    if (dist <= step) { p.copy(next); n.path.shift(); } else p.addScaledVector(to.normalize(), step);
+    if (!n.path.length) { npcs.delete(a); n.done?.(); }
+  }
+}
+/** Play a named clip on someone (exact Kenney Mini Characters clip name, e.g. "interact-left"). */
+export function clip(who: Who, name: string) {
+  const a = actorMap()[who];
+  if (who === 'intern' && name !== 'sit' && seated) { seated = false; intern.root.position.y = 0; }
+  play(a, new RegExp(`^${name}$`));
+}
+export const internSeated = () => seated;

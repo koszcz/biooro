@@ -1,7 +1,7 @@
 # How Task choices play out
 
 Type: prototype
-Status: open
+Status: resolved
 Blocked by: 24
 
 ## Question
@@ -21,3 +21,49 @@ Today a Task choice resolves at once, and the Intern stays where they stand. A T
 Sources: [Pressures and Task inbox UI](11-pressures-and-inbox-ui.md), [Crowded Task bubbles](12-crowded-task-bubbles.md), [Conversation interface](24-conversation-interface.md), [Free low-poly office assets](05-free-office-assets.md), [Character and art direction](13-character-and-art-direction.md).
 
 ## Comments
+
+- Prototype built: `prototype/pressures-ui`, variants J, K and L (`src/variants/act.ts`), preview `pressures-ui-prototype`, `?variant=J|K|L`. The user chose variant J.
+
+## Answer
+
+Variant J, "go there and wait it out". The Intern acts out every Task choice in the office, and the player waits for it to finish. The prototype is `prototype/pressures-ui/src/variants/act.ts` (`?variant=J`). Variants K and L stay in the same file as the alternatives that lost.
+
+### Task places
+
+- Every Task has one Task place. Write it on each Task slot in the content, with the clip to play there. Do not work it out from the title, as the prototype does.
+- The slice uses seven Task places: the Intern's desk, the printer, the sink, the plant, the shredder, Room 4, and the evidence shelf.
+- A Task with no clear place, such as "Summarise the week of complaints in one upbeat line", happens at the Intern's desk. The Intern sits down there.
+- The Kenney kits have no printer. The prototype uses a grey box. The build needs a printer model, for example from Quaternius, or a better stand-in.
+
+### What each Task choice looks like
+
+| Task choice | On screen |
+| --- | --- |
+| Do it | The Intern walks to the Task place and plays its clip: `sit` at the desk, `interact-left` or `interact-right` at a machine, `pick-up` at the plant or shelf, `crouch` at the shredder. |
+| Fake it | The same walk and the same place, for 1 hour. It ends with a "✨ looks done" sparkle. |
+| Sabotage it | The same walk and place, with a different clip, such as a kick or a fiddle. A purple "🤫" tag over the Intern shows only to the player. Nobody turns to look, and nobody comments. At the desk, the clip is still `sit`, so the tag carries the difference. |
+| Delegate it | The Intern walks to the Colleague. The Colleague nods (`emote-yes`) and says a short line in a speech bubble. The 1 hour drains there. |
+
+After a hand-off, the Colleague acts on their own, and it costs the Intern nothing:
+
+- Wiola walks to the Task place, works for about 3 hours of screen time, then walks back home. For a desk Task, she works where she stands.
+- Kamil does the same for a Paper Trail or unsided Task. With a Launch Team Task, he walks to Pani Halina instead, which shows the escalation.
+- Ryszard says yes, stays where he is, and shows "✨ looks done". He fakes it.
+
+### Time, input and Pressures
+
+- **Hours drain while the clip plays.** One hour block empties for each in-game hour of the Task choice. The prototype uses 1 second per hour. Tune the pace in the build.
+- **Input is locked**, as in a Conversation. Clicks on the office are ignored. All Task bubbles dim and cannot be clicked, and any open popover closes. Break and "Go home" are disabled.
+- The Task being worked shows a "⏳" before its title. A tag over the Intern names the Task choice, the Task, and the hours left, as small blocks.
+- **Pressures change when the action finishes**, never at the click. Each visible change rises from the Intern's head as a coloured float, such as "+1 Performance".
+- If the hours reach 0, the day ends after the action finishes.
+
+### Fit with the locked tech plan
+
+This decision only changes what the scene shows. The rules stay the same:
+
+- `GameState` still applies a Task choice in one step, at the click. It stays pure, and the autosave after a Task choice holds the finished result.
+- The scene gets a new typed event for the start of a Task choice. It plays the walk and the clip, drains the hour blocks, and holds back the Pressure gauges and floats until the action finishes.
+- Reloading in the middle of an action skips the rest of the animation. Nothing is lost.
+
+The prototype instead splits the rule into steps (`spendHours`, then `applyChoice`). That is only a shortcut for the prototype. Do not copy it.
