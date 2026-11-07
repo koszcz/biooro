@@ -41,6 +41,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [Audio](issues/14-audio.md): one muzak loop with three Escalation variants, a few CC0 effects, per-character gibberish blips, one mute button, and a raw Web Audio module in `src/audio/` that listens to the typed events.
 - [Save and load](issues/15-save-and-load.md): one `localStorage` slot plus a settings record. It autosaves after every Task choice, Break, and Ink choice. A Firing offers "Retry this day" or "Start over". A version mismatch discards the save.
 - [Assemble the spec](issues/16-assemble-the-spec.md): the draft [spec](spec.md) covers tickets 01 to 15 and resolves 12 small fixes. Nine rule and interface gaps became new tickets, and a final ticket folds them into the spec.
+- [Retry after a morning Firing](issues/17-retry-after-a-morning-firing.md): retry restores the latest snapshot, taken after the morning steps. A morning Firing therefore offers "Retry yesterday", and the snapshot lives in the save record.
 
 ## Not yet specified
 

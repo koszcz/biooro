@@ -21,5 +21,6 @@ Do this:
 3. Decide whether to change any number, such as hours, costs or starting Pressures, so the week is tight but survivable.
 4. Decide whether faking on Thursday and Friday, which has no Fallout cost, breaks the balance.
 5. Define the scripted Vitest week exactly: which Task it handles first, which Task choice it picks, when it takes Breaks, and which Pressures it must end above.
+6. Check that "Retry yesterday" can always save the run. After a morning Firing, the player replays the previous day from its snapshot. Confirm that some sequence of Task choices and Breaks on that day keeps Sanity above 0 the next morning. See [Retry after a morning Firing](17-retry-after-a-morning-firing.md).
 
-Sources: [The week](08-the-week.md), [Pressures and Task choices](07-pressures-and-task-choices.md), [Lock the tech plan](09-lock-the-tech-plan.md).
+Sources: [The week](08-the-week.md), [Pressures and Task choices](07-pressures-and-task-choices.md), [Lock the tech plan](09-lock-the-tech-plan.md), [Retry after a morning Firing](17-retry-after-a-morning-firing.md).
