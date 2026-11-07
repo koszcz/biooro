@@ -1,6 +1,6 @@
 # Walking skeleton
 
-Status: ready-for-agent
+Status: resolved
 Blocked by:
 
 ## What to build
@@ -29,3 +29,7 @@ GitHub Pages hosts one site per repository, and `.github/workflows/backlog.yml` 
 
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "Stack", "Code layout" and "Checks".
 - [7. Look and art](../../intern-game/spec.md#7-look-and-art): "Camera and movement".
+
+## Comments
+
+Built on branch ticket-01, merged into intern-game-build at fb5d789.
