@@ -41,7 +41,6 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 
 ## Not yet specified
 
-- Audio: music, sound effects, and whether there is any voice.
 - Saving and loading progress.
 - Assembling the final spec document from the resolved tickets.
 
