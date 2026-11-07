@@ -66,6 +66,10 @@ _Avoid_: Done, resolved
 A Task the Intern did, faked, or delegated. Only finished Tasks make the Bosses assign more. A sabotaged Task is handled but not finished.
 _Avoid_: Completed, done
 
+**Helps**:
+A Task choice helps a Faction when the real work ends up serving that Faction. Faked work helps nobody. Helping a Faction protects its goodwill from the end-of-day neutrality cost. Helping the Paper Trail also raises Escalation.
+_Avoid_: Sides with, supports, favours
+
 **Pressure**:
 One of four visible measures of the Intern's standing: Performance, Launch Team goodwill, Paper Trail goodwill, and Sanity. If any Pressure runs out, the Intern is fired.
 _Avoid_: Meter, stat, health
