@@ -52,7 +52,7 @@ export class Dialogue {
     this.bindWrites();
   }
 
-  /** True from `start()` until the Conversation ends or a Firing ends it. */
+  /** True from `start()` until `end()`, or until a Firing ends the Conversation. */
   get active(): boolean {
     return this.running;
   }
@@ -94,16 +94,30 @@ export class Dialogue {
     return line;
   }
 
-  /** Runs one line, then the Firing check. The end of the knot ends the Conversation. */
+  /** Runs one line, then the Firing check. A Firing ends the Conversation at once. */
   private step(): DialogueLine {
     const line = this.nextLine();
     const inkState = this.story.state.toJson();
     if (this.store.checkFiring(inkState)) this.finish(inkState);
-    else if (!this.story.canContinue && this.story.currentChoices.length === 0) {
-      this.store.endConversation(inkState);
-      this.finish(inkState);
-    }
     return line;
+  }
+
+  /** True when the knot has no more lines or choices. The player may still be reading the last line. */
+  get finished(): boolean {
+    return this.running && !this.story.canContinue && this.story.currentChoices.length === 0;
+  }
+
+  /** Ends a finished Conversation, after the player reads its last line. */
+  end(): void {
+    if (!this.finished) throw new Error("The Conversation has not reached its end.");
+    const inkState = this.story.state.toJson();
+    this.store.endConversation(inkState);
+    this.finish(inkState);
+  }
+
+  /** True when the story holds a knot with this name. */
+  hasKnot(name: string): boolean {
+    return this.story.KnotContainerWithName(name) !== null;
   }
 
   choose(index: number): void {

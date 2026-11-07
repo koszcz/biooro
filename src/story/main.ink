@@ -1,6 +1,12 @@
 // The root Ink story. Other Ink files join it through INCLUDE.
 // For now it holds one placeholder knot for each kind of story. The writing tickets replace them.
 
+INCLUDE zbigniew.ink
+INCLUDE halina.ink
+INCLUDE ryszard.ink
+INCLUDE wiola.ink
+INCLUDE kamil.ink
+
 EXTERNAL pressure(name)
 EXTERNAL tier()
 EXTERNAL flag(name)

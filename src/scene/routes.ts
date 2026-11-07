@@ -21,7 +21,33 @@ export const seatPoint = (chair: Piece): FloorPoint => ({
   z: chair.cell.row + (chair.offset?.z ?? 0),
 });
 
-export type WalkGoal = { cell: Cell } | { chair: Piece };
+/** The eight cells around a person, front (toward the camera) and sides first. */
+const AROUND = [
+  [0, 1],
+  [-1, 0],
+  [1, 0],
+  [0, -1],
+  [-1, 1],
+  [1, 1],
+  [-1, -1],
+  [1, -1],
+] as const;
+
+/**
+ * The walk to the nearest free cell beside a person at `target`. Empty when the Intern already stands
+ * beside them. Null when no cell beside them can be reached.
+ */
+export function routeBeside(from: Cell, target: Cell): FloorPoint[] | null {
+  if (Math.max(Math.abs(from.col - target.col), Math.abs(from.row - target.row)) === 1) return [];
+  let best: FloorPoint[] | null = null;
+  for (const [dc, dr] of AROUND) {
+    const route = routeToCell(from, { col: target.col + dc, row: target.row + dr });
+    if (route && (!best || route.length < best.length)) best = route;
+  }
+  return best;
+}
+
+export type WalkGoal = { cell: Cell } | { chair: Piece } | { beside: Cell };
 /** The points to walk through, and where the target ring goes. */
 export type Walk = { route: FloorPoint[]; target: FloorPoint };
 
@@ -37,8 +63,9 @@ export function planWalk(position: FloorPoint, seatedOn: Piece | undefined, goal
     if (!route || !goal.chair.seat) return null;
     return { route: [...standUp, ...route], target: centreOf(goal.chair.seat.approach) };
   }
-  const route = routeToCell(from, goal.cell);
-  return route ? { route: [...standUp, ...route], target: centreOf(goal.cell) } : null;
+  const route = "beside" in goal ? routeBeside(from, goal.beside) : routeToCell(from, goal.cell);
+  if (!route) return null;
+  return { route: [...standUp, ...route], target: route.at(-1) ?? centreOf(from) };
 }
 
 /** The walk to the free cell behind a chair, then onto the chair itself. */

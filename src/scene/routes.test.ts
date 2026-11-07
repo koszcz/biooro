@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FURNITURE, type Piece } from "../content";
-import { cellAt, planWalk, routeToCell, routeToSeat } from "./routes";
+import { cellAt, planWalk, routeBeside, routeToCell, routeToSeat } from "./routes";
 
 const internChair = FURNITURE.find((p) => p.seat && p.cell.col === 2 && p.cell.row === 2) as Piece;
 
@@ -56,5 +56,39 @@ describe("routeToSeat", () => {
   it("sits down at once when the Intern already stands behind the chair", () => {
     const route = routeToSeat({ col: 2, row: 1 }, internChair) ?? [];
     expect(route).toHaveLength(1);
+  });
+});
+
+describe("routeBeside", () => {
+  const wiola = { col: 17, row: 3 };
+
+  const beside = (point: { x: number; z: number } | undefined, cell: { col: number; row: number }) =>
+    point !== undefined && Math.max(Math.abs(point.x - cell.col), Math.abs(point.z - cell.row)) === 1;
+
+  it("stops at the first free cell beside the person", () => {
+    const fromLeft = routeBeside({ col: 14, row: 4 }, wiola) ?? [];
+    expect(fromLeft).toHaveLength(2);
+    expect(beside(fromLeft.at(-1), wiola)).toBe(true);
+    expect(routeBeside({ col: 20, row: 3 }, wiola)).toEqual([
+      { x: 19, z: 3 },
+      { x: 18, z: 3 },
+    ]);
+  });
+
+  it("does not walk when the Intern already stands beside the person", () => {
+    expect(routeBeside({ col: 16, row: 2 }, wiola)).toEqual([]);
+  });
+
+  it("reaches a seated person whose own cell is blocked", () => {
+    const route = routeBeside({ col: 6, row: 10 }, { col: 2, row: 10 }) ?? [];
+    expect(route.at(-1)).toEqual({ x: 3, z: 10 });
+  });
+});
+
+describe("planWalk beside a person", () => {
+  it("stands a seated Intern up, then walks beside the person", () => {
+    const walk = planWalk({ x: 2, z: 1.58 }, internChair, { beside: { col: 4, row: 2 } });
+    expect(walk?.route[0]).toEqual({ x: 2, z: 1 });
+    expect(walk?.target).toEqual({ x: 3, z: 1 });
   });
 });
