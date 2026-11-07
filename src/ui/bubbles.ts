@@ -60,6 +60,7 @@ export function createBubbles(
         if (group.pill) nodes.push(pillBubble(group, group.pill, onList));
         return nodes.map((node) => {
           node.style.pointerEvents = enabled ? "auto" : "none";
+          node.dataset.over = group.over;
           node.classList.toggle("faded", openFor !== null && openFor !== group.over);
           return { node, over: group.over };
         });

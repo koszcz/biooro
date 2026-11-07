@@ -105,6 +105,12 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
     confirming = false;
     redraw();
   });
+  // A Conversation closes any open popover. The talk overlay's CSS fades and hides the bubbles.
+  store.on("conversationStarted", () => {
+    confirming = false;
+    popover.close();
+    redraw();
+  });
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") popover.close();
   });
