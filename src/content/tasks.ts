@@ -40,24 +40,24 @@ export interface Task {
   place: TaskPlaceId;
 }
 
-// Every slot Task starts at the Intern's desk. The "Task wording" ticket sets the real places.
+// Each Task place matches the Task wording in src/locales/en/tasks.ts.
 export const TASKS = {
-  "mon-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "desk" },
-  "mon-anyone": { assigner: "anyone", side: null, place: "desk" },
-  "tue-halina": { assigner: "halina", side: "paperTrail", place: "desk" },
-  "tue-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "desk" },
-  "tue-anyone": { assigner: "anyone", side: null, place: "desk" },
-  "wed-kamil": { assigner: "kamil", side: "paperTrail", place: "desk" },
-  "wed-wiola": { assigner: "wiola", side: "launchTeam", place: "desk" },
+  "mon-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "printer" },
+  "mon-anyone": { assigner: "anyone", side: null, place: "sink" },
+  "tue-halina": { assigner: "halina", side: "paperTrail", place: "evidenceShelf" },
+  "tue-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "shredder" },
+  "tue-anyone": { assigner: "anyone", side: null, place: "plant" },
+  "wed-kamil": { assigner: "kamil", side: "paperTrail", place: "printer" },
+  "wed-wiola": { assigner: "wiola", side: "launchTeam", place: "room4" },
   "wed-ryszard": { assigner: "ryszard", side: "launchTeam", place: "desk" },
-  "thu-halina": { assigner: "halina", side: "paperTrail", place: "desk" },
-  "thu-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "desk" },
-  "thu-kamil": { assigner: "kamil", side: "paperTrail", place: "desk" },
-  "thu-anyone": { assigner: "anyone", side: null, place: "desk" },
-  "fri-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "desk" },
-  "fri-halina": { assigner: "halina", side: "paperTrail", place: "desk" },
-  "fri-wiola": { assigner: "wiola", side: "launchTeam", place: "desk" },
-  "fri-ryszard": { assigner: "ryszard", side: "launchTeam", place: "desk" },
+  "thu-halina": { assigner: "halina", side: "paperTrail", place: "evidenceShelf" },
+  "thu-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "shredder" },
+  "thu-kamil": { assigner: "kamil", side: "paperTrail", place: "room4" },
+  "thu-anyone": { assigner: "anyone", side: null, place: "plant" },
+  "fri-zbigniew": { assigner: "zbigniew", side: "launchTeam", place: "shredder" },
+  "fri-halina": { assigner: "halina", side: "paperTrail", place: "evidenceShelf" },
+  "fri-wiola": { assigner: "wiola", side: "launchTeam", place: "room4" },
+  "fri-ryszard": { assigner: "ryszard", side: "launchTeam", place: "printer" },
 } as const satisfies Record<string, Task>;
 
 export type TaskId = keyof typeof TASKS;
@@ -82,11 +82,11 @@ export interface StrangeTask {
   place: TaskPlaceId;
 }
 
-// Each strange Task starts at the Intern's desk. The "Task wording" ticket sets the real places.
+// Each Task place matches the Task wording in src/locales/en/tasks.ts.
 export const STRANGE_TASKS = {
-  "tue-strange": { place: "desk" },
+  "tue-strange": { place: "room4" },
   "wed-strange": { place: "desk" },
-  "thu-strange": { place: "desk" },
+  "thu-strange": { place: "printer" },
 } as const satisfies Record<string, StrangeTask>;
 
 export type StrangeTaskId = keyof typeof STRANGE_TASKS;
