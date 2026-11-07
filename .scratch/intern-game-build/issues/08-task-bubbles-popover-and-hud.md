@@ -1,6 +1,6 @@
 # Task bubbles, popover and HUD
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 03, 05, 07
 
 ## What to build
@@ -27,3 +27,7 @@ Use plain DOM overlays in `src/ui/`. Read text from the locale files. Never buil
 
 - [6. Screen and interface](../../intern-game/spec.md#6-screen-and-interface): "Task bubbles", "The Task choice popover" and "Pressures and hours".
 - Prototype: `prototype/pressures-ui`, `?variant=C`.
+
+## Comments
+
+Built on branch ticket-08, merged into intern-game-build at f955d95. Placeholder cards for Firing (retry and Start over), the audit (Bury/Escalate/Deflect) and the survived week; ticket 13 replaces them. `main.ts` calls `startOver()` on boot. New UI text in src/locales/en/hud.ts needs the user's review. Chips show rule effects before clamping; previews clamp to 0–10. `startOfficeScene` now returns a head locator (src/scene/heads.ts). Crowding and the 35% fade are left to ticket 10.
