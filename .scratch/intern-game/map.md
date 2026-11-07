@@ -43,7 +43,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 
 ## Not yet specified
 
-- Assembling the final spec document from the resolved tickets.
+- Nothing. The last fog is now the ticket [Assemble the spec](issues/16-assemble-the-spec.md).
 
 ## Out of scope
 
