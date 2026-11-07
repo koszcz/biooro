@@ -1,12 +1,12 @@
 // The overlay layer that keeps Conversation elements over people's heads as the office moves.
 import type { CastId } from "../content/index";
-import { TALK_CSS } from "./talkStyles";
+import { CONVERSATION_FOCUS_CSS, TALK_CSS } from "./talkStyles";
 
 /** What the overlay needs from the office scene. */
 export interface TalkOffice {
   onFrame(listener: () => void): void;
   onPersonHover(listener: (person: CastId | undefined) => void): void;
-  headOnScreen(who: CastId | "intern"): { x: number; y: number };
+  headAt(who: CastId | "intern"): { x: number; y: number };
 }
 
 export type Head = CastId | "intern";
@@ -27,7 +27,7 @@ export function element(tag: string, className: string, colour?: string): HTMLEl
 
 export function createTalkLayer(container: HTMLElement, office: TalkOffice): TalkLayer {
   const style = document.createElement("style");
-  style.textContent = TALK_CSS;
+  style.textContent = TALK_CSS + CONVERSATION_FOCUS_CSS;
   const root = element("div", "talk-layer");
   container.append(style, root);
 
@@ -35,7 +35,7 @@ export function createTalkLayer(container: HTMLElement, office: TalkOffice): Tal
   const place = (el: HTMLElement) => {
     const at = anchored.get(el);
     if (!at) return;
-    const point = office.headOnScreen(at.who);
+    const point = office.headAt(at.who);
     el.style.left = `${point.x}px`;
     el.style.top = `${point.y + at.dy}px`;
   };

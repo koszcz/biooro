@@ -1,6 +1,6 @@
 # Crowded Task bubbles
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 08
 
 ## What to build
@@ -24,3 +24,7 @@ Use one "most urgent" sort everywhere: Fallout first, then oldest first.
 
 - [6. Screen and interface](../../intern-game/spec.md#6-screen-and-interface): "Task bubbles" and "The Task choice popover".
 - Prototype: `prototype/pressures-ui`, `?variant=E`.
+
+## Comments
+
+Built on branch ticket-10, merged into intern-game-build at 30d9399. Choices where the spec is silent: 'oldest first' means open-list order; the pill sits above the two bubbles; a Task opened from the list has a Back button (text in src/locales/en/hud.ts needs the user's review); the pill for Anyone Tasks reads 'from Anyone'. Edge sliding keeps a 10px screen margin but does not avoid the gauges or hour blocks.

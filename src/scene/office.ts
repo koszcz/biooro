@@ -19,13 +19,18 @@ import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
 import { createCast } from "./cast";
 import { createFloor, FLOOR_DEPTH, FLOOR_WIDTH } from "./floor";
 import { buildFurniture } from "./furniture";
+import { createHeadLocator, type HeadLocator } from "./heads";
 import { createIntern, type Intern } from "./intern";
 import type { ModelLibrary } from "./models";
-import { addHitTargets, faceEachOther, headOnScreen, type Who } from "./people";
+import { addHitTargets, faceEachOther } from "./people";
 import { createPointer, type LockEvents } from "./pointer";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
 import { createTierLook, type TierSource } from "./tierLook";
+
+function mapValues<K extends string, V, W>(record: Readonly<Record<K, V>>, map: (value: V) => W): Record<K, W> {
+  return Object.fromEntries(Object.entries<V>(record).map(([key, value]) => [key, map(value)])) as Record<K, W>;
+}
 
 const TARGET_RING = "#ff2bd6";
 
@@ -97,7 +102,7 @@ export type Office = {
   /** Calls `listener` once a frame, after the office moves. */
   onFrame(listener: () => void): void;
   /** Where a person's head is on screen, in pixels from the top left of the office. */
-  headOnScreen(who: Who): { x: number; y: number };
+  headAt: HeadLocator;
   walkBeside(person: CastId): Promise<void>;
   faceEachOther(person: CastId): () => void;
 };
@@ -166,13 +171,12 @@ export function startOfficeScene(
     for (const listener of frameListeners) listener();
   });
   Object.assign(window, { __office: { scene, camera, intern, cast, walkTo } });
-
-  const size = () => ({ width: container.clientWidth, height: container.clientHeight });
+  const roots = { intern: intern.root, ...mapValues(cast, (person) => person.root) };
   return {
+    headAt: createHeadLocator(roots, camera, renderer.domElement),
     onPersonClick: pointer.onPersonClick,
     onPersonHover: pointer.onPersonHover,
     onFrame: (listener) => frameListeners.push(listener),
-    headOnScreen: (who) => headOnScreen(who, cast, intern, camera, size()),
     walkBeside: (person) => new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve)),
     faceEachOther: (person) => faceEachOther(person, cast, intern),
   };
