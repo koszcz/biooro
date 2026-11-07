@@ -30,8 +30,11 @@ export const ACTION_CSS = `
 
 const TAG_COLOUR = "#ff8a1f";
 const SECRET_COLOUR = "#b27cff";
-/** Pixels above the head point for each kind of label. The tag sits under the Intern, clear of Task bubbles. */
-const LIFT = { tag: -50, spark: 70, say: 8, float: 70 } as const;
+/**
+ * Pixels above the head point for each kind of label. The tag sits under the Intern, clear of Task bubbles.
+ * The sparkle sits above the Pressure floats, because both appear when a faked Task finishes.
+ */
+const LIFT = { tag: -50, spark: 100, say: 8, float: 60 } as const;
 
 export interface ActionLayer {
   /** Shows or clears the tag over the Intern. */

@@ -85,6 +85,8 @@ export function mountGameUi(
   const popover = createPopover(root, headAt, {
     pick: (task, pick) => act(() => play.pick(task, pick)),
     preview: (next) => {
+      // A closing popover clears its preview, which must not draw the finished result while an action plays.
+      if (acting.playing) return;
       preview = next;
       hud.renderPreview(store.state, preview);
     },
@@ -119,10 +121,20 @@ export function mountGameUi(
   }
 
   for (const type of REDRAW_ON) store.on(type, () => redraw());
+  // The popover closes while a Task action plays. A Task picked from a list returns to that list afterwards.
+  let backToList: BubbleOwner | null = null;
   store.on("taskActionStarted", () => {
     preview = undefined;
+    backToList = popover.listOwner;
     popover.close();
     redraw();
+  });
+  store.on("taskActionFinished", () => {
+    if (backToList) popover.openList(backToList);
+    backToList = null;
+  });
+  store.on("dayStarted", () => {
+    backToList = null;
   });
   acting.onFloats((floats) => labels.floats(floats));
   onActionCue((cue) => {
