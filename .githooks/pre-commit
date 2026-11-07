@@ -1,0 +1,9 @@
+#!/bin/sh
+# Blocks a commit when a wayfinder ticket header is malformed.
+# Turn it on once per clone: git config core.hooksPath .githooks
+if git diff --cached --name-only | grep -q '^\.scratch/'; then
+  if ! python3 -I scripts/frontier.py > /dev/null; then
+    python3 -I scripts/frontier.py | grep '^ERROR'
+    exit 1
+  fi
+fi

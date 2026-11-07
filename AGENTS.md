@@ -13,3 +13,7 @@ This repo uses the five default triage labels: `needs-triage`, `needs-info`, `re
 ### Domain docs
 
 This is a single-context repo, with one `CONTEXT.md` and `docs/adr/` at the root. See `docs/agents/domain.md`.
+
+### Prototypes
+
+Before you read prototype code or check a prototype in the browser, read `prototype/README.md`.
