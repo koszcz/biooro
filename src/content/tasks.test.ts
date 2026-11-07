@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COLLEAGUES, TASK_SLOTS, TASKS, taskById } from "./index";
+import { COLLEAGUES, STRANGE_TASKS, TASK_SLOTS, TASKS, taskById } from "./index";
 
 describe("Colleagues", () => {
   it("match the spec's cast table and delegation rules", () => {
@@ -29,5 +29,37 @@ describe("Task slots", () => {
     const used = Object.values(TASK_SLOTS).flat();
     expect(used).toHaveLength(16);
     expect(new Set(used)).toEqual(new Set(Object.keys(TASKS)));
+  });
+});
+
+describe("Task places", () => {
+  it("put each slot Task where its work happens, with the desk only for Tasks with no better place", () => {
+    const places = Object.fromEntries(Object.entries(TASKS).map(([id, task]) => [id, task.place]));
+    expect(places).toEqual({
+      "mon-zbigniew": "printer",
+      "mon-anyone": "sink",
+      "tue-halina": "evidenceShelf",
+      "tue-zbigniew": "shredder",
+      "tue-anyone": "plant",
+      "wed-kamil": "printer",
+      "wed-wiola": "room4",
+      "wed-ryszard": "desk",
+      "thu-halina": "evidenceShelf",
+      "thu-zbigniew": "shredder",
+      "thu-kamil": "room4",
+      "thu-anyone": "plant",
+      "fri-zbigniew": "shredder",
+      "fri-halina": "evidenceShelf",
+      "fri-wiola": "room4",
+      "fri-ryszard": "printer",
+    });
+  });
+
+  it("put each strange swap Task where its work happens", () => {
+    expect(STRANGE_TASKS).toEqual({
+      "tue-strange": { place: "room4" },
+      "wed-strange": { place: "desk" },
+      "thu-strange": { place: "printer" },
+    });
   });
 });
