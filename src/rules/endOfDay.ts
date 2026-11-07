@@ -33,7 +33,10 @@ export function endDay(state: GameState): RuleResult {
   next = apply(checkFiring(next, "thisDay"));
   if (next.phase.kind !== "workday") return { state: next, events };
   // On Friday the audit scene plays before the day ends.
-  if (state.day === FRIDAY) return { state: { ...next, phase: { kind: "audit" } }, events };
+  if (state.day === FRIDAY) {
+    events.push({ type: "auditStarted" });
+    return { state: { ...next, phase: { kind: "audit" } }, events };
+  }
   events.push({ type: "dayEnded", day: state.day });
   return { state: next, events };
 }

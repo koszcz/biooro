@@ -191,6 +191,15 @@ describe("the Friday audit", () => {
     expect(storage.getItem(SAVE_KEY)).toBeNull();
   });
 
+  it("queues the audit as soon as auditStarted fires", () => {
+    const { store, scenes } = setUp(friday({}));
+    const started: string[] = [];
+    store.on("auditStarted", () => started.push(scenes.playing ? "audit queued" : "audit not queued"));
+    store.goHome();
+
+    expect(started).toEqual(["audit queued"]);
+  });
+
   it("runs the second Firing check after the answer", async () => {
     const { store, view, frame, scenes } = setUp(friday({ sanity: 2 }));
     view.pick = "Deflect";
