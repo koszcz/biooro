@@ -1,6 +1,6 @@
 // What the Conversation layer needs from the office: clickable people, and the two turning to face each other.
 import { CylinderGeometry, Mesh, MeshBasicMaterial, type Object3D, type Raycaster } from "three";
-import type { CastId } from "../content";
+import type { CastId } from "../content/index";
 import type { Cast } from "./cast";
 import type { Intern } from "./intern";
 

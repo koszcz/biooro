@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FURNITURE, type Piece } from "../content";
+import { FURNITURE, type Piece } from "../content/index";
 import { cellAt, planWalk, routeBeside, routeToCell, routeToSeat } from "./routes";
 
 const internChair = FURNITURE.find((p) => p.seat && p.cell.col === 2 && p.cell.row === 2) as Piece;

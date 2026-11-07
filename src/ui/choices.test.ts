@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type GameState, newGame, type OpenTask, startDay } from "../rules";
+import { type GameState, newGame, type OpenTask, startDay } from "../rules/index";
 import { taskChoiceViews } from "./choices";
 
 function monday(): GameState {

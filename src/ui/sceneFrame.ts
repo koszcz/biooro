@@ -1,21 +1,10 @@
 // The scripted scene frame: letterbox bars with the title card in the top bar.
 // While it is open, the container carries `data-scene`, which hides the HUD, Task bubbles and "…" badges.
-import type { SceneFrame, ScriptedScene } from "../dialogue/index";
+import { type SceneFrame, type ScriptedScene, sceneSpec } from "../dialogue/index";
 import { sceneTitles } from "../locales/index";
 import { el } from "./dom";
 
-export function sceneTitle(scene: ScriptedScene): string {
-  switch (scene.kind) {
-    case "onboarding":
-      return sceneTitles.onboarding;
-    case "firing":
-      return sceneTitles.firing[scene.pressure];
-    case "audit":
-      return sceneTitles.audit;
-    case "survival":
-      return sceneTitles.survival[scene.variant];
-  }
-}
+export const sceneTitle = (scene: ScriptedScene): string => sceneTitles[sceneSpec(scene).knot];
 
 const BAR_SLIDE_MS = 400;
 
@@ -26,7 +15,7 @@ const SCENE_CSS = `
 .scene-bar.top{top:0;transform:translateY(-100%)}
 .scene-bar.bottom{bottom:0;transform:translateY(100%)}
 [data-scene] .scene-bar{transform:translateY(0)}
-[data-scene] .hud,[data-scene] .talk-badge,[data-scene] .talk-hover{display:none!important}
+[data-scene] .hud,[data-scene] .conversation-badge,[data-scene] .conversation-hover{display:none!important}
 `;
 
 export function mountSceneFrame(container: HTMLElement): SceneFrame {

@@ -1,11 +1,12 @@
 // Mounts the playable HUD: Task bubbles, the Task choice popover, gauges, hour blocks and the day card.
-import type { CastId } from "../content";
-import type { ColleagueId } from "../rules";
-import type { GameStore, StoreEventType } from "../store";
+import type { CastId } from "../content/index";
+import type { ColleagueId } from "../rules/index";
+import type { GameStore, StoreEventType } from "../store/index";
 import { createActing } from "./acting";
 import { ACTION_CSS, createActionLayer } from "./actionLayer";
 import { createBubbles, type HeadLocator } from "./bubbles";
 import { createCards } from "./cards";
+import type { RevealListener } from "./conversationText";
 import { el } from "./dom";
 import { createHud } from "./hud";
 import type { BubbleOwner, Preview } from "./hudView";
@@ -37,13 +38,14 @@ export type ActionCue =
 
 /**
  * Mounts the HUD over `container`. Mount it before the first morning, so it sees Monday's `dayStarted`.
- * `onActionCue` subscribes to the scene's cues for Task actions.
+ * `onActionCue` subscribes to the scene's cues for Task actions. `onReveal` hears hand-off lines as they reveal.
  */
 export function mountGameUi(
   container: HTMLElement,
   store: GameStore,
   headAt: HeadLocator,
   onActionCue: (listener: (cue: ActionCue) => void) => void,
+  onReveal?: RevealListener,
 ): void {
   const style = el("style", "", HUD_CSS + ACTION_CSS);
   const root = el("div", "hud");
@@ -81,7 +83,7 @@ export function mountGameUi(
       redraw();
     },
   });
-  const labels = createActionLayer(root, headAt);
+  const labels = createActionLayer(root, headAt, onReveal);
   const popover = createPopover(root, headAt, {
     pick: (task, pick) => act(() => play.pick(task, pick)),
     preview: (next) => {
@@ -154,7 +156,7 @@ export function mountGameUi(
     confirming = false;
     redraw();
   });
-  // A Conversation closes any open popover. The talk overlay's CSS fades and hides the bubbles.
+  // A Conversation closes any open popover. The Conversation overlay's CSS fades and hides the bubbles.
   store.on("conversationStarted", () => {
     confirming = false;
     popover.close();

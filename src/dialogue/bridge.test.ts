@@ -1,7 +1,7 @@
 import { Compiler } from "inkjs/full";
 import { describe, expect, it } from "vitest";
 import { createStore, type GameStore, type StoreEvent } from "../store/index";
-import { story } from "../story/index";
+import { story, testStory } from "../story/index";
 import { Dialogue } from "./bridge";
 
 /** A fresh store on Monday morning, with every event it emits. */
@@ -48,7 +48,7 @@ describe("a Colleague Conversation through the bridge", () => {
   it("applies each write at once, emits its events and ends the Conversation", () => {
     const { store, events } = monday();
     store.on("pressureChanged", () => expect(store.state.escalation).toBe(1));
-    const dialogue = new Dialogue(store, story);
+    const dialogue = new Dialogue(store, testStory);
     dialogue.start("wiola", "test_colleague_conversation", false);
 
     expect(play(dialogue, 1)).toEqual(["Morning. Coffee?", "Do not ask about the launch."]);
@@ -72,18 +72,18 @@ describe("a Colleague Conversation through the bridge", () => {
 
   it("gives each line and choice its #id: tag", () => {
     const { store } = monday();
-    const dialogue = new Dialogue(store, story);
+    const dialogue = new Dialogue(store, testStory);
     dialogue.start("wiola", "test_colleague_conversation", false);
-    expect(dialogue.continue().id).toBe("main.test_colleague_conversation.2");
+    expect(dialogue.continue().id).toBe("test.test_colleague_conversation.2");
     expect(dialogue.choices.map((choice) => choice.id)).toEqual([
-      "main.test_colleague_conversation.3",
-      "main.test_colleague_conversation.5",
+      "test.test_colleague_conversation.3",
+      "test.test_colleague_conversation.5",
     ]);
   });
 
   it("reads the tier, flags, Pressures and day from the store", () => {
     const { store } = monday();
-    const dialogue = new Dialogue(store, story);
+    const dialogue = new Dialogue(store, testStory);
     dialogue.start("wiola", "test_colleague_conversation", false);
     play(dialogue, 1);
     dialogue.start("zbigniew", "test_onboarding", true);
@@ -131,7 +131,7 @@ describe("the Conversation caps", () => {
 describe("the Firing check after an Ink choice", () => {
   it("ends the scene at the Firing and saves the Ink state", () => {
     const { store, events } = monday();
-    const dialogue = new Dialogue(store, story);
+    const dialogue = new Dialogue(store, testStory);
     dialogue.start("zbigniew", "test_scripted_drop", true);
 
     expect(play(dialogue)).toEqual(["This is going badly.", "It got worse."]);

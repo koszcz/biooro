@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Cell, COLLEAGUE_SPOTS, isWalkable, PLACE_SPOTS } from "../content";
+import { type Cell, COLLEAGUE_SPOTS, isWalkable, PLACE_SPOTS } from "../content/index";
 import { findPath } from "./pathfinding";
 
 const cell = (col: number, row: number): Cell => ({ col, row });

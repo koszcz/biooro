@@ -1,3 +1,4 @@
+// Checks every rule file in this folder, so it belongs to the folder rather than to one file.
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";

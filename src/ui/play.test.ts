@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createStore, type SaveStorage } from "../store";
+import { createStore, type SaveStorage } from "../store/index";
 import { createActing } from "./acting";
 import { taskChoiceViews } from "./choices";
 import { createPlay } from "./play";

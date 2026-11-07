@@ -13,8 +13,8 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import { type CastId, COLLEAGUE_SPOTS, type Piece, SMART_TOILET } from "../content";
-import type { Tier } from "../rules";
+import { type CastId, COLLEAGUE_SPOTS, type Piece, SMART_TOILET } from "../content/index";
+import type { Tier } from "../rules/index";
 import { createActionStage } from "./actionStage";
 import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
 import { createCast } from "./cast";
@@ -111,10 +111,7 @@ export type Office = {
   faceEachOther(person: CastId): () => void;
 };
 
-/**
- * Starts the office. `store` sends `tierChanged` and the Task actions, which the scene finishes.
- * `startTier` is the tier when the office loads.
- */
+/** Starts the office at `startTier`. `store` sends `tierChanged` and the Task actions, which the scene finishes. */
 export function startOfficeScene(
   container: HTMLElement,
   models: ModelLibrary,
@@ -164,7 +161,7 @@ export function startOfficeScene(
   const actions = createTaskActions(store, stage, (cue) => {
     for (const listener of cueListeners) listener(cue);
   });
-  // Input is also locked while a Task action plays.
+  // Input is also locked while a Task action plays, and from the walk to a Conversation until it ends.
   const pointer = createPointer(renderer.domElement, camera, hitTargets, store, () => actions.playing);
   pointer.onFloorClick((ray) => {
     const hit = ray.intersectObjects([...furniture.chairs, floor], true)[0];
@@ -192,7 +189,10 @@ export function startOfficeScene(
     onPersonClick: pointer.onPersonClick,
     onPersonHover: pointer.onPersonHover,
     onFrame: (listener) => frameListeners.push(listener),
-    walkBeside: (person) => new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve)),
+    walkBeside: (person) => {
+      pointer.lock();
+      return new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve));
+    },
     faceEachOther: (person) => faceEachOther(person, cast, intern),
   };
 }

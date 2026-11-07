@@ -1,7 +1,8 @@
 // Runs Ink knots with inkjs and binds the seven game functions to the store.
 import { Story } from "inkjs";
+import type { CastId } from "../content/index";
 import { PRESSURES, type Pressure, tierOf } from "../rules/index";
-import type { GameStore, Person } from "../store/index";
+import type { GameStore } from "../store/index";
 import { ConversationCaps } from "./caps";
 
 export interface DialogueLine {
@@ -65,7 +66,7 @@ export class Dialogue {
   };
 
   /** Starts a Conversation or scripted scene at `knot`. Caps apply only when `scripted` is false. */
-  start(person: Person, knot: string, scripted: boolean): void {
+  start(person: CastId, knot: string, scripted: boolean): void {
     if (this.running) throw new Error("A Conversation is already running.");
     this.syncInkState();
     this.story.ChoosePathString(knot);

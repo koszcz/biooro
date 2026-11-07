@@ -217,7 +217,7 @@ export const PLACE_SPOTS: Readonly<Record<TaskPlaceId, Spot>> = {
 
 /** The five cast members, by the IDs Tasks use for their assigner. */
 export type CastId = Exclude<Assigner, "anyone">;
-/** Where a cast member sits or stands, and the cell the Intern stands on to talk to them. */
+/** Where a cast member sits or stands, and the cell the Intern stands on for a Conversation with them. */
 export type ColleagueSpot = Spot & { readonly seated: boolean; readonly offset?: { readonly z: number } };
 export const COLLEAGUE_SPOTS: Readonly<Record<CastId, ColleagueSpot>> = {
   zbigniew: { cell: cell(1, 5), offset: { z: -0.5 }, seated: true, stand: cell(1, 4) },

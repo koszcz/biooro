@@ -1,3 +1,4 @@
+// Tests for store.ts: retry and loading a save. store.test.ts and the other store.*.test.ts files hold the rest.
 import { describe, expect, it } from "vitest";
 import type { GameState } from "../rules/index";
 import { FakeStorage } from "./fakeStorage";

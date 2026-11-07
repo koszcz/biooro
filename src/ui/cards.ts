@@ -1,8 +1,8 @@
 // Plain full-screen cards: the day card between days, the screen after a Firing scene, and the card
 // after the survival scene. The scene frame hides them while a scripted scene plays.
-import { endCardText, hudText, WEEKDAY_NAMES } from "../locales";
-import type { GameState } from "../rules";
-import type { GameStore } from "../store";
+import { endCardText, hudText, WEEKDAY_NAMES } from "../locales/index";
+import type { GameState } from "../rules/index";
+import type { GameStore } from "../store/index";
 import { button, el } from "./dom";
 
 export interface Cards {

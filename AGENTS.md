@@ -9,7 +9,7 @@ The game is a Vite and TypeScript project at the repository root. Run `npm run d
 - `src/content/`: typed data for Tasks, Task slots, Task places, Colleagues and the office grid.
 - `src/store/`: the state store, its commands and events, autosave and the day-start snapshot. Imports only `src/rules/` and `src/content/`.
 - `src/dialogue/`: the inkjs bridge, and the runner that turns a click on a person into a Conversation or a brush-off.
-- `src/story/`: Ink files, with `main.ink` as the root.
+- `src/story/`: Ink files, with `main.ink` as the root. `test.ink` adds test knots that only tests load.
 - `src/scene/`: Three.js, the isometric camera, the floor, pathfinding and Task actions.
 - `src/ui/`: DOM overlays.
 - `src/audio/`: Web Audio and the audio manifest.

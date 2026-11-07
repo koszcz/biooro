@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FakeStorage } from "./fakeStorage";
-import { SAVE_KEY, SAVE_VERSION, SETTINGS_KEY } from "./save";
+import { SAVE_KEY, SAVE_VERSION } from "./save";
 import { createStore } from "./store";
 
 describe("save and load", () => {
@@ -49,17 +49,6 @@ describe("Conversations", () => {
     store.startConversation("zbigniew", true);
     store.endConversation("{}");
     expect(store.state.talkedToday).toEqual([]);
-  });
-});
-
-describe("settings", () => {
-  it("keeps the settings record in its own key", () => {
-    const storage = new FakeStorage();
-    const store = createStore(storage);
-    expect(store.settings).toEqual({ muted: false });
-    store.updateSettings({ muted: true });
-    expect(storage.getItem(SETTINGS_KEY)).not.toBeNull();
-    expect(createStore(storage).settings).toEqual({ muted: true });
   });
 });
 

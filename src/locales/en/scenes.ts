@@ -1,7 +1,5 @@
 // English text for the title screen and the title cards of the scripted scenes. Placeholder wording for review.
-
-type Pressure = "performance" | "launchTeam" | "paperTrail" | "sanity";
-type SurvivalVariant = "launchTeam" | "paperTrail" | "equal";
+import type { SceneKnot } from "../../dialogue/index";
 
 export const titleText = {
   gameTitle: "Biooro",
@@ -12,19 +10,15 @@ export const titleText = {
   newGameConfirmNo: "Back",
 } as const;
 
-/** The title card in the top letterbox bar of each scripted scene. */
-export const sceneTitles = {
+/** The title card in the top letterbox bar of each scripted scene, by the scene's Ink knot. */
+export const sceneTitles: Readonly<Record<SceneKnot, string>> = {
   onboarding: "Monday 9:00 · Onboarding",
-  firing: {
-    performance: "Fired · Performance hit 0",
-    launchTeam: "Fired · Launch Team goodwill hit 0",
-    paperTrail: "Fired · Paper Trail goodwill hit 0",
-    sanity: "Fired · Sanity hit 0",
-  } satisfies Record<Pressure, string>,
+  firing_performance: "Fired · Performance hit 0",
+  firing_launchTeam: "Fired · Launch Team goodwill hit 0",
+  firing_paperTrail: "Fired · Paper Trail goodwill hit 0",
+  firing_sanity: "Fired · Sanity hit 0",
   audit: "Friday 14:00 · The audit",
-  survival: {
-    launchTeam: "Friday evening",
-    paperTrail: "Friday evening",
-    equal: "Friday evening",
-  } satisfies Record<SurvivalVariant, string>,
-} as const;
+  survival_launchTeam: "Friday evening",
+  survival_paperTrail: "Friday evening",
+  survival_equal: "Friday evening",
+};

@@ -1,8 +1,8 @@
 // What the HUD shows while a Task action plays: the state from before the click, hours that drain one by one,
 // the tag over the Intern, and the Pressure floats when the action finishes or a Break is taken.
-import { PRESSURE_FLOATS, TASK_CHOICE_LABELS } from "../locales";
-import { type GameState, type OpenTask, PRESSURES, type Pressure } from "../rules";
-import type { GameStore, StoreEventOf } from "../store";
+import { PRESSURE_FLOATS, TASK_CHOICE_LABELS } from "../locales/index";
+import { type GameState, type OpenTask, PRESSURES, type Pressure } from "../rules/index";
+import type { GameStore, StoreEventOf } from "../store/index";
 import { visiblePressures } from "./choices";
 import { taskText } from "./hudView";
 

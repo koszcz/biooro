@@ -1,3 +1,4 @@
+// Tests for store.ts: the commands behind the Ink writes. store.test.ts and the other store.*.test.ts files hold the rest.
 import { describe, expect, it } from "vitest";
 import { FakeStorage } from "./fakeStorage";
 import { SAVE_KEY } from "./save";

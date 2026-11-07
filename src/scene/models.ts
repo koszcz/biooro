@@ -3,7 +3,7 @@
 import type { AnimationClip, Group, Object3D } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
-import { FURNITURE, type KitModel } from "../content";
+import { FURNITURE, type KitModel } from "../content/index";
 
 /** Kenney Mini Characters models the office uses. Each person has a different base model. */
 const CHARACTERS = [

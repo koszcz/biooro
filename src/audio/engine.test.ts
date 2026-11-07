@@ -66,7 +66,7 @@ class FakeStore {
     this.listeners.push({ type, fn: fn as (event: StoreEvent) => void });
     return () => {};
   }
-  updateSettings(changes: Partial<Settings>) {
+  update(changes: Partial<Settings>) {
     this.settings = { ...this.settings, ...changes };
     this.saved.settings = this.settings;
   }
@@ -79,7 +79,7 @@ function setup(saved = { settings: { muted: false } }) {
   const ctx = new FakeContext();
   const store = new FakeStore(saved);
   const buffers = Object.fromEntries(Object.keys(AUDIO_MANIFEST).map((id) => [id, { id }])) as Record<SoundId, never>;
-  const audio = createAudio(store as never, ctx as unknown as SoundContext, buffers);
+  const audio = createAudio(store as never, store, ctx as unknown as SoundContext, buffers);
   const played = () => ctx.sources.filter((s) => s.started && !s.loop).map((s) => (s.buffer as { id: string }).id);
   const master = () => ctx.gains[0];
   return { ctx, store, audio, saved, played, master };
@@ -90,6 +90,20 @@ describe("createAudio", () => {
     const { store, played } = setup();
     store.emit({ type: "taskAssigned", task: {} as never });
     expect(played()).toContain("bubble");
+  });
+
+  it("plays the Task bubble sound when a Fallout Task arrives", () => {
+    const { store, played } = setup();
+    store.emit({ type: "falloutArrived", task: {} as never });
+    expect(played()).toEqual(["bubble"]);
+  });
+
+  it("plays the Task choice sound when the action resolves, not when it starts", () => {
+    const { store, played } = setup();
+    store.emit({ type: "taskActionStarted", task: {} as never, choice: "fake", hours: 1 });
+    expect(played()).toEqual([]);
+    store.emit({ type: "taskResolved", task: {} as never, choice: "fake" });
+    expect(played()).toEqual(["choice-fake"]);
   });
 
   it("starts the music variants and the hum looping", () => {

@@ -1,16 +1,7 @@
 // The room floors, walls, doorways, Faction rugs, Showroom podiums, signs and the Smart toilet's LED.
-// Colours and sizes follow prototype/office-look/src/art.ts.
-import {
-  BoxGeometry,
-  CanvasTexture,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  type MeshStandardMaterialParameters,
-  PlaneGeometry,
-  SphereGeometry,
-  SRGBColorSpace,
-} from "three";
+// Sizes follow prototype/office-look/src/art.ts. Every surface uses a kit material, and every slab is a chamfered box.
+// See docs/art/making-assets.md.
+import { CanvasTexture, Group, Mesh, MeshStandardMaterial, PlaneGeometry, SphereGeometry, SRGBColorSpace } from "three";
 import {
   CORRIDOR_WALL_ROW,
   DOORWAYS,
@@ -23,33 +14,34 @@ import {
   ROOMS,
   type RoomId,
   SMART_TOILET,
-} from "../content";
-import { officeSigns } from "../locales";
+} from "../content/index";
+import { officeSigns } from "../locales/index";
+import { chamferedBox, type KitMaterial, kitCss, kitMaterial } from "./kit";
 
 const FULL_HEIGHT = 1.3;
 const INNER_STUB = 0.5;
 const NEAR_STUB = 0.2;
 const THICKNESS = 0.15;
 
-const LOOK: Record<RoomId, { floor: string; floor2: string; wall: string; gloss?: boolean }> = {
-  complaints: { floor: "#d9c9a3", floor2: "#cebd96", wall: "#bcd4c1" },
-  safety: { floor: "#aeb8c0", floor2: "#a3aeb7", wall: "#d9d6cc" },
-  showroom: { floor: "#efeeea", floor2: "#e3e1db", wall: "#f4efe6", gloss: true },
+/** Each room's checkered floor and back wall, in kit materials. */
+const LOOK: Record<RoomId, { floor: KitMaterial; floor2: KitMaterial; wall: KitMaterial }> = {
+  complaints: { floor: "wood", floor2: "woodDark", wall: "glass" },
+  safety: { floor: "metal", floor2: "metalMedium", wall: "metalLight" },
+  showroom: { floor: "metalLight", floor2: "metal", wall: "carpetWhite" },
 };
-const CORRIDOR_TILES = ["#97988f", "#8e8f8b"];
-const INNER_WALL = "#cfc9bb";
-const NEAR_WALL = "#8e8f8b";
-const THRESHOLD = "#5a554c";
-const RUG_COLOURS = { launchTeam: "#a7c8c6", paperTrail: "#c9ab6b" } as const;
+const CORRIDOR_TILES: readonly KitMaterial[] = ["metalMedium", "metalDark"];
+const INNER_WALL: KitMaterial = "metalLight";
+const NEAR_WALL: KitMaterial = "metalMedium";
+const THRESHOLD: KitMaterial = "metalDark";
+const RUG_MATERIALS: Record<"launchTeam" | "paperTrail", KitMaterial> = { launchTeam: "glass", paperTrail: "fur" };
+const RUNNER: KitMaterial = "carpetBlue";
+/** The Launch Team sign. Sign faces are textures, so they keep the colours the art direction gave them. */
 const BRAND_TEAL = "#18b6c8";
 
-const material = (color: string, extra: MeshStandardMaterialParameters = {}) =>
-  new MeshStandardMaterial({ color, flatShading: true, roughness: 0.9, ...extra });
-
 /** A box by its west, north and bottom edges, in world units. Clicks pass through it. */
-function slab(x: number, z: number, y: number, size: [number, number, number], color: string, extra = {}): Mesh {
+function slab(x: number, z: number, y: number, size: [number, number, number], look: KitMaterial): Mesh {
   const [w, h, d] = size;
-  const mesh = new Mesh(new BoxGeometry(w, h, d), material(color, extra));
+  const mesh = new Mesh(chamferedBox(w, h, d), kitMaterial(look));
   mesh.position.set(x + w / 2, y + h / 2, z + d / 2);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -57,8 +49,8 @@ function slab(x: number, z: number, y: number, size: [number, number, number], c
   return mesh;
 }
 
-function tile(col: number, row: number, color: string, gloss = false): Mesh {
-  const mesh = new Mesh(new PlaneGeometry(1, 1), material(color, { roughness: gloss ? 0.35 : 0.95 }));
+function tile(col: number, row: number, look: KitMaterial): Mesh {
+  const mesh = new Mesh(new PlaneGeometry(1, 1), kitMaterial(look));
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(col, 0.003, row);
   mesh.receiveShadow = true;
@@ -71,7 +63,7 @@ function floorTiles(group: Group): void {
     const look = LOOK[room.id];
     for (let col = room.firstCol; col <= room.lastCol; col++) {
       for (let row = 0; row < CORRIDOR_WALL_ROW; row++) {
-        group.add(tile(col, row, (col + row) % 2 ? look.floor : look.floor2, look.gloss));
+        group.add(tile(col, row, (col + row) % 2 ? look.floor : look.floor2));
       }
     }
   }
@@ -113,11 +105,11 @@ function walls(group: Group): void {
 
 function rugsAndPodiums(group: Group): void {
   for (const rug of FACTION_RUGS) {
-    group.add(slab(rug.minX, rug.minZ, 0.003, [rug.width, 0.015, rug.depth], RUG_COLOURS[rug.faction]));
+    group.add(slab(rug.minX, rug.minZ, 0.003, [rug.width, 0.015, rug.depth], RUG_MATERIALS[rug.faction]));
   }
-  group.add(slab(14.9, 5.5, 0.003, [5.2, 0.015, 1.2], BRAND_TEAL)); // Showroom runner
+  group.add(slab(14.9, 5.5, 0.003, [5.2, 0.015, 1.2], RUNNER)); // Showroom runner
   for (const piece of FURNITURE.filter((p) => p.podium)) {
-    group.add(slab(piece.cell.col - 0.45, piece.cell.row - 0.45, 0, [0.9, 0.1, 0.9], "#ffffff", { roughness: 0.3 }));
+    group.add(slab(piece.cell.col - 0.45, piece.cell.row - 0.45, 0, [0.9, 0.1, 0.9], "carpetWhite"));
   }
 }
 
@@ -182,7 +174,13 @@ function signs(group: Group): void {
   ROOMS.forEach((room, i) => {
     const door = DOORWAYS.find((d) => d.row === CORRIDOR_WALL_ROW && d.col >= room.firstCol && d.col <= room.lastCol);
     if (!door) return;
-    const label = sign(labels[i], { width: 1.4, height: 0.3, background: LOOK[room.id].wall, ink: "#222", px: 46 });
+    const label = sign(labels[i], {
+      width: 1.4,
+      height: 0.3,
+      background: kitCss(LOOK[room.id].wall),
+      ink: "#222",
+      px: 46,
+    });
     label.scale.setScalar(0.8);
     label.position.set(door.col, 0.58, CORRIDOR_WALL_ROW + 0.12);
     group.add(label);

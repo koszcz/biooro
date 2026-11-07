@@ -1,6 +1,6 @@
 // What the Task choice popover shows for one Task: hours, effect chips, locked reasons and delegate rows.
-import { COLLEAGUES, type ColleagueId, taskById } from "../content";
-import { DELEGATE_NOTES, EFFECT_CHIPS, hudText, LOCKED_REASONS, TASK_CHOICE_LABELS } from "../locales";
+import { COLLEAGUES, type ColleagueId, taskById } from "../content/index";
+import { DELEGATE_NOTES, EFFECT_CHIPS, hudText, LOCKED_REASONS, TASK_CHOICE_LABELS } from "../locales/index";
 import {
   applyTaskChoice,
   type GameState,
@@ -11,7 +11,7 @@ import {
   type TaskChoice,
   taskChoiceHours,
   taskChoiceLockedReason,
-} from "../rules";
+} from "../rules/index";
 
 export type Deltas = Partial<Record<Pressure, number>>;
 

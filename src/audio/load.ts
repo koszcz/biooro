@@ -1,9 +1,9 @@
 // Loads every file in the manifest at boot, then starts the engine. The browser keeps the context
 // suspended until the player first clicks or presses a key, so the first gesture resumes it.
-import { type Audio, type AudioStore, type Buffers, createAudio } from "./engine";
+import { type Audio, type AudioSettings, type AudioStore, type Buffers, createAudio } from "./engine";
 import { AUDIO_MANIFEST, type SoundId } from "./manifest";
 
-export async function loadAudio(store: AudioStore, baseUrl: string): Promise<Audio> {
+export async function loadAudio(store: AudioStore, settings: AudioSettings, baseUrl: string): Promise<Audio> {
   const ctx = new AudioContext();
   const ids = Object.keys(AUDIO_MANIFEST) as SoundId[];
   const decoded = await Promise.all(
@@ -20,5 +20,5 @@ export async function loadAudio(store: AudioStore, baseUrl: string): Promise<Aud
   };
   window.addEventListener("pointerdown", resume, true);
   window.addEventListener("keydown", resume, true);
-  return createAudio(store, ctx, Object.fromEntries(decoded) as Buffers);
+  return createAudio(store, settings, ctx, Object.fromEntries(decoded) as Buffers);
 }

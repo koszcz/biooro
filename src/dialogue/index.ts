@@ -3,10 +3,10 @@ export { Dialogue, type DialogueChoice, type DialogueLine, type DialogueOptions 
 export {
   type Availability,
   brushOffKnot,
+  type ConversationStage,
   Conversations,
+  type ConversationView,
   conversationKnot,
   type Speaker,
-  type TalkStage,
-  type TalkView,
 } from "./conversations";
-export { ONBOARDED_FLAG, type SceneFrame, Scenes, type ScriptedScene, sceneSpec } from "./scenes";
+export { ONBOARDED_FLAG, type SceneFrame, type SceneKnot, Scenes, type ScriptedScene, sceneSpec } from "./scenes";

@@ -1,6 +1,6 @@
 // Places furniture from the office layout. Kenney origins sit at a corner, so each piece is centred on its cell.
 import { Box3, Group, type Object3D, Vector3 } from "three";
-import { FURNITURE, type Piece } from "../content";
+import { FURNITURE, type Piece } from "../content/index";
 import type { ModelLibrary } from "./models";
 import { makePrinter } from "./printer";
 

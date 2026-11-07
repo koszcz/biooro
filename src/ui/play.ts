@@ -1,6 +1,6 @@
 // The player's Workday actions, sent to the store. Input is locked while a Task action plays out.
-import type { OpenTask } from "../rules";
-import type { GameStore } from "../store";
+import type { OpenTask } from "../rules/index";
+import type { GameStore } from "../store/index";
 import type { Acting } from "./acting";
 import type { Pick } from "./choices";
 

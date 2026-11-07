@@ -1,6 +1,6 @@
 // The four Pressure gauges, the 8 hour blocks with Break and "Go home", its confirmation and the empty prompt.
-import { hudText } from "../locales";
-import type { GameState } from "../rules";
+import { hudText } from "../locales/index";
+import type { GameState } from "../rules/index";
 import { button, el } from "./dom";
 import { hudView, type Preview } from "./hudView";
 import { PRESSURE_COLOURS } from "./styles";

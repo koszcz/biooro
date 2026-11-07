@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import type { CastId } from "../content/index";
 import type { GameState } from "../rules/index";
-import { createStore, type Person, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
-import type { Speaker, TalkStage, TalkView } from "./conversations";
+import type { ConversationStage, ConversationView, Speaker } from "./conversations";
 import { type SceneFrame, Scenes, type ScriptedScene } from "./scenes";
 
 function memoryStorage(): SaveStorage {
@@ -16,7 +17,7 @@ function memoryStorage(): SaveStorage {
 }
 
 /** A view that reads every line at once. At each choice it picks the one whose text contains `pick`. */
-class FakeView implements TalkView {
+class FakeView implements ConversationView {
   readonly shown: string[] = [];
   pick = "";
 
@@ -32,16 +33,18 @@ class FakeView implements TalkView {
   }
 
   brushOff(): void {}
+
+  approach(): void {}
 }
 
-class FakeStage implements TalkStage {
+class FakeStage implements ConversationStage {
   readonly moves: string[] = [];
 
-  async walkBeside(person: Person): Promise<void> {
+  async walkBeside(person: CastId): Promise<void> {
     this.moves.push(`walk to ${person}`);
   }
 
-  faceEachOther(person: Person): () => void {
+  faceEachOther(person: CastId): () => void {
     this.moves.push(`face ${person}`);
     return () => this.moves.push(`${person} turns back`);
   }
@@ -92,6 +95,15 @@ describe("the Monday onboarding", () => {
     expect(stage.moves).toEqual(["walk to zbigniew", "face zbigniew", "zbigniew turns back"]);
     expect(view.shown[0]).toMatch(/^zbigniew: /);
     expect(store.state.flags).toContain("onboarded");
+  });
+
+  it("starts the scene only once the Intern stands beside Pan Zbigniew", async () => {
+    const { store, stage, scenes } = setUp();
+    store.on("conversationStarted", () => stage.moves.push("scene starts"));
+    store.startOver();
+    await scenes.settled;
+
+    expect(stage.moves.slice(0, 3)).toEqual(["walk to zbigniew", "face zbigniew", "scene starts"]);
   });
 });
 

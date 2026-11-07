@@ -1,6 +1,6 @@
 import { Group, type Mesh, type MeshStandardMaterial, type Object3D } from "three";
 import { describe, expect, it } from "vitest";
-import { COLLEAGUE_SPOTS } from "../content";
+import { COLLEAGUE_SPOTS } from "../content/index";
 import { createCast } from "./cast";
 import type { CharacterModel, ModelLibrary } from "./models";
 

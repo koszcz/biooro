@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { GameState } from "../rules";
-import { createStore, type SaveStorage } from "../store";
+import type { GameState } from "../rules/index";
+import { createStore, type SaveStorage } from "../store/index";
 import { createActing } from "./acting";
 import { taskChoiceViews } from "./choices";
 import { createPlay } from "./play";

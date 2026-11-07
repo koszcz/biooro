@@ -1,6 +1,6 @@
 // Grid A* over the office floor with easystarjs: 8 directions and no corner cutting.
 import EasyStar from "easystarjs";
-import { type Cell, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS } from "../content";
+import { type Cell, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS } from "../content/index";
 
 const WALKABLE = 0;
 const BLOCKED = 1;

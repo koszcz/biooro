@@ -1,7 +1,7 @@
 // The Task choice popover: the Task text, assigner, side and all four Task choices, beside the assigner.
-import { taskById } from "../content";
-import { ASSIGNER_NAMES, hudText, SIDE_LABELS } from "../locales";
-import type { GameState, OpenTask } from "../rules";
+import { taskById } from "../content/index";
+import { ASSIGNER_NAMES, hudText, SIDE_LABELS } from "../locales/index";
+import type { GameState, OpenTask } from "../rules/index";
 import type { HeadLocator } from "./bubbles";
 import { type Chip, type ChoiceView, goodwillVisible, type Pick, taskChoiceViews } from "./choices";
 import { button, el } from "./dom";

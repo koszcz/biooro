@@ -1,5 +1,5 @@
 // What the gauges, the hour blocks and the Task bubbles show for a GameState, with an optional preview.
-import { type Faction, taskById } from "../content";
+import { type Faction, taskById } from "../content/index";
 import {
   ASSIGNER_NAMES,
   FALLOUT_WORDING,
@@ -9,7 +9,7 @@ import {
   type ReturningTaskId,
   STRANGE_TASK_WORDING,
   TASK_WORDING,
-} from "../locales";
+} from "../locales/index";
 import {
   breakLockedReason,
   type GameState,
@@ -18,7 +18,7 @@ import {
   PRESSURE_MIN,
   type Pressure,
   WORKDAY_HOURS,
-} from "../rules";
+} from "../rules/index";
 import { type Deltas, goodwillVisible, visiblePressures } from "./choices";
 
 /** A gauge pulses at this value or lower. */

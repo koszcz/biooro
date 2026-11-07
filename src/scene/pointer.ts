@@ -1,7 +1,7 @@
 // Turns pointer events on the office canvas into clicks and hovers on people or the floor.
 // A Conversation locks the office from the click that starts it until it ends.
 import { type Camera, type Object3D, Raycaster, Vector2 } from "three";
-import type { CastId } from "../content";
+import type { CastId } from "../content/index";
 import { personUnder } from "./people";
 
 /** The store events that lock and unlock the office. */
@@ -14,6 +14,8 @@ export type Pointer = {
   onPersonHover(listener: (person: CastId | undefined) => void): void;
   /** Calls `listener` with the aimed ray when the player clicks anything but a person. */
   onFloorClick(listener: (ray: Raycaster) => void): void;
+  /** Locks the office now, for the walk to a Conversation. The next `conversationEnded` unlocks it. */
+  lock(): void;
 };
 
 /** `busy` locks the office as well, for example while a Task action plays. */
@@ -47,10 +49,11 @@ export function createPointer(
     for (const listener of hovers) listener(person);
   };
 
-  events.on("conversationStarted", () => {
+  const lock = () => {
     locked = true;
     hover(undefined);
-  });
+  };
+  events.on("conversationStarted", lock);
   events.on("conversationEnded", () => {
     locked = false;
   });
@@ -75,5 +78,6 @@ export function createPointer(
     onPersonClick: (listener) => clicks.push(listener),
     onPersonHover: (listener) => hovers.push(listener),
     onFloorClick: (listener) => floorClicks.push(listener),
+    lock,
   };
 }

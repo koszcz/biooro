@@ -1,8 +1,9 @@
 // Plays the scripted scenes the game starts: the Monday onboarding, the four Firings, the Friday audit and survival.
+import type { CastId } from "../content/index";
 import type { AuditAnswer, Pressure, SurvivalVariant } from "../rules/index";
-import type { GameStore, Person } from "../store/index";
+import type { GameStore } from "../store/index";
 import type { Dialogue, DialogueChoice } from "./bridge";
-import { playDialogue, type TalkStage, type TalkView } from "./conversations";
+import { type ConversationStage, type ConversationView, playDialogue } from "./conversations";
 
 export type ScriptedScene =
   | { kind: "onboarding" }
@@ -19,15 +20,18 @@ export interface SceneFrame {
 /** The onboarding knot sets this flag at its end. Until then, Continue on Monday replays the onboarding. */
 export const ONBOARDED_FLAG = "onboarded";
 
+/** The Ink knot of each scripted scene. It also names the scene, for example in its title card. */
+export type SceneKnot = "onboarding" | "audit" | `firing_${Pressure}` | `survival_${SurvivalVariant}`;
+
 interface SceneSpec {
-  knot: string;
+  knot: SceneKnot;
   /** The scene's main person. Lines without a speaker tag are theirs. */
-  person: Person;
+  person: CastId;
   /** True when the main speaker is in the room, so the Intern walks beside them first. */
   walkUp: boolean;
 }
 
-const FIRING_PEOPLE: Record<Pressure, Person> = {
+const FIRING_PEOPLE: Record<Pressure, CastId> = {
   performance: "zbigniew",
   launchTeam: "ryszard",
   paperTrail: "halina",
@@ -35,7 +39,7 @@ const FIRING_PEOPLE: Record<Pressure, Person> = {
   sanity: "zbigniew",
 };
 
-const SURVIVAL_PEOPLE: Record<SurvivalVariant, Person> = {
+const SURVIVAL_PEOPLE: Record<SurvivalVariant, CastId> = {
   launchTeam: "zbigniew",
   paperTrail: "halina",
   // Nobody wins. Every line carries #speaker:intern.
@@ -75,8 +79,8 @@ export class Scenes {
   constructor(
     private readonly store: GameStore,
     private readonly dialogue: Dialogue,
-    private readonly stage: TalkStage,
-    private readonly view: TalkView,
+    private readonly stage: ConversationStage,
+    private readonly view: ConversationView,
     private readonly frame: SceneFrame,
   ) {
     store.on("dayStarted", () => this.queueOnboarding());
@@ -149,9 +153,10 @@ export class Scenes {
     this.openFrame(scene);
     const { knot, person, walkUp } = sceneSpec(scene);
     let answer: AuditAnswer | undefined;
-    this.dialogue.start(person, knot, true);
+    // The frame already locks input, so the scene starts once the Intern arrives.
     if (walkUp) await this.stage.walkBeside(person);
     const turnBack = walkUp ? this.stage.faceEachOther(person) : undefined;
+    this.dialogue.start(person, knot, true);
     await playDialogue(this.dialogue, this.view, person, (choice) => {
       answer ??= auditAnswerOf(choice);
     });

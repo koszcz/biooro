@@ -1,5 +1,5 @@
 // The loading screen shown while every GLB loads at boot. When loading ends, it turns into the title screen.
-import { loadingText } from "../locales";
+import { loadingText } from "../locales/index";
 import { showTitle, type TitleChoice, type TitleOptions } from "./title";
 
 export type LoadingScreen = {
