@@ -1,37 +1,27 @@
 // The printer. The Kenney kits have none, so it is built from chamfered boxes, copied from
 // makePrinter() in prototype/pressures-ui/src/scene.ts. See docs/art/making-assets.md.
 // It is a floor-standing copier the size of the kit's washer, in the kit's own materials.
-import { BoxGeometry, Color, Group, LinearSRGBColorSpace, type Material, Mesh, MeshStandardMaterial } from "three";
-import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-
-const kit = (r: number, g: number, b: number) =>
-  new MeshStandardMaterial({
-    color: new Color().setRGB(r, g, b, LinearSRGBColorSpace),
-    roughness: 1,
-    metalness: 0,
-    flatShading: true,
-  });
+import { BoxGeometry, Group, type Material, Mesh } from "three";
+import { chamferedBox, KIT_BEVEL, kitMaterial } from "./kit";
 
 /** The origin is the centre of the footprint, with the base at y = 0. The front faces +z, toward the camera. */
 export function makePrinter(): Group {
   const printer = new Group();
   printer.name = "printer";
-  const metal = kit(0.741, 0.823, 0.84);
-  const metalMedium = kit(0.369, 0.467, 0.467);
-  const metalDark = kit(0.306, 0.388, 0.388);
-  const white = kit(0.973, 1, 1);
+  const metal = kitMaterial("metal");
+  const metalMedium = kitMaterial("metalMedium");
+  const metalDark = kitMaterial("metalDark");
+  const white = kitMaterial("carpetWhite");
   const part = (
     w: number,
     h: number,
     d: number,
     m: Material,
     at: [number, number, number],
-    bevel = 0.012,
+    bevel = KIT_BEVEL,
     tilt = 0,
   ) => {
-    const geometry = bevel
-      ? new RoundedBoxGeometry(w, h, d, 1, Math.min(bevel, h / 2 - 0.001))
-      : new BoxGeometry(w, h, d);
+    const geometry = bevel ? chamferedBox(w, h, d, bevel) : new BoxGeometry(w, h, d);
     const mesh = new Mesh(geometry, m);
     mesh.position.set(...at);
     mesh.rotation.x = tilt;
