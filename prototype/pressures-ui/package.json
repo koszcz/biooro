@@ -1,0 +1,7 @@
+{
+  "name": "pressures-ui-prototype",
+  "private": true,
+  "type": "module",
+  "description": "PROTOTYPE, throwaway. Answers the 'Pressures and Task inbox UI' ticket. Reuses office-look's assets and node_modules.",
+  "scripts": { "dev": "node ../office-look/node_modules/vite/bin/vite.js" }
+}
