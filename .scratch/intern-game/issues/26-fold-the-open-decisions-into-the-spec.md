@@ -2,11 +2,11 @@
 
 Type: task
 Status: open
-Blocked by: 17, 18, 19, 20, 21, 22, 23, 24, 25
+Blocked by: 17, 18, 19, 20, 21, 22, 23, 24, 25, 27
 
 ## Question
 
-Update `.scratch/intern-game/spec.md` with the answers to tickets 17 to 25.
+Update `.scratch/intern-game/spec.md` with the answers to tickets 17 to 25 and 27.
 
 Do this:
 
