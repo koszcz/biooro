@@ -155,7 +155,7 @@ const ITEMS: Item[] = [
   { kind: 'plant', candidates: ['pottedPlant', 'plant'], fallback: [0.4, 0.9, 0.4, '#4a7'], cell: [9, 0], rot: 0, blocks: true },
   { kind: 'bookcase', candidates: ['bookcaseClosed', 'bookcase'], fallback: [1, 1.8, 0.4, '#8a6a4a'], cell: [0, 0], rot: 0, blocks: true },
   { kind: 'trash', candidates: ['trashcan', 'trash'], fallback: [0.3, 0.4, 0.3, '#777'], cell: [7, 2], rot: 0, blocks: true },
-  // ticket "How Task choices play out": the kits have no printer, so a grey box stands in.
+  // ticket "How Task choices play out": the kits have no printer, so makePrinter() builds one from boxes.
   { kind: 'printer', candidates: [], fallback: [0.7, 0.75, 0.55, '#c9ced6'], cell: [9, 4], rot: 0, blocks: true },
 ];
 
@@ -168,6 +168,7 @@ async function buildFurniture() {
     const file = pickFile(manifest.furniture, it.candidates);
     let obj: THREE.Object3D;
     if (file) { obj = (await loadGlb(`/kenney/furniture/${file}`)).scene; report[it.kind] ??= file; }
+    else if (it.kind === 'printer') { obj = makePrinter(); report.printer = 'built in code'; }
     else { obj = box(...it.fallback); report[it.kind] ??= 'box stand-in'; }
     obj.position.set(it.cell[0] + 0.5, it.kind === 'screen' ? sizeOfDeskTop() : 0, it.cell[1] + 0.5);
     obj.rotation.y = it.rot;
@@ -180,6 +181,30 @@ async function buildFurniture() {
   }
 }
 let deskHeight = 0, chairHeight = 0;
+/** A floor-standing office copier built from boxes, in the Kenney palette. The front faces +z, toward the camera.
+ *  About 0.66 wide, 1.0 tall and 0.56 deep, so it sits beside the Kenney desks at native scale. */
+function makePrinter() {
+  const g = new THREE.Group();
+  const part = (w: number, h: number, d: number, c: string, x: number, y: number, z: number, rx = 0) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), flat(c));
+    m.position.set(x, y, z); m.rotation.x = rx; m.castShadow = m.receiveShadow = true; g.add(m); return m;
+  };
+  part(0.66, 0.06, 0.54, '#3a3f48', 0, 0.03, 0);           // plinth
+  part(0.62, 0.5, 0.52, '#aeb4bc', 0, 0.31, 0);            // paper cabinet
+  for (const y of [0.2, 0.42]) {                             // two paper drawers
+    part(0.56, 0.005, 0.01, '#6b717a', 0, y + 0.1, 0.262);
+    part(0.16, 0.03, 0.03, '#3a3f48', 0, y, 0.27);           // drawer handle
+  }
+  part(0.62, 0.3, 0.52, '#e3e6ea', 0, 0.71, 0);            // print engine
+  part(0.5, 0.03, 0.04, '#2b2f36', -0.02, 0.66, 0.26);     // output slot
+  part(0.36, 0.012, 0.22, '#ffffff', -0.02, 0.665, 0.33, -0.12); // a sheet half out of the slot
+  part(0.66, 0.06, 0.56, '#cdd2d8', 0, 0.89, 0);           // scanner lid
+  part(0.24, 0.04, 0.12, '#3a3f48', 0.2, 0.93, 0.2, -0.35); // control panel
+  const led = part(0.03, 0.012, 0.03, '#4ade80', 0.27, 0.955, 0.24, -0.35);
+  (led.material as THREE.MeshStandardMaterial).emissive = new THREE.Color('#22c55e');
+  part(0.08, 0.04, 0.03, '#f59e0b', 0.15, 0.955, 0.24, -0.35); // the "jam" warning light
+  return g;
+}
 const sizeOfDeskTop = () => deskHeight || 0.75;
 
 // ---------- characters ----------

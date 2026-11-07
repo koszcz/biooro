@@ -33,7 +33,7 @@ Variant J, "go there and wait it out". The Intern acts out every Task choice in 
 - Every Task has one Task place. Write it on each Task slot in the content, with the clip to play there. Do not work it out from the title, as the prototype does.
 - The slice uses seven Task places: the Intern's desk, the printer, the sink, the plant, the shredder, Room 4, and the evidence shelf.
 - A Task with no clear place, such as "Summarise the week of complaints in one upbeat line", happens at the Intern's desk. The Intern sits down there.
-- The Kenney kits have no printer. The prototype uses a grey box. The build needs a printer model, for example from Quaternius, or a better stand-in.
+- The Kenney kits have no printer, so we build our own from boxes in code, in the Kenney palette. It is a floor-standing copier, about 0.66 wide, 1.0 tall and 0.56 deep, with two paper drawers, a sheet half out of the output slot, and a control panel with an orange "jam" light. Its front faces the camera. See `makePrinter()` in `prototype/pressures-ui/src/scene.ts`. The build can keep it as code or export it once to a GLB file.
 
 ### What each Task choice looks like
 

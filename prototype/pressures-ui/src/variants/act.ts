@@ -109,7 +109,7 @@ export function mountAct(root: HTMLElement, mode: Mode) {
       .bub[data-id="${id}"],[data-pick="${id}"]{opacity:.45;pointer-events:none}
       .bub[data-id="${id}"]:before,[data-pick="${id}"]:before{content:'${label} ';font-weight:700}`).join('');
   }
-  const closePop = () => dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+  const closePop = () => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
   function lock(on: boolean, bubblesToo: boolean) {
     hooks.locked = on;
     lockCss = on ? `#vc-h{pointer-events:none}${bubblesToo ? '#vc-b{pointer-events:none;opacity:.35}#vc-popwrap{display:none}' : ''}` : '';
