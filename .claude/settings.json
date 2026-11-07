@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": [
+      "mcp__Claude_Code_iOS_Simulator",
+      "mcp__1a59c906-04da-521d-bda7-7f71b9f9e01c",
+      "mcp__visualize",
+      "mcp__claude-in-chrome",
+      "mcp__terminal",
+      "mcp__scheduled-tasks",
+      "mcp__mcp-registry",
+      "mcp__ccd_sidebar",
+      "mcp__ccd_window",
+      "mcp__ccd_directory",
+      "mcp__ccd_pr",
+      "RemoteTrigger",
+      "DesignSync",
+      "SendToProject",
+      "SendToProjectContext"
+    ]
+  },
+  "enabledPlugins": {
+    "geekbot@geekbot-cli": false
+  }
+}
