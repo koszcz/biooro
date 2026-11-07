@@ -17,6 +17,7 @@ import {
 } from "three";
 import { type Piece, SMART_TOILET } from "../content";
 import type { Tier } from "../rules";
+import { createActionStage } from "./actionStage";
 import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
 import { createCast } from "./cast";
 import { createFloor, FLOOR_DEPTH, FLOOR_WIDTH } from "./floor";
@@ -26,6 +27,7 @@ import { createIntern, type Intern } from "./intern";
 import type { ModelLibrary } from "./models";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
+import { type ActionCue, type ActionSource, createTaskActions } from "./taskActions";
 import { createTierLook, type TierSource } from "./tierLook";
 
 function mapValues<K extends string, V, W>(record: Readonly<Record<K, V>>, map: (value: V) => W): Record<K, W> {
@@ -64,12 +66,15 @@ const pieceOf = (hit: Object3D): Piece | undefined => {
   return undefined;
 };
 
-/** Click-to-walk for the Intern. It remembers the chair the Intern sits on, so the Intern can stand up again. */
+/** Walks the Intern. It remembers the chair the Intern sits on, so the Intern can stand up again. */
 function createWalking(intern: Intern, ring: Mesh) {
   let seatedOn: Piece | undefined;
-  return (goal: WalkGoal) => {
+  return (goal: WalkGoal, arrived?: () => void) => {
     const walk = planWalk(intern.walker.position, seatedOn, goal);
-    if (!walk) return;
+    if (!walk) {
+      arrived?.();
+      return;
+    }
     const chair = "chair" in goal ? goal.chair : undefined;
     seatedOn = undefined;
     ring.position.set(walk.target.x, ring.position.y, walk.target.z);
@@ -82,17 +87,27 @@ function createWalking(intern: Intern, ring: Mesh) {
         seatedOn = chair;
         intern.setPose("sit", chair.turn ?? 0);
       } else intern.setPose("idle");
+      arrived?.();
     });
   };
 }
 
-/** Starts the office. `store` sends `tierChanged`, and `startTier` is the tier when the office loads. */
+export interface OfficeScene {
+  headAt: HeadLocator;
+  /** Calls `listener` with each cue the DOM overlays show while a Task action plays. */
+  onActionCue(listener: (cue: ActionCue) => void): void;
+}
+
+/**
+ * Starts the office. `store` sends `tierChanged` and the Task actions, which the scene finishes.
+ * `startTier` is the tier when the office loads.
+ */
 export function startOfficeScene(
   container: HTMLElement,
   models: ModelLibrary,
-  store: TierSource,
+  store: TierSource & ActionSource,
   startTier: Tier,
-): { headAt: HeadLocator } {
+): OfficeScene {
   const scene = new Scene();
   const floor = createFloor();
   const furniture = buildFurniture(models);
@@ -130,9 +145,16 @@ export function startOfficeScene(
   );
 
   const walkTo = createWalking(intern, ring);
+  const cueListeners: ((cue: ActionCue) => void)[] = [];
+  const stage = createActionStage(intern, walkTo, cast);
+  const actions = createTaskActions(store, stage, (cue) => {
+    for (const listener of cueListeners) listener(cue);
+  });
   const ray = new Raycaster();
   const pointer = new Vector2();
   renderer.domElement.addEventListener("pointerdown", (event) => {
+    // Input is locked while a Task action plays.
+    if (actions.playing) return;
     const bounds = renderer.domElement.getBoundingClientRect();
     pointer.set(
       ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
@@ -148,6 +170,7 @@ export function startOfficeScene(
   const clock = new Clock();
   renderer.setAnimationLoop(() => {
     const seconds = Math.min(clock.getDelta(), 0.05);
+    actions.update(seconds);
     intern.update(seconds, clock.elapsedTime);
     for (const person of people) person.update(seconds, clock.elapsedTime);
     tierLook.update(seconds, clock.elapsedTime);
@@ -155,5 +178,8 @@ export function startOfficeScene(
   });
   Object.assign(window, { __office: { scene, camera, intern, cast, walkTo } });
   const roots = { intern: intern.root, ...mapValues(cast, (person) => person.root) };
-  return { headAt: createHeadLocator(roots, camera, renderer.domElement) };
+  return {
+    headAt: createHeadLocator(roots, camera, renderer.domElement),
+    onActionCue: (listener) => void cueListeners.push(listener),
+  };
 }

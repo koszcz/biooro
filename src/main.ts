@@ -12,7 +12,7 @@ const models = await loadModels((share) => loading.setProgress(share));
 loading.close();
 const store = createStore(window.localStorage);
 const office = startOfficeScene(container, models, store, tierOf(store.state.escalation));
-mountGameUi(container, store, office.headAt);
+mountGameUi(container, store, office.headAt, office.onActionCue);
 // The title screen ticket replaces this with Continue and New game.
 store.startOver();
 Object.assign(window, { __store: store });

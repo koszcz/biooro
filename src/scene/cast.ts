@@ -2,10 +2,10 @@
 // The lineup follows prototype/office-look/src/art.ts.
 import { type AnimationAction, AnimationMixer, Group, type MeshStandardMaterial, type Object3D } from "three";
 import { type CastId, COLLEAGUE_SPOTS } from "../content";
-import { SEAT_LIFT } from "./intern";
+import { type Pose, SEAT_LIFT } from "./intern";
 import type { AccessoryModel, CharacterModel, ModelLibrary } from "./models";
 import { addFolder, addLanyard, addRecordingLight, addTie, addVest, bone } from "./outfit";
-import type { FloorPoint } from "./walker";
+import { type FloorPoint, Walker } from "./walker";
 
 /** Bosses stand 12% taller than everyone else. */
 export const BOSS_SCALE = 1.12;
@@ -42,6 +42,13 @@ const LOOKS: Readonly<Record<CastId, CastLook>> = {
 export type CastMember = {
   readonly id: CastId;
   readonly root: Group;
+  readonly walker: Walker;
+  /** Where the person sits or stands when they are at their spot. */
+  readonly home: FloorPoint;
+  /** Their pose at their spot: "sit" or "idle". */
+  readonly homePose: Pose;
+  /** Plays a clip. "sit" lifts the person onto the seat. */
+  play(pose: Pose): void;
   /** Turns the person to face a point on the floor. */
   faceToward(point: FloorPoint): void;
   /** Turns the person back to their set direction. */
@@ -78,19 +85,35 @@ function createMember(models: ModelLibrary, id: CastId): CastMember {
   const root = new Group();
   root.name = id;
   root.add(character.model);
-  root.position.set(spot.cell.col, spot.seated ? SEAT_LIFT : 0, spot.cell.row + (spot.offset?.z ?? 0));
+  const home = { x: spot.cell.col, z: spot.cell.row + (spot.offset?.z ?? 0) };
+  const homePose: Pose = spot.seated ? "sit" : "idle";
+  root.position.set(home.x, spot.seated ? SEAT_LIFT : 0, home.z);
   root.scale.setScalar(look.boss ? BOSS_SCALE : 1);
   root.rotation.y = look.facing;
   root.traverse(ignoreClicks);
 
   const mixer = new AnimationMixer(character.model);
-  const clip = character.clips.find((c) => c.name === (spot.seated ? "sit" : "idle"));
-  const action: AnimationAction | undefined = clip && mixer.clipAction(clip);
-  action?.play();
+  let current: AnimationAction | undefined;
+  let pose: Pose = homePose;
+  const play = (next: Pose) => {
+    pose = next;
+    const clip = character.clips.find((c) => c.name === next);
+    const action = clip && mixer.clipAction(clip);
+    if (!action || action === current) return;
+    action.reset().fadeIn(0.2).play();
+    current?.fadeOut(0.2);
+    current = action;
+  };
+  play(homePose);
+  const walker = new Walker(home);
 
   return {
     id,
     root,
+    walker,
+    home,
+    homePose,
+    play,
     faceToward(point) {
       root.rotation.y = Math.atan2(point.x - root.position.x, point.z - root.position.z);
     },
@@ -98,6 +121,12 @@ function createMember(models: ModelLibrary, id: CastId): CastMember {
       root.rotation.y = look.facing;
     },
     update(seconds, elapsed) {
+      if (walker.walking) {
+        walker.update(seconds);
+        if (pose !== "walk") play("walk");
+        root.rotation.y = walker.heading;
+      }
+      root.position.set(walker.position.x, pose === "sit" ? SEAT_LIFT : 0, walker.position.z);
       if (light) (light.material as MeshStandardMaterial).emissiveIntensity = Math.sin(elapsed * 6) > 0 ? 2.5 : 0.2;
       mixer.update(seconds);
     },

@@ -37,6 +37,7 @@ export const HUD_CSS = `
 .hud-bubble{position:absolute;transform:translate(-50%,-100%);background:#fff;border-radius:10px;padding:4px 8px;font:600 12px system-ui;color:#222;box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer;width:max-content;max-width:200px;line-height:1.3;text-align:center;border:2px solid var(--c);pointer-events:auto}
 .hud-bubble:after{content:'';position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--c)}
 .hud-bubble.fallout{background:#ffe5e5}
+.hud-bubbles.dim .hud-bubble{opacity:.35}
 .hud-bubble:hover{transform:translate(-50%,-100%) scale(1.05)}
 .hud-pop{position:absolute;width:280px;background:#fff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.5);padding:8px;overflow-y:auto;pointer-events:auto}
 .hud-pop .title{font-weight:700;margin:0 16px 2px 0}

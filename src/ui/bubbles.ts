@@ -1,4 +1,6 @@
 // Task bubbles: one speech bubble per open Task over its assigner's head, following them every frame.
+
+import { actionText } from "../locales";
 import type { GameState, OpenTask } from "../rules";
 import { el } from "./dom";
 import { type BubbleOwner, bubbleViews } from "./hudView";
@@ -12,7 +14,8 @@ export type HeadLocator = (owner: BubbleOwner) => ScreenPoint;
 const STACK_GAP = 12;
 
 export interface Bubbles {
-  render(state: GameState, enabled: boolean): void;
+  /** While a Task action plays, every bubble dims and `busy` shows "⏳" before its title. */
+  render(state: GameState, enabled: boolean, busy?: OpenTask | null): void;
   /** Moves each bubble over its person's head. Call it every frame. */
   follow(): void;
 }
@@ -27,13 +30,16 @@ export function createBubbles(
   let placed: { node: HTMLElement; over: BubbleOwner }[] = [];
 
   return {
-    render(state, enabled) {
+    render(state, enabled, busy) {
+      layer.classList.toggle("dim", Boolean(busy));
+      const isBusy = (task: OpenTask) =>
+        busy?.id === task.id && busy.fallout === task.fallout && busy.strange === task.strange;
       const views = state.phase.kind === "workday" ? bubbleViews(state) : [];
       placed = views.map((view) => {
         const node = el(
           "div",
           `hud-bubble${view.fallout ? " fallout" : ""}`,
-          view.fallout ? `⚠ ${view.text}` : view.text,
+          `${isBusy(view.task) ? `${actionText.busy} ` : ""}${view.fallout ? `⚠ ${view.text}` : view.text}`,
         );
         node.style.setProperty("--c", SIDE_COLOURS[view.border]);
         node.dataset.task = view.task.id;

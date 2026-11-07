@@ -1,5 +1,9 @@
 // Mounts the playable HUD: Task bubbles, the Task choice popover, gauges, hour blocks and the day card.
+import type { CastId } from "../content";
+import type { ColleagueId } from "../rules";
 import type { GameStore, StoreEventType } from "../store";
+import { createActing } from "./acting";
+import { ACTION_CSS, createActionLayer } from "./actionLayer";
 import { createBubbles, type HeadLocator } from "./bubbles";
 import { createCards } from "./cards";
 import { el } from "./dom";
@@ -25,12 +29,27 @@ const REDRAW_ON: StoreEventType[] = [
 
 export type { BubbleOwner, HeadLocator };
 
-/** Mounts the HUD over `container`. Mount it before the first morning, so it sees Monday's `dayStarted`. */
-export function mountGameUi(container: HTMLElement, store: GameStore, headAt: HeadLocator): void {
-  const style = el("style", "", HUD_CSS);
+/** What the scene tells the HUD while a Task action plays. */
+export type ActionCue =
+  | { kind: "drained"; hours: number }
+  | { kind: "looksDone"; over: CastId | "intern" }
+  | { kind: "handOff"; colleague: ColleagueId };
+
+/**
+ * Mounts the HUD over `container`. Mount it before the first morning, so it sees Monday's `dayStarted`.
+ * `onActionCue` subscribes to the scene's cues for Task actions.
+ */
+export function mountGameUi(
+  container: HTMLElement,
+  store: GameStore,
+  headAt: HeadLocator,
+  onActionCue: (listener: (cue: ActionCue) => void) => void,
+): void {
+  const style = el("style", "", HUD_CSS + ACTION_CSS);
   const root = el("div", "hud");
   container.append(style, root);
-  const play = createPlay(store);
+  const acting = createActing(store);
+  const play = createPlay(store, acting);
   let confirming = false;
   let revealGoodwill = false;
   let preview: Preview | undefined;
@@ -54,6 +73,7 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
       redraw();
     },
   });
+  const labels = createActionLayer(root, headAt);
   const popover = createPopover(root, headAt, {
     pick: (task, pick) => act(() => play.pick(task, pick)),
     preview: (next) => {
@@ -71,14 +91,17 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
 
   function draw(): void {
     queued = false;
-    const state = store.state;
+    // While a Task action plays, this is the state from before the click, so the Pressures and any Firing wait.
+    const state = acting.shown(store.state);
+    const locked = acting.playing;
     const carded = cards.render(state);
-    if (carded) popover.close();
-    hud.render(state, { preview, confirming: confirming && !carded, revealGoodwill });
+    if (carded || locked) popover.close();
+    hud.render(state, { preview, confirming: confirming && !carded, revealGoodwill, locked });
     hud.hours.hidden = carded;
     revealGoodwill = false;
-    bubbles.render(state, !carded);
+    bubbles.render(state, !carded && !locked, acting.busyTask);
     popover.render(state);
+    labels.renderTag(acting.tag());
   }
 
   function redraw(): void {
@@ -88,6 +111,19 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
   }
 
   for (const type of REDRAW_ON) store.on(type, () => redraw());
+  store.on("taskActionStarted", () => {
+    preview = undefined;
+    popover.close();
+    redraw();
+  });
+  acting.onFloats((floats) => labels.floats(floats));
+  onActionCue((cue) => {
+    if (cue.kind === "drained") {
+      acting.drained(cue.hours);
+      redraw();
+    } else if (cue.kind === "looksDone") labels.looksDone(cue.over);
+    else labels.handOff(cue.colleague);
+  });
   store.on("goodwillRevealed", () => {
     revealGoodwill = true;
     redraw();
@@ -103,6 +139,7 @@ export function mountGameUi(container: HTMLElement, store: GameStore, headAt: He
 
   const follow = () => {
     bubbles.follow();
+    labels.follow();
     const rect = (node: HTMLElement) => {
       const box = node.getBoundingClientRect();
       const origin = root.getBoundingClientRect();
