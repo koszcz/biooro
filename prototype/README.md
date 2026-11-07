@@ -9,7 +9,7 @@ Each source file starts with a comment that says which ticket it answers and wha
 | Prototype | Preview name | Port | Files |
 | --- | --- | --- | --- |
 | `office-look/` | `office-look-prototype` | 5174 | `src/main.ts`: "Isometric office look", variants A–C (`?variant=`). `src/art.ts` with `art.html`: "Character and art direction", rooms and cast lineup. Models live in `public/kenney/`; run `pnpm unpack` to fill it. |
-| `pressures-ui/` | `pressures-ui-prototype` | 5175 | `src/main.ts`: variant switcher and prototype controls. `src/game.ts`: in-memory rules and typed events. `src/scene.ts`: the office scene, locked to the chosen look. `src/shared.ts`: helpers. `src/variants/a.ts`, `b.ts`, `c.ts`: "Pressures and Task inbox UI". `src/variants/crowd.ts`: "Crowded Task bubbles" (variants D–F). |
+| `pressures-ui/` | `pressures-ui-prototype` | 5175 | `src/main.ts`: variant switcher and prototype controls. `src/game.ts`: in-memory rules and typed events. `src/scene.ts`: the office scene, locked to the chosen look. `src/shared.ts`: helpers. `src/variants/a.ts`, `b.ts`, `c.ts`: "Pressures and Task inbox UI". `src/variants/crowd.ts`: "Crowded Task bubbles" (variants D–F). `src/variants/talk.ts` with `src/talk.ts`: "Conversation interface" (variants G–I, G chosen). |
 
 ## Check a prototype in the browser
 

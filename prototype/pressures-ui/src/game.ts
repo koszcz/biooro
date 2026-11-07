@@ -83,6 +83,13 @@ function setP(key: PressureKey, to: number) {
   emit({ type: 'pressureChanged', key, from, to });
   if (to === 0 && !state.firedBy) { state.firedBy = key; emit({ type: 'fired', key }); }
 }
+/** Conversation effect (ticket "How often the Intern can talk"): one non-Performance Pressure by 1, never below 1. */
+export function nudge(key: PressureKey, d: number) {
+  if (key === 'performance') return;
+  const to = Math.max(1, state.p[key] + d);
+  if (to !== state.p[key]) setP(key, to);
+}
+export const talkedToday = new Set<Who>();
 function setHours(to: number) { const from = state.hours; state.hours = to; emit({ type: 'hoursChanged', from, to }); }
 function assign(t: Omit<Task, 'id'>) { const task = { ...t, id: nextId++ }; state.inbox.push(task); emit({ type: 'taskAssigned', task }); }
 
@@ -155,6 +162,7 @@ export function startDay(day: number) {
   if (state.firedBy) return;
   const finished = state.finishedToday;
   state.day = day;
+  talkedToday.clear();
   state.dayOver = false;
   state.helpedToday.clear();
   state.finishedToday = 0;
@@ -172,6 +180,7 @@ export function reset() {
   Object.assign(state, { day: 1, hours: 8, goodwillVisible: false, inbox: [], pendingFallout: [], finishedToday: 0, firedBy: null, dayOver: false });
   state.p = { performance: 6, launch: 6, paper: 6, sanity: 6 };
   state.helpedToday = new Set();
+  talkedToday.clear();
   log.length = 0;
   emit({ type: 'dayStarted', day: 1 });
   for (const [assigner, side, title] of SLOTS[1]) assign({ assigner, side, title, fallout: false });

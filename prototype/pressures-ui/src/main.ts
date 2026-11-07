@@ -4,6 +4,7 @@
 //   B Clipboard + wall clock + memo: pips on a clipboard, hours as time of day, a memo modal per Task.
 //   C In the world: Task bubbles over whoever assigned them, a popover per Task, slim gauges.
 //   D/E/F: variant C with three answers to the 'Crowded Task bubbles' ticket (see variants/crowd.ts).
+//   G/H/I: variant E with three answers to the 'Conversation interface' ticket (see variants/talk.ts).
 // The pink controls (top left) are prototype-only: jump days, stress the inbox, show state.
 import './scene';
 import { BASE_CSS } from './shared';
@@ -12,6 +13,7 @@ import { mountA } from './variants/a';
 import { mountB } from './variants/b';
 import { mountC } from './variants/c';
 import { mountCrowd } from './variants/crowd';
+import { mountTalk } from './variants/talk';
 
 const VARIANTS = [
   { key: 'A', name: 'Top bar + inbox drawer', mount: mountA },
@@ -20,6 +22,9 @@ const VARIANTS = [
   { key: 'D', name: 'Crowd: pile, hover to fan out', mount: (r: HTMLElement) => mountCrowd(r, 'pile') },
   { key: 'E', name: 'Crowd: two bubbles + "more" pill', mount: (r: HTMLElement) => mountCrowd(r, 'cap') },
   { key: 'F', name: 'Crowd: one bubble per person + inbox popover', mount: (r: HTMLElement) => mountCrowd(r, 'summary') },
+  { key: 'G', name: 'Talk: walk up, speech bubbles in the world', mount: (r: HTMLElement) => mountTalk(r, 'world') },
+  { key: 'H', name: 'Talk: from anywhere, bottom panel', mount: (r: HTMLElement) => mountTalk(r, 'panel') },
+  { key: 'I', name: 'Talk: walk up, transcript column', mount: (r: HTMLElement) => mountTalk(r, 'log') },
 ];
 const params = new URLSearchParams(location.search);
 let i = Math.max(0, VARIANTS.findIndex((v) => v.key === (params.get('variant') ?? 'A')));

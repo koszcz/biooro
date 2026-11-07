@@ -48,6 +48,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [What helps a Faction](issues/21-what-helps-a-faction.md): a Task choice helps whichever Faction the real work serves. Faking and Ryszard help nobody, and Wiola helps the Task side. Kamil always helps the Paper Trail: he does its Tasks and flips unsided ones. Fallout uses the same table.
 - [End-of-day order and Firing priority](issues/22-end-of-day-order-and-firing-priority.md): fixed morning and end-of-day step lists with one Firing check at the end of the night. Friday runs the end-of-day steps before the audit. Ties go Performance, Launch Team, Paper Trail, Sanity. A "Go home" button ends the day early.
 - [How often the Intern can talk](issues/23-how-often-the-intern-can-talk.md): each Colleague offers one Conversation a day, and Bosses have none outside scripted scenes. A Conversation changes at most one non-Performance Pressure by 1, never below 1, and never counts as helping. Otherwise a click shows a tier-varied brush-off.
+- [Conversation interface](issues/24-conversation-interface.md): click a person to talk. The Intern walks up first. Lines are Faction-coloured speech bubbles over the speaker, revealed at 45 characters a second. Choices are numbered bubbles over the Intern, with effects hidden. "…" badges show who can still talk, and brush-offs are short fading bubbles. Scripted scenes add letterbox bars.
 
 ## Not yet specified
 

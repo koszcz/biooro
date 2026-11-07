@@ -252,6 +252,7 @@ let sitOn: (typeof chairs)[number] | null = null;
 let seated = false;
 const SPEED = 2.4;
 let marker: THREE.Mesh;
+let arrived: (() => void) | null = null;
 
 function cellOf(p: THREE.Vector3): Cell { return [Math.floor(p.x), Math.floor(p.z)]; }
 function walkTo(goal: Cell, chair: (typeof chairs)[number] | null = null) {
@@ -278,6 +279,7 @@ function updateIntern(dt: number) {
   if (dist <= step) { p.copy(next); path.shift(); } else p.addScaledVector(to.normalize(), step);
   if (!path.length) {
     marker.visible = false;
+    arrived?.(); arrived = null;
     if (sitOn) {
       seated = true;
       intern.root.rotation.y = sitOn.rot + Math.PI; // face the desk
@@ -293,8 +295,14 @@ function updateIntern(dt: number) {
 const ray = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (hooks.locked) return;
   mouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
   ray.setFromCamera(mouse, camera);
+  const actors = actorMap();
+  for (const [who, a] of Object.entries(actors) as [Who, Actor][]) {
+    if (who === 'intern' || !a) continue;
+    if (ray.intersectObject(a.root, true).length && hooks.onActorClick) { hooks.onActorClick(who); return; }
+  }
   const hit = ray.intersectObjects(clickables, true)[0];
   if (!hit) return;
   let o: THREE.Object3D | null = hit.object;
@@ -309,6 +317,18 @@ renderer.domElement.addEventListener('pointerdown', (e) => {
     const c = cellOf(hit.point);
     if (!blocked.has(key(c))) walkTo(c);
   }
+});
+// Hover: pointer cursor over people, and tell the UI who is under the mouse.
+let hovered: Who | null = null;
+renderer.domElement.addEventListener('pointermove', (e) => {
+  mouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(mouse, camera);
+  let hit: Who | null = null;
+  if (!hooks.locked && intern) for (const [who, a] of Object.entries(actorMap()) as [Who, Actor][]) {
+    if (who !== 'intern' && a && ray.intersectObject(a.root, true).length) { hit = who; break; }
+  }
+  renderer.domElement.style.cursor = hit ? 'pointer' : '';
+  if (hit !== hovered) { hovered = hit; hooks.onActorHover?.(hit); }
 });
 renderer.domElement.addEventListener('wheel', (e) => { zoomMul = THREE.MathUtils.clamp(zoomMul * (e.deltaY > 0 ? 0.9 : 1.1), 0.5, 3); placeCamera(); });
 addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); placeCamera(); });
@@ -408,4 +428,38 @@ export function screenPos(who: Who): { x: number; y: number } | null {
   const v = a.root.position.clone(); v.y += 0.95;
   v.project(camera);
   return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight };
+}
+
+// ---------- conversation hooks (ticket "Conversation interface") ----------
+export const hooks: { locked: boolean; onActorClick: ((who: Who) => void) | null; onActorHover?: (who: Who | null) => void } = { locked: false, onActorClick: null };
+function actorMap(): Record<Who, Actor> { return { intern, zbigniew: boss, ryszard: colleague, halina, wiola, kamil }; }
+/** Walk the Intern to a free cell next to `who`, then face them. Resolves on arrival. */
+export function walkNear(who: Who): Promise<void> {
+  const a = actorMap()[who].root, me = intern.root;
+  const target = cellOf(a.position), here = cellOf(me.position);
+  const face = () => { me.rotation.y = Math.atan2(a.position.x - me.position.x, a.position.z - me.position.z); };
+  const near = (c: Cell) => Math.max(Math.abs(c[0] - target[0]), Math.abs(c[1] - target[1])) <= 1;
+  // Head for the person's own cell and stop at the first cell beside them, so the Intern never
+  // walks past them to a "closer" cell on the far side.
+  const wasBlocked = blocked.delete(key(target)); // a person may stand on a blocked cell
+  const route = astar(here, target);
+  if (wasBlocked) blocked.add(key(target));
+  const stop = route.find((c) => near(c) && key(c) !== key(target));
+  if (!stop || key(stop) === key(here)) { face(); return Promise.resolve(); }
+  return new Promise((res) => {
+    walkTo(stop);
+    if (!path.length) { face(); res(); return; }
+    arrived = () => { face(); res(); };
+  });
+}
+/** Turn `who` to face the Intern. Returns a function that turns them back. */
+export function faceIntern(who: Who): () => void {
+  const a = actorMap()[who].root, me = intern.root.position;
+  const before = a.rotation.y;
+  a.rotation.y = Math.atan2(me.x - a.position.x, me.z - a.position.z);
+  return () => { a.rotation.y = before; };
+}
+export function internDistance(who: Who) {
+  const a = actorMap()[who].root.position, b = intern.root.position;
+  return Math.hypot(a.x - b.x, a.z - b.z);
 }
