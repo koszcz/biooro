@@ -39,6 +39,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [Crowded Task bubbles](issues/12-crowded-task-bubbles.md): with 3 or more Tasks, a person shows their two most urgent bubbles and a "+N more" pill that opens a list. The popover flips sides at the edge and never covers the gauges or hours.
 - [Character and art direction](issues/13-character-and-art-direction.md): faction-coloured vests plus one prop each (teal Launch Team, manila Paper Trail), an orange Intern with ring and marker, three rooms off one corridor with low inner walls, and a palette that greys with Escalation.
 - [Audio](issues/14-audio.md): one muzak loop with three Escalation variants, a few CC0 effects, per-character gibberish blips, one mute button, and a raw Web Audio module in `src/audio/` that listens to the typed events.
+- [Save and load](issues/15-save-and-load.md): one `localStorage` slot plus a settings record. It autosaves after every Task choice, Break, and Ink choice. A Firing offers "Retry this day" or "Start over". A version mismatch discards the save.
 
 ## Not yet specified
 
