@@ -1,6 +1,6 @@
 # Title screen and scripted scenes
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 09, 12
 
 ## What to build
@@ -28,3 +28,7 @@ Wrap the week in its scenes, so it plays from the title screen to the end. Use p
 - [6. Screen and interface](../../intern-game/spec.md#6-screen-and-interface): "Scripted scenes" and "After a Firing".
 - [5. The week](../../intern-game/spec.md#5-the-week): "Friday", "The Friday audit", "Firings" and "Surviving the week".
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "Boot".
+
+## Comments
+
+Built on branch ticket-13, merged into intern-game-build at 07c55e4. Browser check was partial: bubbles, letterbox and the walk-up were not seen; the full week passes in tests only. Choices where the spec is silent: `hoursChanged` to 0 queues the audit phase check; the audit answer applies after its scene ends, read from `#audit:` choice tags; an `onboarded` flag makes Continue replay the onboarding; Pan Zbigniew is the main person for the Sanity Firing and equal survival; New game confirms only when a save exists; no day card on Monday; a Start over card shows after survival; the finished-week rule moved into autosave and SAVE_VERSION is 2. Placeholder text for the user's review: src/story/scenes.ink and src/locales/en/scenes.ts.
