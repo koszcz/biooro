@@ -15,8 +15,8 @@ export const SPEAKER_NAMES: Record<CastId | "intern" | "headOffice", string> = {
 
 /** The label under a person's head when the pointer is over them. */
 export const HOVER_LABELS = {
-  talk: (name: string) => `💬 Talk to ${name}`,
-  talked: (name: string) => `${name} · talked today`,
+  available: (name: string) => `💬 Talk to ${name}`,
+  held: (name: string) => `${name} · talked today`,
   boss: (name: string) => `${name} · busy (Boss)`,
 } as const;
 

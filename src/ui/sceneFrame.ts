@@ -15,7 +15,7 @@ const SCENE_CSS = `
 .scene-bar.top{top:0;transform:translateY(-100%)}
 .scene-bar.bottom{bottom:0;transform:translateY(100%)}
 [data-scene] .scene-bar{transform:translateY(0)}
-[data-scene] .hud,[data-scene] .talk-badge,[data-scene] .talk-hover{display:none!important}
+[data-scene] .hud,[data-scene] .conversation-badge,[data-scene] .conversation-hover{display:none!important}
 `;
 
 export function mountSceneFrame(container: HTMLElement): SceneFrame {

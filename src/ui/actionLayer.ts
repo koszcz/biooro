@@ -4,10 +4,10 @@ import { ASSIGNER_NAMES, actionText, HAND_OFF_LINES } from "../locales/index";
 import type { ColleagueId } from "../rules/index";
 import type { ActionTag, Float } from "./acting";
 import type { HeadLocator } from "./bubbles";
+import { type RevealListener, typeLine } from "./conversationText";
 import { el } from "./dom";
 import type { BubbleOwner } from "./hudView";
 import { PRESSURE_COLOURS } from "./styles";
-import { type RevealListener, typeLine } from "./talkText";
 
 const SPARKLE_MS = 1600;
 const SAY_MS = 1800;

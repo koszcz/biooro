@@ -8,10 +8,10 @@ import type { Dialogue, DialogueChoice, DialogueLine } from "./bridge";
 export type Speaker = CastId | "intern" | "headOffice";
 
 /** What a click on a person offers: a Conversation, a brush-off after it, or a Boss's brush-off. */
-export type Availability = "talk" | "talked" | "boss";
+export type Availability = "available" | "held" | "boss";
 
 /** The DOM side of a Conversation. Each promise resolves when the player moves on. */
-export interface TalkView {
+export interface ConversationView {
   say(speaker: Speaker, text: string): Promise<void>;
   /** Shows the choices and resolves with the index the player picks. */
   choose(choices: readonly string[]): Promise<number>;
@@ -21,7 +21,7 @@ export interface TalkView {
 }
 
 /** The office side of a Conversation. */
-export interface TalkStage {
+export interface ConversationStage {
   /** Walks the Intern to the first free cell beside the person. Clicks on the office do nothing until the Conversation ends. */
   walkBeside(person: CastId): Promise<void>;
   /** Turns the two to face each other. Returns a function that turns the person back. */
@@ -53,8 +53,8 @@ export class Conversations {
   constructor(
     private readonly store: GameStore,
     private readonly dialogue: Dialogue,
-    private readonly stage: TalkStage,
-    private readonly view: TalkView,
+    private readonly stage: ConversationStage,
+    private readonly view: ConversationView,
   ) {}
 
   /** True from the click on a Colleague until their Conversation ends. */
@@ -66,14 +66,14 @@ export class Conversations {
   availability(person: CastId): Availability {
     if (!isColleague(person)) return "boss";
     const { talkedToday, day } = this.store.state;
-    if (talkedToday.includes(person) || !this.dialogue.hasKnot(conversationKnot(person, day))) return "talked";
-    return "talk";
+    if (talkedToday.includes(person) || !this.dialogue.hasKnot(conversationKnot(person, day))) return "held";
+    return "available";
   }
 
   /** Locks input at the click and walks the Intern over. The Conversation starts on arrival. Resolves when it ends. */
   async click(person: CastId): Promise<void> {
     if (this.running || this.dialogue.active || this.store.state.phase.kind !== "workday") return;
-    if (this.availability(person) !== "talk" || !isColleague(person)) {
+    if (this.availability(person) !== "available" || !isColleague(person)) {
       const [line] = this.dialogue.readLines(brushOffKnot(person));
       if (line) this.view.brushOff(person, line.text);
       return;
@@ -99,7 +99,7 @@ export class Conversations {
  */
 export async function playDialogue(
   dialogue: Dialogue,
-  view: TalkView,
+  view: ConversationView,
   partner: CastId,
   picked: (choice: DialogueChoice) => void = () => {},
 ): Promise<void> {

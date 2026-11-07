@@ -7,11 +7,11 @@ import { loadModels, startOfficeScene } from "./scene/index";
 import { createSettings, createStore, hasSave } from "./store/index";
 import { story } from "./story/index";
 import {
+  mountConversations,
   mountDebugPanel,
   mountGameUi,
   mountMuteButton,
   mountSceneFrame,
-  mountTalk,
   type RevealListener,
   showLoadingScreen,
 } from "./ui/index";
@@ -33,10 +33,10 @@ const office = startOfficeScene(container, models, store, tierOf(store.state.esc
 const blip: RevealListener = (speaker, text, from, to) => audio.blip(speaker, blipsBetween(text, from, to));
 mountGameUi(container, store, office.headAt, office.onActionCue, blip);
 mountMuteButton(container, audio);
-const talk = mountTalk(container, office, store, blip);
-const conversations = new Conversations(store, dialogue, office, talk.view);
-talk.connect((person) => conversations.availability(person));
-const scenes = new Scenes(store, dialogue, office, talk.view, mountSceneFrame(container));
+const overlay = mountConversations(container, office, store, blip);
+const conversations = new Conversations(store, dialogue, office, overlay.view);
+overlay.connect((person) => conversations.availability(person));
+const scenes = new Scenes(store, dialogue, office, overlay.view, mountSceneFrame(container));
 office.onPersonClick((person) => {
   if (!scenes.playing) void conversations.click(person);
 });

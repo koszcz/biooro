@@ -3,7 +3,7 @@ import type { CastId } from "../content/index";
 import type { AuditAnswer, Pressure, SurvivalVariant } from "../rules/index";
 import type { GameStore } from "../store/index";
 import type { Dialogue, DialogueChoice } from "./bridge";
-import { playDialogue, type TalkStage, type TalkView } from "./conversations";
+import { type ConversationStage, type ConversationView, playDialogue } from "./conversations";
 
 export type ScriptedScene =
   | { kind: "onboarding" }
@@ -79,8 +79,8 @@ export class Scenes {
   constructor(
     private readonly store: GameStore,
     private readonly dialogue: Dialogue,
-    private readonly stage: TalkStage,
-    private readonly view: TalkView,
+    private readonly stage: ConversationStage,
+    private readonly view: ConversationView,
     private readonly frame: SceneFrame,
   ) {
     store.on("dayStarted", () => this.queueOnboarding());

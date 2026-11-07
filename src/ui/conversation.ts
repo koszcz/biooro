@@ -1,15 +1,15 @@
-// The Conversation overlay: speech bubbles, choices and brush-offs, plus the marks in talkMarks.ts.
+// The Conversation overlay: speech bubbles, choices and brush-offs, plus the marks in conversationMarks.ts.
 import type { CastId } from "../content/index";
-import type { Availability, Speaker, TalkView } from "../dialogue/index";
+import type { Availability, ConversationView, Speaker } from "../dialogue/index";
 import { SPEAKER_NAMES } from "../locales/index";
 import type { GameStore } from "../store/index";
-import { createTalkLayer, element, type TalkOffice } from "./talkLayer";
-import { mountTalkMarks } from "./talkMarks";
-import { BRUSH_OFF_MS, SPEAKER_COLOURS } from "./talkStyles";
-import { type RevealListener, typeLine } from "./talkText";
+import { type ConversationOffice, createConversationLayer, element } from "./conversationLayer";
+import { mountConversationMarks } from "./conversationMarks";
+import { BRUSH_OFF_MS, SPEAKER_COLOURS } from "./conversationStyles";
+import { type RevealListener, typeLine } from "./conversationText";
 
-export interface TalkOverlay {
-  readonly view: TalkView;
+export interface ConversationOverlay {
+  readonly view: ConversationView;
   /** Connects the overlay to whatever knows who still has a Conversation today. */
   connect(availability: (person: CastId) => Availability): void;
 }
@@ -40,17 +40,17 @@ function reveal(target: HTMLElement, text: string, onShown?: (from: number, to: 
   });
 }
 
-export function mountTalk(
+export function mountConversations(
   container: HTMLElement,
-  office: TalkOffice,
+  office: ConversationOffice,
   store: GameStore,
   onReveal?: RevealListener,
-): TalkOverlay {
-  const layer = createTalkLayer(container, office);
-  const connect = mountTalkMarks(container, layer, office, store);
+): ConversationOverlay {
+  const layer = createConversationLayer(container, office);
+  const connect = mountConversationMarks(container, layer, office, store);
 
   const bubble = (speaker: Speaker, extra = "") => {
-    const el = element("div", `talk-say${extra}`, SPEAKER_COLOURS[speaker]);
+    const el = element("div", `conversation-say${extra}`, SPEAKER_COLOURS[speaker]);
     const name = element("b", "");
     name.textContent = SPEAKER_NAMES[speaker];
     el.append(name);
@@ -62,7 +62,7 @@ export function mountTalk(
   };
 
   let brushOff: HTMLElement | undefined;
-  const view: TalkView = {
+  const view: ConversationView = {
     async say(speaker, text) {
       const el = bubble(speaker, speaker === "headOffice" ? " head-office" : "");
       const body = element("span", "text");
@@ -72,7 +72,7 @@ export function mountTalk(
       layer.remove(el);
     },
     choose(choices) {
-      const list = element("div", "talk-choices");
+      const list = element("div", "conversation-choices");
       const buttons = choices.map((text, index) => {
         const button = document.createElement("button");
         const number = document.createElement("i");

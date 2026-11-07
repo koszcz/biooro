@@ -4,7 +4,7 @@ import type { GameState } from "../rules/index";
 import { createStore, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
-import type { Speaker, TalkStage, TalkView } from "./conversations";
+import type { ConversationStage, ConversationView, Speaker } from "./conversations";
 import { type SceneFrame, Scenes, type ScriptedScene } from "./scenes";
 
 function memoryStorage(): SaveStorage {
@@ -17,7 +17,7 @@ function memoryStorage(): SaveStorage {
 }
 
 /** A view that reads every line at once. At each choice it picks the one whose text contains `pick`. */
-class FakeView implements TalkView {
+class FakeView implements ConversationView {
   readonly shown: string[] = [];
   pick = "";
 
@@ -37,7 +37,7 @@ class FakeView implements TalkView {
   approach(): void {}
 }
 
-class FakeStage implements TalkStage {
+class FakeStage implements ConversationStage {
   readonly moves: string[] = [];
 
   async walkBeside(person: CastId): Promise<void> {

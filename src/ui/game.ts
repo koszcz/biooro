@@ -6,13 +6,13 @@ import { createActing } from "./acting";
 import { ACTION_CSS, createActionLayer } from "./actionLayer";
 import { createBubbles, type HeadLocator } from "./bubbles";
 import { createCards } from "./cards";
+import type { RevealListener } from "./conversationText";
 import { el } from "./dom";
 import { createHud } from "./hud";
 import type { BubbleOwner, Preview } from "./hudView";
 import { createPlay } from "./play";
 import { createPopover } from "./popover";
 import { HUD_CSS } from "./styles";
-import type { RevealListener } from "./talkText";
 
 /** Every store event that changes what the HUD shows. */
 const REDRAW_ON: StoreEventType[] = [
@@ -156,7 +156,7 @@ export function mountGameUi(
     confirming = false;
     redraw();
   });
-  // A Conversation closes any open popover. The talk overlay's CSS fades and hides the bubbles.
+  // A Conversation closes any open popover. The Conversation overlay's CSS fades and hides the bubbles.
   store.on("conversationStarted", () => {
     confirming = false;
     popover.close();

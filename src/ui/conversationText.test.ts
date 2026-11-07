@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createLineReveal } from "./talkText";
+import { createLineReveal } from "./conversationText";
 
 describe("createLineReveal", () => {
   it("reveals a line at 45 characters a second and reports each newly shown stretch, up to the last character", () => {
