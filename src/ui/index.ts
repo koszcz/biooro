@@ -3,5 +3,6 @@
 export { mountDebugPanel } from "./debugPanel";
 export { type BubbleOwner, type HeadLocator, mountGameUi } from "./game";
 export { type LoadingScreen, showLoadingScreen } from "./loading";
-export { mountTalk, type TalkOverlay } from "./talk";
+export { mountMuteButton } from "./muteButton";
+export { mountTalk, type RevealListener, type TalkOverlay } from "./talk";
 export type { TalkOffice } from "./talkLayer";
