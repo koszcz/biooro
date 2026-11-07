@@ -1,8 +1,12 @@
 // PROTOTYPE, throwaway. The office scene from the office-look prototype, locked to the chosen look
 // (true isometric angle, low near-wall stubs). Its HUD and switcher are hidden. It exposes actor screen positions.
+// Carries the fixes and cast cues from the "Character and art direction" ticket (office-look/src/art.ts):
+// furniture centred on its cell, chairs pulled up to the desk, seated people lifted, bosses taller,
+// faction vests and props, and the Intern's orange vest, ring and arrow.
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 // ---------- variants ----------
 type Variant = { key: string; name: string; elevation: number; zoom: number; walls: 'back-only' | 'stubs' | 'fade'; rotatable: boolean };
@@ -140,23 +144,28 @@ function box(w: number, h: number, d: number, c: string) {
 }
 const sizeOf = (o: THREE.Object3D) => new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3());
 
-type Item = { kind: string; candidates: string[]; fallback: [number, number, number, string]; cell: [number, number]; rot: number; blocks: boolean };
+// ox/oz nudge a piece off its cell centre. snapN pushes it flat against the back wall.
+type Item = { kind: string; candidates: string[]; fallback: [number, number, number, string]; cell: [number, number]; rot: number; blocks: boolean; ox?: number; oz?: number; snapN?: boolean };
+// A desk is 0.73 by 0.39 units. A chair sits 0.42 units from the desk centre (art direction ticket).
+const SEAT_DZ = 0.42, SEAT_LIFT = 0.13, BOSS_SCALE = 1.12;
+const CHAIR_OZ = SEAT_DZ - 1; // chair cell is one row south of its desk
 const ITEMS: Item[] = [
   ...[2, 4, 6].flatMap((x): Item[] => [
     { kind: 'desk', candidates: ['desk'], fallback: [1, 0.75, 0.6, '#9b7653'], cell: [x, 2], rot: 0, blocks: true },
-    { kind: 'screen', candidates: ['computerScreen', 'screen'], fallback: [0.5, 0.35, 0.08, '#333'], cell: [x, 2], rot: 0, blocks: false },
-    { kind: 'chair', candidates: ['chairDesk', 'chair'], fallback: [0.5, 0.45, 0.5, '#456'], cell: [x, 3], rot: Math.PI, blocks: false },
+    { kind: 'screen', candidates: ['computerScreen', 'screen'], fallback: [0.5, 0.35, 0.08, '#333'], cell: [x, 2], rot: 0, blocks: false, oz: -0.08 },
+    { kind: 'keyboard', candidates: ['computerKeyboard'], fallback: [0.3, 0.02, 0.1, '#444'], cell: [x, 2], rot: 0, blocks: false, oz: 0.1 },
+    { kind: 'chair', candidates: ['chairDesk', 'chair'], fallback: [0.5, 0.45, 0.5, '#456'], cell: [x, 3], rot: Math.PI, blocks: false, oz: CHAIR_OZ },
   ]),
-  { kind: 'desk', candidates: ['deskCorner', 'desk'], fallback: [1.2, 0.75, 0.8, '#6d4c33'], cell: [8, 6], rot: Math.PI, blocks: true },
-  { kind: 'chair', candidates: ['chairDesk', 'chair'], fallback: [0.5, 0.45, 0.5, '#644'], cell: [8, 7], rot: 0, blocks: false },
+  { kind: 'desk', candidates: ['deskCorner', 'desk'], fallback: [1.2, 0.75, 0.8, '#6d4c33'], cell: [8, 6], rot: 0, blocks: true },
+  { kind: 'chair', candidates: ['chairDesk', 'chair'], fallback: [0.5, 0.45, 0.5, '#644'], cell: [8, 7], rot: Math.PI, blocks: false, oz: -0.5 },
   { kind: 'toilet', candidates: ['toilet'], fallback: [0.45, 0.5, 0.65, '#f4f4f4'], cell: [1, 6], rot: Math.PI / 2, blocks: true },
   { kind: 'toilet', candidates: ['toiletSquare', 'toilet'], fallback: [0.45, 0.5, 0.65, '#f4f4f4'], cell: [1, 7], rot: Math.PI / 2, blocks: true },
   { kind: 'sink', candidates: ['bathroomSink', 'sink'], fallback: [0.5, 0.85, 0.4, '#e8e8e8'], cell: [0, 4], rot: Math.PI / 2, blocks: true },
   { kind: 'plant', candidates: ['pottedPlant', 'plant'], fallback: [0.4, 0.9, 0.4, '#4a7'], cell: [9, 0], rot: 0, blocks: true },
-  { kind: 'bookcase', candidates: ['bookcaseClosed', 'bookcase'], fallback: [1, 1.8, 0.4, '#8a6a4a'], cell: [0, 0], rot: 0, blocks: true },
+  { kind: 'bookcase', candidates: ['bookcaseClosed', 'bookcase'], fallback: [1, 1.8, 0.4, '#8a6a4a'], cell: [0, 0], rot: 0, blocks: true, snapN: true },
   { kind: 'trash', candidates: ['trashcan', 'trash'], fallback: [0.3, 0.4, 0.3, '#777'], cell: [7, 2], rot: 0, blocks: true },
   // ticket "How Task choices play out": the kits have no printer, so makePrinter() builds one from boxes.
-  { kind: 'printer', candidates: [], fallback: [0.7, 0.75, 0.55, '#c9ced6'], cell: [9, 4], rot: 0, blocks: true },
+  { kind: 'printer', candidates: [], fallback: [0.38, 0.45, 0.32, '#c9ced6'], cell: [9, 4], rot: 0, blocks: true },
 ];
 
 const blocked = new Set<string>();
@@ -167,13 +176,21 @@ async function buildFurniture() {
   for (const it of ITEMS) {
     const file = pickFile(manifest.furniture, it.candidates);
     let obj: THREE.Object3D;
-    if (file) { obj = (await loadGlb(`/kenney/furniture/${file}`)).scene; report[it.kind] ??= file; }
-    else if (it.kind === 'printer') { obj = makePrinter(); report.printer = 'built in code'; }
-    else { obj = box(...it.fallback); report[it.kind] ??= 'box stand-in'; }
-    obj.position.set(it.cell[0] + 0.5, it.kind === 'screen' ? sizeOfDeskTop() : 0, it.cell[1] + 0.5);
+    if (file) {
+      // Kenney furniture origins sit at a corner, so centre each piece on its cell and ground it.
+      const inner = (await loadGlb(`/kenney/furniture/${file}`)).scene;
+      const b = new THREE.Box3().setFromObject(inner), c = b.getCenter(new THREE.Vector3());
+      inner.position.set(-c.x, -b.min.y, -c.z);
+      obj = new THREE.Group(); obj.add(inner);
+      report[it.kind] ??= file;
+    } else if (it.kind === 'printer') { obj = makePrinter(); report.printer = 'built in code';
+    } else { obj = box(...it.fallback); report[it.kind] ??= 'box stand-in'; }
+    const onDesk = it.kind === 'screen' || it.kind === 'keyboard';
+    obj.position.set(it.cell[0] + 0.5 + (it.ox ?? 0), onDesk ? sizeOfDeskTop() : 0, it.cell[1] + 0.5 + (it.oz ?? 0));
     obj.rotation.y = it.rot;
     obj.userData.kind = it.kind;
     scene.add(obj);
+    if (it.snapN) { obj.updateMatrixWorld(true); obj.position.z += it.cell[1] + 0.03 - new THREE.Box3().setFromObject(obj).min.z; }
     if (it.blocks) blocked.add(it.cell.join(','));
     if (it.kind === 'chair') { chairs.push({ obj, cell: it.cell, rot: it.rot }); clickables.push(obj); }
     if (it.kind === 'desk' && !deskHeight) deskHeight = sizeOf(obj).y;
@@ -181,54 +198,98 @@ async function buildFurniture() {
   }
 }
 let deskHeight = 0, chairHeight = 0;
-/** A floor-standing office copier built from boxes, in the Kenney palette. The front faces +z, toward the camera.
- *  About 0.66 wide, 1.0 tall and 0.56 deep, so it sits beside the Kenney desks at native scale. */
+/** A floor-standing office copier, built from chamfered boxes to match the Kenney Furniture Kit.
+ *  It uses the kit's own materials (metal, metalMedium, metalDark, carpetWhite: linear colours, roughness 1)
+ *  and the size of the kit's washer, so it sits just above desk height. The front faces +z, toward the camera. */
 function makePrinter() {
   const g = new THREE.Group();
-  const part = (w: number, h: number, d: number, c: string, x: number, y: number, z: number, rx = 0) => {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), flat(c));
-    m.position.set(x, y, z); m.rotation.x = rx; m.castShadow = m.receiveShadow = true; g.add(m); return m;
+  const kit = (r: number, gr: number, b: number) => new THREE.MeshStandardMaterial({ color: new THREE.Color().setRGB(r, gr, b, THREE.LinearSRGBColorSpace), roughness: 1, metalness: 0, flatShading: true });
+  const metal = kit(0.741, 0.823, 0.84), metalMedium = kit(0.369, 0.467, 0.467), metalDark = kit(0.31, 0.39, 0.39), white = kit(0.973, 1, 1);
+  const part = (w: number, h: number, d: number, m: THREE.Material, x: number, y: number, z: number, bevel = 0.012, rx = 0) => {
+    const geo = bevel ? new RoundedBoxGeometry(w, h, d, 1, Math.min(bevel, h / 2 - 0.001)) : new THREE.BoxGeometry(w, h, d);
+    const mesh = new THREE.Mesh(geo, m);
+    mesh.position.set(x, y, z); mesh.rotation.x = rx; mesh.castShadow = mesh.receiveShadow = true; g.add(mesh);
   };
-  part(0.66, 0.06, 0.54, '#3a3f48', 0, 0.03, 0);           // plinth
-  part(0.62, 0.5, 0.52, '#aeb4bc', 0, 0.31, 0);            // paper cabinet
-  for (const y of [0.2, 0.42]) {                             // two paper drawers
-    part(0.56, 0.005, 0.01, '#6b717a', 0, y + 0.1, 0.262);
-    part(0.16, 0.03, 0.03, '#3a3f48', 0, y, 0.27);           // drawer handle
-  }
-  part(0.62, 0.3, 0.52, '#e3e6ea', 0, 0.71, 0);            // print engine
-  part(0.5, 0.03, 0.04, '#2b2f36', -0.02, 0.66, 0.26);     // output slot
-  part(0.36, 0.012, 0.22, '#ffffff', -0.02, 0.665, 0.33, -0.12); // a sheet half out of the slot
-  part(0.66, 0.06, 0.56, '#cdd2d8', 0, 0.89, 0);           // scanner lid
-  part(0.24, 0.04, 0.12, '#3a3f48', 0.2, 0.93, 0.2, -0.35); // control panel
-  const led = part(0.03, 0.012, 0.03, '#4ade80', 0.27, 0.955, 0.24, -0.35);
-  (led.material as THREE.MeshStandardMaterial).emissive = new THREE.Color('#22c55e');
-  part(0.08, 0.04, 0.03, '#f59e0b', 0.15, 0.955, 0.24, -0.35); // the "jam" warning light
+  part(0.34, 0.03, 0.28, metalDark, 0, 0.015, 0, 0);          // plinth, set in
+  part(0.38, 0.27, 0.32, metal, 0, 0.165, 0);                  // paper cabinet
+  part(0.34, 0.006, 0.006, metalDark, 0, 0.165, 0.161, 0);     // gap between the two drawers
+  for (const y of [0.1, 0.235]) part(0.1, 0.016, 0.014, metalDark, 0, y, 0.163, 0.004); // drawer handles
+  part(0.38, 0.12, 0.32, metal, 0, 0.36, 0);                   // print engine
+  part(0.28, 0.022, 0.01, metalDark, 0, 0.345, 0.158, 0);      // output slot
+  part(0.2, 0.006, 0.1, white, 0, 0.338, 0.195, 0, -0.08);     // a sheet half out of the slot
+  part(0.38, 0.03, 0.32, metalMedium, 0, 0.435, 0);            // scanner lid
+  part(0.12, 0.02, 0.07, metalDark, 0.11, 0.455, 0.1, 0.006); // control panel
   return g;
 }
 const sizeOfDeskTop = () => deskHeight || 0.75;
 
 // ---------- characters ----------
-type Actor = { root: THREE.Object3D; mixer?: THREE.AnimationMixer; clips: THREE.AnimationClip[]; current?: THREE.AnimationAction; height: number };
+type Actor = { root: THREE.Object3D; model?: THREE.Object3D; mixer?: THREE.AnimationMixer; clips: THREE.AnimationClip[]; current?: THREE.AnimationAction; height: number; base: number };
 let intern: Actor;
 let charScale = Number(params.get('charScale') ?? 1);
 
-async function makeActor(fileIndex: number, color: string): Promise<Actor> {
-  const files = manifest.characters.filter((f) => !/texture|colormap/i.test(f));
-  const file = files[fileIndex % Math.max(1, files.length)];
+// Each cast member has a fixed base model (art direction ticket), so skin, hair and outfit differ.
+async function makeActor(name: string, color: string, base = 1): Promise<Actor> {
+  const file = pickFile(manifest.characters, [name]);
   if (file) {
     const g = await loadGlb(`/kenney/characters/${file}`);
     const root = new THREE.Group(); root.add(g.scene);
-    report[`character ${fileIndex}`] = file;
-    const a: Actor = { root, clips: g.animations, mixer: new THREE.AnimationMixer(g.scene), height: sizeOf(g.scene).y };
+    report[name] = file;
+    const a: Actor = { root, model: g.scene, clips: g.animations, mixer: new THREE.AnimationMixer(g.scene), height: sizeOf(g.scene).y, base };
     return a;
   }
   const root = new THREE.Group();
   const body = box(0.35, 0.9, 0.25, color); root.add(body);
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.17, 8, 6), flat('#f0c8a0'));
   head.position.y = 1.07; head.castShadow = true; root.add(head);
-  report[`character ${fileIndex}`] = 'box stand-in';
-  return { root, clips: [], height: 1.24 };
+  report[name] = 'box stand-in';
+  return { root, clips: [], height: 1.24, base };
 }
+
+// ---------- cast cues (art direction ticket) ----------
+const FACTION = { launch: { color: '#18b6c8', trim: '#0b6f7a' }, paper: { color: '#c9ab6b', trim: '#7a6a45' } } as const;
+const INTERN_ORANGE = '#ff7a1a';
+const cueMat = (c: string, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) => new THREE.MeshStandardMaterial({ color: c, flatShading: true, roughness: 0.8, ...extra });
+function bone(a: Actor, name: string) { let b: THREE.Object3D | undefined; a.model?.traverse((o) => { if (o.name === name) b = o; }); return b; }
+function addPart(parent: THREE.Object3D | undefined, geo: THREE.BufferGeometry, color: string, pos: [number, number, number], extra = {}) {
+  if (!parent) return;
+  const m = new THREE.Mesh(geo, cueMat(color, extra)); m.position.set(...pos); m.castShadow = true; parent.add(m); return m;
+}
+// Torso bone sits at the hip, so offsets are in torso-local space.
+function vest(a: Actor, color: string, stripe?: string) {
+  const t = bone(a, 'torso');
+  addPart(t, new THREE.BoxGeometry(0.3, 0.19, 0.32), color, [0, 0.09, -0.02]);
+  if (stripe) addPart(t, new THREE.BoxGeometry(0.31, 0.03, 0.33), stripe, [0, 0.07, -0.02]);
+}
+function lanyard(a: Actor, color: string, badge: string) {
+  const t = bone(a, 'torso');
+  addPart(t, new THREE.BoxGeometry(0.03, 0.14, 0.01), color, [0, 0.2, 0.115]);
+  addPart(t, new THREE.BoxGeometry(0.09, 0.1, 0.012), badge, [0, 0.11, 0.12]);
+}
+function folder(a: Actor, color: string) {
+  const arm = bone(a, 'arm-right');
+  addPart(arm, new THREE.BoxGeometry(0.14, 0.02, 0.2), color, [-0.03, -0.12, 0.1]);
+  addPart(arm, new THREE.BoxGeometry(0.1, 0.022, 0.08), '#c23b3b', [-0.03, -0.12, 0.03]);
+}
+function necktie(a: Actor, color: string) { addPart(bone(a, 'torso'), new THREE.BoxGeometry(0.05, 0.16, 0.014), color, [0, 0.14, 0.12]); }
+const blinkers: THREE.Mesh[] = [];
+function recorder(a: Actor) { // Teczka's red "recording" light
+  const led = addPart(bone(a, 'torso'), new THREE.SphereGeometry(0.025, 8, 6), '#ff2020', [0.07, 0.2, 0.125], { emissive: '#ff0000', emissiveIntensity: 2 });
+  if (led) blinkers.push(led);
+}
+async function glasses(a: Actor, which: string) {
+  const file = pickFile(manifest.characters, [which]); const h = bone(a, 'head');
+  if (!file || !h) return;
+  const g = (await loadGlb(`/kenney/characters/${file}`)).scene; g.position.set(0, 0, 0.05); h.add(g);
+}
+let internArrow: THREE.Mesh | undefined;
+function internHighlight(a: Actor) {
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.38, 28), new THREE.MeshBasicMaterial({ color: INTERN_ORANGE, side: THREE.DoubleSide }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.012; ring.raycast = () => {}; a.root.add(ring);
+  internArrow = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.2, 4), new THREE.MeshBasicMaterial({ color: INTERN_ORANGE }));
+  internArrow.rotation.x = Math.PI; internArrow.position.y = 1.1; internArrow.raycast = () => {}; a.root.add(internArrow);
+}
+const setScale = (a: Actor) => a.root.scale.setScalar(a.base * charScale);
 function play(a: Actor, pattern: RegExp) {
   if (!a.mixer) return;
   const clip = a.clips.find((c) => pattern.test(c.name));
@@ -290,7 +351,7 @@ function walkTo(goal: Cell, chair: (typeof chairs)[number] | null = null) {
   seated = false;
   intern.root.position.y = 0;
   path = cells.slice(1).map((c) => new THREE.Vector3(c[0] + 0.5, 0, c[1] + 0.5));
-  if (chair) path.push(new THREE.Vector3(chair.cell[0] + 0.5, 0, chair.cell[1] + 0.5));
+  if (chair) path.push(new THREE.Vector3(chair.obj.position.x, 0, chair.obj.position.z));
   sitOn = chair;
   marker.position.set(goal[0] + 0.5, 0.01, goal[1] + 0.5);
   marker.visible = true;
@@ -310,10 +371,10 @@ function updateIntern(dt: number) {
     arrived?.(); arrived = null;
     if (sitOn) {
       seated = true;
-      intern.root.rotation.y = sitOn.rot + Math.PI; // face the desk
-      // Raise to seat height only if there is no sit clip to do it for us.
+      intern.root.rotation.y = sitOn.rot; // a chair faces its desk, so sit the way it faces
+      // The sit clip sits low, so lift a little to sit tall at the desk (art direction ticket).
       const hasSit = intern.clips.some((c) => /sit/i.test(c.name));
-      intern.root.position.y = hasSit ? 0 : (chairHeight || 0.45) * 0.45;
+      intern.root.position.y = hasSit ? SEAT_LIFT : (chairHeight || 0.45) * 0.45;
       play(intern, /sit/i);
     } else play(intern, /idle/i);
   }
@@ -408,7 +469,7 @@ function renderHud() {
     <div style="color:#666;margin-top:4px">Assets: ${Object.entries(report).map(([k, v]) => `${k}=${v}`).join(', ')}</div>`;
   (hud.querySelector('#cs') as HTMLInputElement).oninput = (e) => {
     charScale = Number((e.target as HTMLInputElement).value);
-    intern.root.scale.setScalar(charScale); colleague.root.scale.setScalar(charScale); boss.root.scale.setScalar(charScale);
+    for (const a of [intern, colleague, boss, halina, wiola, kamil]) setScale(a);
   };
   hud.querySelectorAll<HTMLButtonElement>('button[data-clip]').forEach((b) => (b.onclick = () => {
     const c = intern.clips[Number(b.dataset.clip)];
@@ -421,16 +482,23 @@ let colleague: Actor, boss: Actor, halina: Actor, wiola: Actor, kamil: Actor;
 async function boot() {
   try { manifest = await (await fetch('/kenney/manifest.json')).json(); } catch { /* boxes */ }
   await buildFurniture();
-  intern = await makeActor(0, '#e8a33d');
-  colleague = await makeActor(1, '#5a8fd6');
-  boss = await makeActor(2, '#8c3b3b');
-  halina = await makeActor(7, '#7a5aa8'); wiola = await makeActor(4, '#4aa86a'); kamil = await makeActor(9, '#a8864a');
+  intern = await makeActor('character-male-c', '#e8a33d');
+  colleague = await makeActor('character-male-a', '#5a8fd6'); // Ryszard Szablon
+  boss = await makeActor('character-male-d', '#8c3b3b', BOSS_SCALE); // Pan Zbigniew Pogodny
+  halina = await makeActor('character-female-e', '#7a5aa8', BOSS_SCALE); // Pani Halina Teczka
+  wiola = await makeActor('character-female-b', '#4aa86a'); kamil = await makeActor('character-male-f', '#a8864a');
+  vest(intern, INTERN_ORANGE, '#ffffff'); internHighlight(intern);
+  for (const a of [boss, colleague, wiola]) { vest(a, FACTION.launch.color); lanyard(a, '#ffffff', FACTION.launch.trim); }
+  necktie(boss, '#0b3d44');
+  for (const a of [halina, kamil]) { vest(a, FACTION.paper.color); folder(a, '#e2c67e'); }
+  await glasses(halina, 'aid-glasses'); recorder(halina);
+  await glasses(kamil, 'aid-sunglasses');
   halina.root.position.set(1.5, 0, 2.5); wiola.root.position.set(2.5, 0, 4.5); kamil.root.position.set(3.5, 0, 6.5);
   halina.root.rotation.y = Math.PI / 2; kamil.root.rotation.y = Math.PI;
   intern.root.position.set(4.5, 0, 5.5);
   colleague.root.position.set(6.5, 0, 5.5); colleague.root.rotation.y = -Math.PI / 2;
   boss.root.position.set(8.5, 0, 7.5); boss.root.rotation.y = Math.PI;
-  for (const a of [intern, colleague, boss, halina, wiola, kamil]) { a.root.scale.setScalar(charScale); scene.add(a.root); play(a, /idle/i); homes.set(a, { pos: a.root.position.clone(), rot: a.root.rotation.y }); }
+  for (const a of [intern, colleague, boss, halina, wiola, kamil]) { setScale(a); scene.add(a.root); play(a, /idle/i); homes.set(a, { pos: a.root.position.clone(), rot: a.root.rotation.y }); }
   marker = new THREE.Mesh(new THREE.RingGeometry(0.25, 0.35, 24), new THREE.MeshBasicMaterial({ color: '#ff2bd6' }));
   marker.rotation.x = -Math.PI / 2; marker.visible = false; scene.add(marker);
   setVariant(vIndex);
@@ -443,6 +511,9 @@ async function boot() {
     updateNpcs(dt);
     fadeWalls(dt);
     for (const a of [intern, colleague, boss, halina, wiola, kamil]) a.mixer?.update(dt);
+    const t = clock.elapsedTime;
+    if (internArrow) internArrow.position.y = 1.1 + Math.sin(t * 4) * 0.05;
+    for (const b of blinkers) (b.material as THREE.MeshStandardMaterial).emissiveIntensity = Math.sin(t * 6) > 0 ? 2.5 : 0.2;
     onFrame.forEach((f) => f());
     renderer.render(scene, camera);
   });
