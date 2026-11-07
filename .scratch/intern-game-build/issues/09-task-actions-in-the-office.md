@@ -1,6 +1,6 @@
 # Task actions in the office
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 08
 
 ## What to build
@@ -27,3 +27,7 @@ Replace the instant Task choice with the action the spec describes. The scene no
 
 - [6. Screen and interface](../../intern-game/spec.md#6-screen-and-interface): "How Task choices play out".
 - Prototype: `prototype/pressures-ui`, `?variant=J`.
+
+## Comments
+
+Built on branch ticket-09, merged into intern-game-build at c52ec5a. Task actions also lock the office input that Conversations added. The hand-off bubble is covered by tests but was not seen in the browser. The HUD wiring fixes in src/ui/game.ts have no unit tests; they were checked in the browser only.
