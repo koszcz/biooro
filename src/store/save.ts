@@ -2,7 +2,7 @@
 import type { GameState } from "../rules/index";
 
 /** Bump this whenever a `.ink` file or the shape of the save record changes. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SAVE_KEY = "biooro.save";
 export const SETTINGS_KEY = "biooro.settings";
 
@@ -66,4 +66,9 @@ export function readSettings(storage: SaveStorage): Settings {
 
 export function writeSettings(storage: SaveStorage, settings: Settings): void {
   storage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+/** True when the slot holds a save that Continue can try to load. */
+export function hasSave(storage: SaveStorage): boolean {
+  return readSave(storage) !== null;
 }

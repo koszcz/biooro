@@ -1,7 +1,12 @@
-// The loading screen shown while every GLB loads at boot.
+// The loading screen shown while every GLB loads at boot. When loading ends, it turns into the title screen.
 import { loadingText } from "../locales";
+import { showTitle, type TitleChoice, type TitleOptions } from "./title";
 
-export type LoadingScreen = { setProgress(share: number): void; close(): void };
+export type LoadingScreen = {
+  setProgress(share: number): void;
+  /** Turns into the title screen. Resolves with the player's pick, and the screen goes away. */
+  toTitle(options: TitleOptions): Promise<TitleChoice>;
+};
 
 export function showLoadingScreen(container: HTMLElement): LoadingScreen {
   const screen = document.createElement("div");
@@ -35,8 +40,10 @@ export function showLoadingScreen(container: HTMLElement): LoadingScreen {
       bar.style.width = `${percent}%`;
       screen.setAttribute("aria-valuenow", String(percent));
     },
-    close() {
+    async toTitle(options) {
+      const choice = await showTitle(screen, options);
       screen.remove();
+      return choice;
     },
   };
 }

@@ -9,3 +9,4 @@ export {
   type TalkStage,
   type TalkView,
 } from "./conversations";
+export { ONBOARDED_FLAG, type SceneFrame, Scenes, type ScriptedScene, sceneSpec } from "./scenes";

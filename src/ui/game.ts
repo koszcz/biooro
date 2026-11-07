@@ -149,7 +149,8 @@ export function mountGameUi(
     redraw();
   });
   store.on("dayStarted", (event) => {
-    cards.showDay(event.day);
+    // On Monday the onboarding title card stands in for the day card.
+    if (event.day !== 1) cards.showDay(event.day);
     confirming = false;
     redraw();
   });

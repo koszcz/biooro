@@ -4,6 +4,7 @@ export { jumpToDay, playDefaultDay, setDebugFlag, setDebugPressure } from "./deb
 export type { Listener, Person, StoreEvent, StoreEventOf, StoreEventType } from "./events";
 export {
   type DayStartSnapshot,
+  hasSave,
   SAVE_KEY,
   SAVE_VERSION,
   type SaveRecord,

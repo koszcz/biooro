@@ -80,6 +80,22 @@ describe("the Friday audit", () => {
     expect(survived).toEqual(["launchTeam"]);
     expect(createStore(storage).continueGame()).toBe(false);
   });
+
+  it("keeps Continue away after the survival scene ends", () => {
+    const storage = new FakeStorage();
+    createStore(storage).startOver();
+    const record = JSON.parse(storage.getItem(SAVE_KEY) ?? "");
+    record.state.phase = { kind: "audit" };
+    record.state.day = 5;
+    storage.setItem(SAVE_KEY, JSON.stringify(record));
+    const store = createStore(storage);
+    store.continueGame();
+    store.answerAudit("bury");
+
+    store.startConversation("zbigniew", true);
+    store.endConversation('{"ink":1}');
+    expect(createStore(storage).continueGame()).toBe(false);
+  });
 });
 
 describe("discarding a save", () => {

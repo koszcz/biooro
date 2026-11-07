@@ -89,7 +89,7 @@ export const hudText = {
   startDay: "Start the day",
 } as const;
 
-/** Plain placeholder cards for the end of the week. The scripted scenes replace them later. */
+/** The screen after a Firing, and the card after the survival scene. */
 export const endCardText = {
   fired: {
     performance: "Performance hit 0",
@@ -101,7 +101,5 @@ export const endCardText = {
   retryThisDay: "Retry this day",
   retryYesterday: "Retry yesterday",
   startOver: "Start over",
-  auditTitle: "The Friday audit",
-  auditAnswers: { bury: "Bury", escalate: "Escalate", deflect: "Deflect" },
   survivedTitle: "You survived the week",
 } as const;

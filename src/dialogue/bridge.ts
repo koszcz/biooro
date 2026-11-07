@@ -14,6 +14,7 @@ export interface DialogueLine {
 export interface DialogueChoice {
   index: number;
   text: string;
+  tags: string[];
   id: string | null;
 }
 
@@ -82,6 +83,7 @@ export class Dialogue {
     return this.story.currentChoices.map((choice) => ({
       index: choice.index,
       text: choice.text,
+      tags: choice.tags ?? [],
       id: idOf(choice.tags ?? []),
     }));
   }

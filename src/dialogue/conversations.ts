@@ -2,7 +2,7 @@
 import { COLLEAGUES } from "../content/index";
 import type { ColleagueId } from "../rules/index";
 import type { GameStore, Person } from "../store/index";
-import type { Dialogue, DialogueLine } from "./bridge";
+import type { Dialogue, DialogueChoice, DialogueLine } from "./bridge";
 
 /** Who says a line. Head office never appears, so its lines sit at the top of the screen. */
 export type Speaker = Person | "intern" | "headOffice";
@@ -81,27 +81,35 @@ export class Conversations {
       this.dialogue.start(person, conversationKnot(person, this.store.state.day), false);
       await this.stage.walkBeside(person);
       const turnBack = this.stage.faceEachOther(person);
-      await this.play(person);
+      await playDialogue(this.dialogue, this.view, person);
       turnBack();
     } finally {
       this.running = false;
     }
   }
+}
 
-  /** Plays lines and choices. The Intern says a chosen text before Ink runs its writes. */
-  private async play(partner: Person): Promise<void> {
-    const dialogue = this.dialogue;
-    while (dialogue.active) {
-      if (dialogue.canContinue) {
-        const line = dialogue.continue();
-        if (line.text !== "") await this.view.say(speakerOf(line, partner), line.text);
-      } else if (dialogue.finished) dialogue.end();
-      else {
-        const choices = dialogue.choices;
-        const picked = choices[await this.view.choose(choices.map((choice) => choice.text))];
-        await this.view.say("intern", picked.text);
-        dialogue.choose(picked.index);
-      }
+/**
+ * Plays lines and choices until the Conversation or scene ends. The Intern says a chosen text before
+ * Ink runs its writes. `picked` hears each chosen choice.
+ */
+export async function playDialogue(
+  dialogue: Dialogue,
+  view: TalkView,
+  partner: Person,
+  picked: (choice: DialogueChoice) => void = () => {},
+): Promise<void> {
+  while (dialogue.active) {
+    if (dialogue.canContinue) {
+      const line = dialogue.continue();
+      if (line.text !== "") await view.say(speakerOf(line, partner), line.text);
+    } else if (dialogue.finished) dialogue.end();
+    else {
+      const choices = dialogue.choices;
+      const choice = choices[await view.choose(choices.map((option) => option.text))];
+      await view.say("intern", choice.text);
+      picked(choice);
+      dialogue.choose(choice.index);
     }
   }
 }
