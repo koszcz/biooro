@@ -23,6 +23,7 @@ import {
   startDay,
   type TaskChoice,
   taskChoiceHours,
+  tierOf,
 } from "../rules/index";
 import { Emitter, type Listener, type Person, type StoreEvent, type StoreEventType } from "./events";
 
@@ -236,6 +237,14 @@ export class GameStore {
   updateSettings(changes: Partial<Settings>): void {
     this.currentSettings = { ...this.currentSettings, ...changes };
     writeSettings(this.storage, this.currentSettings);
+  }
+
+  /** Dev-only hook for the debug panel. Swaps the state, autosaves and tells the HUD and the office to redraw. */
+  devReplaceState(state: GameState): void {
+    this.current = state;
+    this.autosave();
+    this.emitter.emit({ type: "tierChanged", tier: tierOf(state.escalation) });
+    this.emitter.emit({ type: "hoursChanged", hoursLeft: state.hoursLeft });
   }
 
   /** Restores the day-start snapshot, both GameState and Ink state. The morning steps do not run again. */

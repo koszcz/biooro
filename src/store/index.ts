@@ -1,4 +1,6 @@
 // The state store, its commands and event emitter, autosave and the day-start snapshot.
+
+export { jumpToDay, playDefaultDay, setDebugFlag, setDebugPressure } from "./debug";
 export type { Listener, Person, StoreEvent, StoreEventOf, StoreEventType } from "./events";
 export {
   type DayStartSnapshot,
