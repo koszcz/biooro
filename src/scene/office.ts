@@ -1,4 +1,4 @@
-// Builds the office scene, renders it into the page and wires click-to-walk and the mouse wheel zoom.
+// Builds the office scene, renders it into the page and wires click-to-walk, clicks on people and the mouse wheel zoom.
 import {
   Clock,
   DirectionalLight,
@@ -8,14 +8,12 @@ import {
   type Object3D,
   PCFSoftShadowMap,
   PointLight,
-  Raycaster,
   RingGeometry,
   Scene,
-  Vector2,
   Vector3,
   WebGLRenderer,
 } from "three";
-import { type Piece, SMART_TOILET } from "../content";
+import { type CastId, COLLEAGUE_SPOTS, type Piece, SMART_TOILET } from "../content";
 import type { Tier } from "../rules";
 import { createActionStage } from "./actionStage";
 import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
@@ -25,6 +23,8 @@ import { buildFurniture } from "./furniture";
 import { createHeadLocator, type HeadLocator } from "./heads";
 import { createIntern, type Intern } from "./intern";
 import type { ModelLibrary } from "./models";
+import { addHitTargets, faceEachOther } from "./people";
+import { createPointer, type LockEvents } from "./pointer";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
 import { type ActionCue, type ActionSource, createTaskActions } from "./taskActions";
@@ -69,10 +69,10 @@ const pieceOf = (hit: Object3D): Piece | undefined => {
 /** Walks the Intern. It remembers the chair the Intern sits on, so the Intern can stand up again. */
 function createWalking(intern: Intern, ring: Mesh) {
   let seatedOn: Piece | undefined;
-  return (goal: WalkGoal, arrived?: () => void) => {
+  return (goal: WalkGoal, onArrive?: () => void) => {
     const walk = planWalk(intern.walker.position, seatedOn, goal);
     if (!walk) {
-      arrived?.();
+      onArrive?.();
       return;
     }
     const chair = "chair" in goal ? goal.chair : undefined;
@@ -87,16 +87,29 @@ function createWalking(intern: Intern, ring: Mesh) {
         seatedOn = chair;
         intern.setPose("sit", chair.turn ?? 0);
       } else intern.setPose("idle");
-      arrived?.();
+      onArrive?.();
     });
   };
 }
 
-export interface OfficeScene {
+/** The store events the office listens to, and the store call that finishes a Task action. */
+export type OfficeEvents = TierSource & LockEvents & ActionSource;
+
+/** What the Conversation layer and the DOM overlays use from the office. */
+export type Office = {
+  /** Calls `listener` when the player clicks a person while input is unlocked. */
+  onPersonClick(listener: (person: CastId) => void): void;
+  /** Calls `listener` when the pointer moves onto a person, or off everyone with `undefined`. */
+  onPersonHover(listener: (person: CastId | undefined) => void): void;
+  /** Calls `listener` once a frame, after the office moves. */
+  onFrame(listener: () => void): void;
+  /** Where a person's head is on screen, in pixels from the top left of the office. */
   headAt: HeadLocator;
   /** Calls `listener` with each cue the DOM overlays show while a Task action plays. */
   onActionCue(listener: (cue: ActionCue) => void): void;
-}
+  walkBeside(person: CastId): Promise<void>;
+  faceEachOther(person: CastId): () => void;
+};
 
 /**
  * Starts the office. `store` sends `tierChanged` and the Task actions, which the scene finishes.
@@ -105,15 +118,16 @@ export interface OfficeScene {
 export function startOfficeScene(
   container: HTMLElement,
   models: ModelLibrary,
-  store: TierSource & ActionSource,
+  store: OfficeEvents,
   startTier: Tier,
-): OfficeScene {
+): Office {
   const scene = new Scene();
   const floor = createFloor();
   const furniture = buildFurniture(models);
   const intern = createIntern(models);
   const cast = createCast(models);
   const people = Object.values(cast);
+  const hitTargets = addHitTargets(cast);
   const ring = createTargetRing();
   const rooms = buildRooms();
   scene.add(floor, rooms, furniture.group, intern.root, ring, ...people.map((p) => p.root));
@@ -150,23 +164,16 @@ export function startOfficeScene(
   const actions = createTaskActions(store, stage, (cue) => {
     for (const listener of cueListeners) listener(cue);
   });
-  const ray = new Raycaster();
-  const pointer = new Vector2();
-  renderer.domElement.addEventListener("pointerdown", (event) => {
-    // Input is locked while a Task action plays.
-    if (actions.playing) return;
-    const bounds = renderer.domElement.getBoundingClientRect();
-    pointer.set(
-      ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
-      -((event.clientY - bounds.top) / bounds.height) * 2 + 1,
-    );
-    ray.setFromCamera(pointer, camera);
+  // Input is also locked while a Task action plays.
+  const pointer = createPointer(renderer.domElement, camera, hitTargets, store, () => actions.playing);
+  pointer.onFloorClick((ray) => {
     const hit = ray.intersectObjects([...furniture.chairs, floor], true)[0];
     if (!hit) return;
     const chair = pieceOf(hit.object);
     walkTo(chair?.seat ? { chair } : { cell: cellAt({ x: hit.point.x, z: hit.point.z }) });
   });
 
+  const frameListeners: (() => void)[] = [];
   const clock = new Clock();
   renderer.setAnimationLoop(() => {
     const seconds = Math.min(clock.getDelta(), 0.05);
@@ -175,11 +182,17 @@ export function startOfficeScene(
     for (const person of people) person.update(seconds, clock.elapsedTime);
     tierLook.update(seconds, clock.elapsedTime);
     renderer.render(scene, camera);
+    for (const listener of frameListeners) listener();
   });
   Object.assign(window, { __office: { scene, camera, intern, cast, walkTo } });
   const roots = { intern: intern.root, ...mapValues(cast, (person) => person.root) };
   return {
     headAt: createHeadLocator(roots, camera, renderer.domElement),
     onActionCue: (listener) => void cueListeners.push(listener),
+    onPersonClick: pointer.onPersonClick,
+    onPersonHover: pointer.onPersonHover,
+    onFrame: (listener) => frameListeners.push(listener),
+    walkBeside: (person) => new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve)),
+    faceEachOther: (person) => faceEachOther(person, cast, intern),
   };
 }

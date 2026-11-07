@@ -1,6 +1,6 @@
 # Conversations
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 07, 11
 
 ## What to build
@@ -26,3 +26,7 @@ Let the player talk to Colleagues, using placeholder Ink knots.
 
 - [6. Screen and interface](../../intern-game/spec.md#6-screen-and-interface): "Conversations".
 - Prototype: `prototype/pressures-ui`, `?variant=G`.
+
+## Comments
+
+Built on branch ticket-12, merged into intern-game-build at c900247. Deviation to review: `conversationStarted` fires at the click, so input locks during the walk; the spec says the scene walks first. The bridge ends a Conversation only after its last line is read. Knots are `<id>_dayN` and `<id>_brush_off`; `#speaker:intern` and `#speaker:headOffice` tags set speakers; Ryszard has no Monday knot. `main.ts` now continues the save on boot. New text in src/locales/en/talk.ts needs the user's review.

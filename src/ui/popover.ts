@@ -6,7 +6,7 @@ import type { HeadLocator } from "./bubbles";
 import { type Chip, type ChoiceView, goodwillVisible, type Pick, taskChoiceViews } from "./choices";
 import { button, el } from "./dom";
 import type { BubbleOwner, Preview } from "./hudView";
-import { taskText } from "./hudView";
+import { ownerName, taskText, urgentTasks } from "./hudView";
 import { placePopover, type Rect } from "./placement";
 import { PRESSURE_COLOURS, SIDE_COLOURS } from "./styles";
 
@@ -19,6 +19,10 @@ export interface PopoverActions {
 
 export interface Popover {
   open(task: OpenTask, over: BubbleOwner): void;
+  /** Opens the list of one person's Tasks, most urgent first. */
+  openList(over: BubbleOwner): void;
+  /** Whose popover is open, or null. */
+  readonly owner: BubbleOwner | null;
   close(): void;
   readonly isOpen: boolean;
   /** Redraws the content, or closes when the Task is no longer open. */
@@ -50,7 +54,9 @@ export function createPopover(root: HTMLElement, headAt: HeadLocator, actions: P
   node.hidden = true;
   node.addEventListener("pointerdown", (event) => event.stopPropagation());
   root.append(node);
-  let current: { task: OpenTask; over: BubbleOwner } | null = null;
+  /** A Task view remembers if it came from the list, so it can return there when the Task finishes. */
+  type Current = { over: BubbleOwner; task: OpenTask | null; fromList: boolean };
+  let current: Current | null = null;
   let delegateOpen = false;
 
   function wire(row: HTMLElement, task: OpenTask, pick: Pick): HTMLElement {
@@ -87,6 +93,26 @@ export function createPopover(root: HTMLElement, headAt: HeadLocator, actions: P
     return [head, ...rows];
   }
 
+  function listContent(state: GameState, over: BubbleOwner, rerender: () => void): HTMLElement[] {
+    const close = button("×", () => popover.close(), "close");
+    close.setAttribute("aria-label", hudText.close);
+    const rows = urgentTasks(state, over).map((view) => {
+      const row = el(
+        "div",
+        `row list-row${view.fallout ? " fallout" : ""}`,
+        view.fallout ? `⚠ ${view.text}` : view.text,
+      );
+      row.dataset.task = view.task.id;
+      row.addEventListener("click", () => {
+        current = { over, task: view.task, fromList: true };
+        delegateOpen = false;
+        rerender();
+      });
+      return row;
+    });
+    return [close, el("div", "title", hudText.taskListTitle(ownerName(over))), ...rows];
+  }
+
   function content(state: GameState, task: OpenTask, rerender: () => void): HTMLElement[] {
     const { assigner, side } = taskById(task.id);
     const who = el("div", "who", ASSIGNER_NAMES[assigner]);
@@ -102,15 +128,35 @@ export function createPopover(root: HTMLElement, headAt: HeadLocator, actions: P
         ? delegateElements(task, view, rerender)
         : [wire(rowElement(view.label, view, [], hudText.choiceHours(view.hours)), task, view)],
     );
-    return [close, el("div", "title", taskText(task)), who, ...choices];
+    const back = current?.fromList
+      ? [
+          button(
+            hudText.backToList,
+            () => {
+              if (current) current = { over: current.over, task: null, fromList: false };
+              rerender();
+            },
+            "back",
+          ),
+        ]
+      : [];
+    return [close, ...back, el("div", "title", taskText(task)), who, ...choices];
   }
 
   const popover: Popover = {
     get isOpen() {
       return current !== null;
     },
+    get owner() {
+      return current?.over ?? null;
+    },
     open(task, over) {
-      current = { task, over };
+      current = { task, over, fromList: false };
+      delegateOpen = false;
+      node.hidden = false;
+    },
+    openList(over) {
+      current = { task: null, over, fromList: false };
       delegateOpen = false;
       node.hidden = false;
     },
@@ -122,10 +168,19 @@ export function createPopover(root: HTMLElement, headAt: HeadLocator, actions: P
       actions.closed();
     },
     render(state) {
-      const task = current?.task;
-      const stillOpen = state.openTasks.some((open) => open.id === task?.id && open.fallout === task?.fallout);
-      if (!task || !stillOpen || state.phase.kind !== "workday") return popover.close();
-      node.replaceChildren(...content(state, task, () => popover.render(state)));
+      if (!current || state.phase.kind !== "workday") return popover.close();
+      const rerender = () => popover.render(state);
+      const { task, over, fromList } = current;
+      const stillOpen = (open: OpenTask) => state.openTasks.some((t) => t.id === open.id && t.fallout === open.fallout);
+      if (task && stillOpen(task)) {
+        node.replaceChildren(...content(state, task, rerender));
+        return;
+      }
+      // A finished Task returns to the list, or closes when nothing is left.
+      if (task && !fromList) return popover.close();
+      if (urgentTasks(state, over).length === 0) return popover.close();
+      current = { over, task: null, fromList: false };
+      node.replaceChildren(...listContent(state, over, rerender));
     },
     follow(avoid) {
       if (!current) return;

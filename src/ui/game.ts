@@ -55,10 +55,18 @@ export function mountGameUi(
   let preview: Preview | undefined;
   let queued = false;
 
-  const bubbles = createBubbles(root, headAt, (task, over) => {
-    popover.open(task, over);
-    redraw();
-  });
+  const bubbles = createBubbles(
+    root,
+    headAt,
+    (task, over) => {
+      popover.open(task, over);
+      redraw();
+    },
+    (over) => {
+      popover.openList(over);
+      redraw();
+    },
+  );
   const cards = createCards(root, store, () => redraw());
   const hud = createHud(root, {
     takeBreak: () => act(() => play.takeBreak()),
@@ -99,7 +107,7 @@ export function mountGameUi(
     hud.render(state, { preview, confirming: confirming && !carded, revealGoodwill, locked });
     hud.hours.hidden = carded;
     revealGoodwill = false;
-    bubbles.render(state, !carded && !locked, acting.busyTask);
+    bubbles.render(state, !carded && !locked, popover.owner, acting.busyTask);
     popover.render(state);
     labels.renderTag(acting.tag());
   }
@@ -131,6 +139,12 @@ export function mountGameUi(
   store.on("dayStarted", (event) => {
     cards.showDay(event.day);
     confirming = false;
+    redraw();
+  });
+  // A Conversation closes any open popover. The talk overlay's CSS fades and hides the bubbles.
+  store.on("conversationStarted", () => {
+    confirming = false;
+    popover.close();
     redraw();
   });
   window.addEventListener("keydown", (event) => {

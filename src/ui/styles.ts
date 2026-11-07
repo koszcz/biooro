@@ -39,6 +39,14 @@ export const HUD_CSS = `
 .hud-bubble.fallout{background:#ffe5e5}
 .hud-bubbles.dim .hud-bubble{opacity:.35}
 .hud-bubble:hover{transform:translate(-50%,-100%) scale(1.05)}
+.hud-bubble.faded{opacity:.35}
+.hud-bubble{transition:opacity .2s}
+.hud-pill{background:#f2efe6;border-style:dashed;border-color:#999;font-size:11px;border-radius:999px;padding:3px 10px}
+.hud-pill:after{display:none}
+.hud-pill .warn{margin-left:6px;color:#c0262d}
+.hud-pop .list-row{display:block;border-bottom:1px solid #eee}
+.hud-pop .list-row.fallout{background:#ffe5e5}
+.hud-pop .back{position:absolute;top:4px;right:28px;background:none;padding:0 4px;color:#666}
 .hud-pop{position:absolute;width:280px;background:#fff;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.5);padding:8px;overflow-y:auto;pointer-events:auto}
 .hud-pop .title{font-weight:700;margin:0 16px 2px 0}
 .hud-pop .who{font-size:11px;color:#666;margin-bottom:6px;display:flex;gap:6px;align-items:center}

@@ -31,6 +31,31 @@ const MARGIN = 10;
 /** How far above the head the popover's top edge starts. */
 const LIFT = 80;
 
+export interface BubbleGroupBox {
+  /** The centre of the group, over the person's head. */
+  x: number;
+  /** The bottom of the group (the head). */
+  bottom: number;
+  width: number;
+  height: number;
+}
+
+/** The room a bubble's tail needs below the group. */
+const TAIL = 8;
+
+/** How far to move a bubble group so it stays fully on screen. */
+export function slideGroupIn(
+  { x, bottom, width, height }: BubbleGroupBox,
+  viewport: { width: number; height: number },
+): { dx: number; dy: number } {
+  const clampShift = (low: number, high: number, min: number, max: number) =>
+    low < min ? min - low : high > max ? max - high : 0;
+  return {
+    dx: clampShift(x - width / 2, x + width / 2, MARGIN, viewport.width - MARGIN),
+    dy: clampShift(bottom - height, bottom + TAIL, MARGIN, viewport.height - MARGIN),
+  };
+}
+
 export function placePopover({ anchor, size, viewport, avoid }: PopoverRequest): PopoverPlace {
   // The free area: right of the gauges and above the hour blocks.
   const minLeft = avoid.gauges.right + MARGIN;

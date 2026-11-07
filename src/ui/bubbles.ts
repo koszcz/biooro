@@ -1,9 +1,10 @@
-// Task bubbles: one speech bubble per open Task over its assigner's head, following them every frame.
-
+// Task bubbles: speech bubbles over each assigner's head, following them every frame.
+// A crowded person shows their two most urgent bubbles and a "+N more" pill. A group slides in from screen edges.
 import { actionText } from "../locales";
 import type { GameState, OpenTask } from "../rules";
 import { el } from "./dom";
-import { type BubbleOwner, bubbleViews } from "./hudView";
+import { type BubbleGroup, type BubbleOwner, type BubbleView, bubbleGroups, type MorePill } from "./hudView";
+import { slideGroupIn } from "./placement";
 import { SIDE_COLOURS } from "./styles";
 
 export type ScreenPoint = { x: number; y: number };
@@ -14,53 +15,92 @@ export type HeadLocator = (owner: BubbleOwner) => ScreenPoint;
 const STACK_GAP = 12;
 
 export interface Bubbles {
-  /** While a Task action plays, every bubble dims and `busy` shows "⏳" before its title. */
-  render(state: GameState, enabled: boolean, busy?: OpenTask | null): void;
+  /**
+   * `openFor` is whose popover is open, or null. Everyone else's bubbles fade.
+   * While a Task action plays, every bubble dims and `busy` shows "⏳" before its title.
+   */
+  render(state: GameState, enabled: boolean, openFor: BubbleOwner | null, busy?: OpenTask | null): void;
   /** Moves each bubble over its person's head. Call it every frame. */
   follow(): void;
+}
+
+function taskBubble(view: BubbleView, busy: boolean, onOpen: (task: OpenTask, over: BubbleOwner) => void): HTMLElement {
+  const text = view.fallout ? `⚠ ${view.text}` : view.text;
+  const node = el("div", `hud-bubble${view.fallout ? " fallout" : ""}`, busy ? `${actionText.busy} ${text}` : text);
+  node.style.setProperty("--c", SIDE_COLOURS[view.border]);
+  node.dataset.task = view.task.id;
+  node.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onOpen(view.task, view.over);
+  });
+  return node;
+}
+
+function pillBubble(group: BubbleGroup, pill: MorePill, onList: (over: BubbleOwner) => void): HTMLElement {
+  const node = el("div", "hud-bubble hud-pill", pill.text);
+  node.dataset.pill = group.over;
+  if (pill.fallout) node.append(el("b", "warn", pill.fallout));
+  node.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onList(group.over);
+  });
+  return node;
 }
 
 export function createBubbles(
   root: HTMLElement,
   headAt: HeadLocator,
   onOpen: (task: OpenTask, over: BubbleOwner) => void,
+  onList: (over: BubbleOwner) => void,
 ): Bubbles {
   const layer = el("div", "hud-bubbles");
   root.append(layer);
   let placed: { node: HTMLElement; over: BubbleOwner }[] = [];
 
   return {
-    render(state, enabled, busy) {
+    render(state, enabled, openFor, busy) {
       layer.classList.toggle("dim", Boolean(busy));
       const isBusy = (task: OpenTask) =>
         busy?.id === task.id && busy.fallout === task.fallout && busy.strange === task.strange;
-      const views = state.phase.kind === "workday" ? bubbleViews(state) : [];
-      placed = views.map((view) => {
-        const node = el(
-          "div",
-          `hud-bubble${view.fallout ? " fallout" : ""}`,
-          `${isBusy(view.task) ? `${actionText.busy} ` : ""}${view.fallout ? `⚠ ${view.text}` : view.text}`,
-        );
-        node.style.setProperty("--c", SIDE_COLOURS[view.border]);
-        node.dataset.task = view.task.id;
-        node.style.pointerEvents = enabled ? "auto" : "none";
-        node.addEventListener("click", (event) => {
-          event.stopPropagation();
-          onOpen(view.task, view.over);
+      const groups = state.phase.kind === "workday" ? bubbleGroups(state) : [];
+      placed = groups.flatMap((group) => {
+        const nodes = group.bubbles.map((view) => taskBubble(view, isBusy(view.task), onOpen));
+        if (group.pill) nodes.push(pillBubble(group, group.pill, onList));
+        return nodes.map((node) => {
+          node.style.pointerEvents = enabled ? "auto" : "none";
+          node.dataset.over = group.over;
+          node.classList.toggle("faded", openFor !== null && openFor !== group.over);
+          return { node, over: group.over };
         });
-        return { node, over: view.over };
       });
       layer.replaceChildren(...placed.map((bubble) => bubble.node));
       this.follow();
     },
     follow() {
-      const lift = new Map<BubbleOwner, number>();
-      for (const { node, over } of placed) {
+      const viewport = { width: root.clientWidth, height: root.clientHeight };
+      const owners = [...new Set(placed.map((bubble) => bubble.over))];
+      for (const over of owners) {
+        const nodes = placed.filter((bubble) => bubble.over === over).map((bubble) => bubble.node);
         const head = headAt(over);
-        const offset = lift.get(over) ?? 0;
-        node.style.left = `${head.x}px`;
-        node.style.top = `${head.y - offset}px`;
-        lift.set(over, offset + node.offsetHeight + STACK_GAP);
+        let offset = 0;
+        const tops = nodes.map((node) => {
+          const top = offset;
+          offset += node.offsetHeight + STACK_GAP;
+          return top;
+        });
+        const slide = slideGroupIn(
+          {
+            x: head.x,
+            bottom: head.y,
+            width: Math.max(...nodes.map((node) => node.offsetWidth)),
+            height: offset - STACK_GAP,
+          },
+          viewport,
+        );
+        nodes.forEach((node, i) => {
+          node.style.left = `${head.x + slide.dx}px`;
+          node.style.top = `${head.y + slide.dy - tops[i]}px`;
+        });
       }
     },
   };

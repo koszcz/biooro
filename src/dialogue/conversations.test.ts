@@ -1,0 +1,197 @@
+import { describe, expect, it } from "vitest";
+import { createStore, type Person, type SaveStorage, type StoreEvent } from "../store/index";
+import { story } from "../story/index";
+import { Dialogue } from "./bridge";
+import { Conversations, type Speaker, type TalkStage, type TalkView } from "./conversations";
+
+function memoryStorage(): SaveStorage {
+  const items = new Map<string, string>();
+  return {
+    getItem: (key) => items.get(key) ?? null,
+    setItem: (key, value) => items.set(key, value),
+    removeItem: (key) => items.delete(key),
+  };
+}
+
+/** A view that reads every line at once and picks `pick` at each choice. It records what it showed. */
+class FakeView implements TalkView {
+  readonly shown: string[] = [];
+  readonly brushOffs: string[] = [];
+  onSay: (speaker: Speaker, text: string) => void = () => {};
+
+  constructor(private readonly pick = 0) {}
+
+  async say(speaker: Speaker, text: string): Promise<void> {
+    this.shown.push(`${speaker}: ${text}`);
+    this.onSay(speaker, text);
+  }
+
+  async choose(choices: readonly string[]): Promise<number> {
+    this.shown.push(`choices: ${choices.join(" | ")}`);
+    return this.pick;
+  }
+
+  brushOff(person: Person, text: string): void {
+    this.brushOffs.push(`${person}: ${text}`);
+  }
+}
+
+/** A stage that records each walk and turn. */
+class FakeStage implements TalkStage {
+  readonly moves: string[] = [];
+
+  async walkBeside(person: Person): Promise<void> {
+    this.moves.push(`walk to ${person}`);
+  }
+
+  faceEachOther(person: Person): () => void {
+    this.moves.push(`face ${person}`);
+    return () => this.moves.push(`${person} turns back`);
+  }
+}
+
+function setUp(storage = memoryStorage(), pick = 0) {
+  const store = createStore(storage);
+  if (!store.continueGame()) store.startOver();
+  const dialogue = new Dialogue(store, story);
+  const view = new FakeView(pick);
+  const stage = new FakeStage();
+  const events: StoreEvent[] = [];
+  for (const type of ["conversationStarted", "conversationEnded", "pressureChanged"] as const) {
+    store.on(type, (event) => events.push(event));
+  }
+  return { store, view, stage, events, storage, talk: new Conversations(store, dialogue, stage, view) };
+}
+
+describe("talking to a Colleague", () => {
+  it("walks beside them, plays the Conversation and turns them back at the end", async () => {
+    const { store, view, stage, talk } = setUp();
+    await talk.click("wiola");
+
+    expect(stage.moves).toEqual(["walk to wiola", "face wiola", "wiola turns back"]);
+    expect(view.shown).toEqual([
+      "wiola: Placeholder: Wiola says good morning.",
+      "headOffice: Placeholder: Head office sends its regards.",
+      "choices: Placeholder: Thanks, I feel better. | Placeholder: Not now, Wiola.",
+      "intern: Placeholder: Thanks, I feel better.",
+      "wiola: Placeholder: Wiola smiles.",
+    ]);
+    expect(store.state.pressures.sanity).toBe(7);
+    expect(store.state.talkedToday).toEqual(["wiola"]);
+  });
+
+  it("gives a line tagged #speaker:intern to the Intern", async () => {
+    const { store, view, talk } = setUp();
+    store.goHome();
+    await talk.click("ryszard");
+    expect(view.shown[1]).toBe("intern: Placeholder: I will think about it.");
+  });
+
+  it("moves the gauge only after the Intern says the chosen text", async () => {
+    const { store, view, events, talk } = setUp();
+    view.onSay = (speaker) => {
+      if (speaker === "intern") expect(store.state.pressures.sanity).toBe(6);
+    };
+    await talk.click("wiola");
+    expect(events.filter((event) => event.type === "pressureChanged")).toHaveLength(1);
+  });
+
+  it("ends the Conversation only after the last line is read", async () => {
+    const { view, events, talk } = setUp();
+    view.onSay = (_, text) => {
+      if (text === "Placeholder: Wiola smiles.") expect(events.at(-1)?.type).not.toBe("conversationEnded");
+    };
+    await talk.click("wiola");
+    expect(events.at(-1)).toEqual({ type: "conversationEnded", person: "wiola" });
+  });
+
+  it("is busy from the click until the Conversation ends", async () => {
+    const { talk } = setUp();
+    const talking = talk.click("wiola");
+    expect(talk.busy).toBe(true);
+    await talking;
+    expect(talk.busy).toBe(false);
+  });
+});
+
+describe("brush-offs", () => {
+  it("shows a brush-off after the day's Conversation, and the Intern does not walk", async () => {
+    const { store, view, stage, talk } = setUp();
+    await talk.click("kamil");
+    stage.moves.length = 0;
+    const sanity = store.state.pressures.sanity;
+
+    await talk.click("kamil");
+    expect(view.brushOffs).toEqual(["kamil: Placeholder: Kamil is busy."]);
+    expect(stage.moves).toEqual([]);
+    expect(store.state.pressures.sanity).toBe(sanity);
+  });
+
+  it("shows a brush-off for a Boss, and the Intern does not walk", async () => {
+    const { view, stage, events, talk } = setUp();
+    await talk.click("halina");
+    expect(view.brushOffs).toEqual(["halina: Placeholder: Pani Halina is busy."]);
+    expect(stage.moves).toEqual([]);
+    expect(events).toEqual([]);
+  });
+
+  it("offers the Colleague a new Conversation the next day", async () => {
+    const { store, talk } = setUp();
+    await talk.click("kamil");
+    expect(talk.availability("kamil")).toBe("talked");
+    store.goHome();
+    expect(talk.availability("kamil")).toBe("talk");
+  });
+});
+
+describe("what a click on a person offers", () => {
+  it("tells a Colleague with a Conversation from a used one and from a Boss", async () => {
+    const { talk } = setUp();
+    expect(talk.availability("wiola")).toBe("talk");
+    expect(talk.availability("zbigniew")).toBe("boss");
+    await talk.click("wiola");
+    expect(talk.availability("wiola")).toBe("talked");
+  });
+
+  it("has no Monday Conversation for Ryszard, because the onboarding is his", () => {
+    const { talk } = setUp();
+    expect(talk.availability("ryszard")).toBe("talked");
+  });
+
+  it("ignores clicks while a Conversation runs", async () => {
+    const { stage, talk } = setUp();
+    const talking = talk.click("wiola");
+    await talk.click("kamil");
+    await talking;
+    expect(stage.moves).toEqual(["walk to wiola", "face wiola", "wiola turns back"]);
+  });
+});
+
+describe("reloading in the middle of a Conversation", () => {
+  it("replays it from its start, and its effects apply once", async () => {
+    const storage = memoryStorage();
+    const first = setUp(storage);
+    // The player reloads while Wiola replies, after the pick has moved the gauge.
+    const reload = new Promise<void>((resolve) => {
+      first.view.say = async (_, text) => {
+        if (text !== "Placeholder: Wiola smiles.") return;
+        resolve();
+        await new Promise(() => {});
+      };
+    });
+    void first.talk.click("wiola");
+    await reload;
+    expect(first.store.state.pressures.sanity).toBe(7);
+
+    const second = setUp(storage);
+    expect(second.store.state.pressures.sanity).toBe(6);
+    expect(second.talk.availability("wiola")).toBe("talk");
+    await second.talk.click("wiola");
+    expect(second.view.shown[0]).toBe("wiola: Placeholder: Wiola says good morning.");
+    expect(second.store.state.pressures.sanity).toBe(7);
+
+    const third = setUp(storage);
+    expect(third.store.state.pressures.sanity).toBe(7);
+    expect(third.store.state.talkedToday).toEqual(["wiola"]);
+  });
+});

@@ -25,6 +25,7 @@ function play(dialogue: Dialogue, choice = 0): string[] {
   const lines: string[] = [];
   while (dialogue.active) {
     if (dialogue.canContinue) lines.push(dialogue.continue().text);
+    else if (dialogue.finished) dialogue.end();
     else dialogue.choose(choice);
   }
   return lines;
