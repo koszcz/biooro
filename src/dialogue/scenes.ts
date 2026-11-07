@@ -20,8 +20,11 @@ export interface SceneFrame {
 /** The onboarding knot sets this flag at its end. Until then, Continue on Monday replays the onboarding. */
 export const ONBOARDED_FLAG = "onboarded";
 
+/** The Ink knot of each scripted scene. It also names the scene, for example in its title card. */
+export type SceneKnot = "onboarding" | "audit" | `firing_${Pressure}` | `survival_${SurvivalVariant}`;
+
 interface SceneSpec {
-  knot: string;
+  knot: SceneKnot;
   /** The scene's main person. Lines without a speaker tag are theirs. */
   person: CastId;
   /** True when the main speaker is in the room, so the Intern walks beside them first. */
