@@ -34,7 +34,7 @@ You need Node.js and pnpm.
 1. Go to a prototype folder:
 
    ```bash
-   cd prototype/pressures-ui
+   cd prototype/office-look
    ```
 
 2. Install the dependencies:
@@ -51,7 +51,9 @@ You need Node.js and pnpm.
 
 4. Open the address that Vite prints.
 
-The `office-look` prototype works the same way. It serves on port 5174, and `pressures-ui` serves on port 5175.
+The `pressures-ui` prototype uses the Vite copy installed in `office-look`. Run `pnpm install` in `prototype/office-look` before you start `pressures-ui`.
+
+The `office-look` prototype serves on port 5174, and `pressures-ui` serves on port 5175.
 
 ## Credits
 
