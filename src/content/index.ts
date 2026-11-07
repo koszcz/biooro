@@ -1,7 +1,11 @@
 // Typed data for Tasks, Task slots, Task places, Colleagues and the office grid.
 export {
   type Assigner,
+  COLLEAGUES,
+  type Colleague,
+  type ColleagueId,
   type Faction,
+  type Handling,
   type LockedReason,
   TASK_PLACES,
   TASK_SLOTS,
