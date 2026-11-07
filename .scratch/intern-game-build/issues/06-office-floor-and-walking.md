@@ -1,6 +1,6 @@
 # Office floor and walking
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 01
 
 ## What to build
@@ -29,3 +29,7 @@ Read `docs/art/making-assets.md` before you build or restyle any 3D asset. Match
 - [7. Look and art](../../intern-game/spec.md#7-look-and-art): "Camera and movement" and "The floor".
 - [12. Assets](../../intern-game/spec.md#12-assets): all of it.
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "Boot" and "Content data".
+
+## Comments
+
+Built on branch ticket-06, merged into intern-game-build at cb279a1. Choices where the spec is silent: Task place cells are printer (0,2), plant (7,0), shredder as trash can (0,7), evidence shelf as low bookcase (11,6); the Intern starts at (6,4); every chair is sittable. Only the Intern's model is in public/models/; ticket 07 must copy the cast models.
