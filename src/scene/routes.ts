@@ -1,5 +1,5 @@
 // Turns a click on a floor cell or a chair into the floor points the Intern walks through.
-import type { Cell, Piece } from "../content";
+import type { Cell, Piece } from "../content/index";
 import { findPath } from "./pathfinding";
 import type { FloorPoint } from "./walker";
 

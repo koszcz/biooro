@@ -1,7 +1,7 @@
 // The five cast members at their Colleague spots, each with a base model, a Faction vest and a prop.
 // The lineup follows prototype/office-look/src/art.ts.
 import { type AnimationAction, AnimationMixer, Group, type MeshStandardMaterial, type Object3D } from "three";
-import { type CastId, COLLEAGUE_SPOTS } from "../content";
+import { type CastId, COLLEAGUE_SPOTS } from "../content/index";
 import { type Pose, SEAT_LIFT } from "./intern";
 import type { AccessoryModel, CharacterModel, ModelLibrary } from "./models";
 import { addFolder, addLanyard, addRecordingLight, addTie, addVest, bone } from "./outfit";

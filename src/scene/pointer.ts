@@ -1,7 +1,7 @@
 // Turns pointer events on the office canvas into clicks and hovers on people or the floor.
 // A Conversation locks the office from the click that starts it until it ends.
 import { type Camera, type Object3D, Raycaster, Vector2 } from "three";
-import type { CastId } from "../content";
+import type { CastId } from "../content/index";
 import { personUnder } from "./people";
 
 /** The store events that lock and unlock the office. */

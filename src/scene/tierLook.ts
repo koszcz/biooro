@@ -9,7 +9,7 @@ import {
   type PointLight,
   type Scene,
 } from "three";
-import type { Tier } from "../rules";
+import type { Tier } from "../rules/index";
 
 type Palette = {
   sky: string;

@@ -1,5 +1,5 @@
 // The Three.js stage for Task actions: walks the Intern and the Colleagues around the office and plays their clips.
-import { type Cell, COLLEAGUE_SPOTS, type ColleagueId, FURNITURE, type Piece, PLACE_SPOTS } from "../content";
+import { type Cell, COLLEAGUE_SPOTS, type ColleagueId, FURNITURE, type Piece, PLACE_SPOTS } from "../content/index";
 import type { Cast, CastMember } from "./cast";
 import type { Intern, Pose } from "./intern";
 import { cellAt, routeToCell, type WalkGoal } from "./routes";

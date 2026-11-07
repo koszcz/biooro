@@ -1,7 +1,7 @@
 // The dev-only debug panel: edit Pressures, jump to a day and set flags. Only `npm run dev` mounts it.
 // It writes state through the store's debug commands. Its text is for developers, so it is not localised.
-import { FRIDAY, PRESSURES, type Pressure } from "../rules";
-import { type GameStore, jumpToDay, type StoreEventType, setDebugFlag, setDebugPressure } from "../store";
+import { FRIDAY, PRESSURES, type Pressure } from "../rules/index";
+import { type GameStore, jumpToDay, type StoreEventType, setDebugFlag, setDebugPressure } from "../store/index";
 import { button, el } from "./dom";
 
 const CSS = `

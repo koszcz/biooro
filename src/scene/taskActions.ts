@@ -1,8 +1,15 @@
 // Task actions: how a Task choice plays out in the office, from `taskActionStarted` to `finishTaskAction()`.
 // It plans each action as steps on a stage, so tests can drive it without Three.js.
-import { type CastId, type ColleagueId, STRANGE_TASKS, TASK_PLACES, type TaskPlaceId, taskById } from "../content";
-import type { OpenTask } from "../rules";
-import type { GameStore, StoreEventOf } from "../store";
+import {
+  type CastId,
+  type ColleagueId,
+  STRANGE_TASKS,
+  TASK_PLACES,
+  type TaskPlaceId,
+  taskById,
+} from "../content/index";
+import type { OpenTask } from "../rules/index";
+import type { GameStore, StoreEventOf } from "../store/index";
 import { run, Sequence, type Step, until, wait } from "./sequence";
 
 /** Screen seconds per in-game hour. The spec says to start at 1 and tune it in the build. */

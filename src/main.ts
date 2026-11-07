@@ -1,11 +1,11 @@
 // Game entry point: loads every GLB behind the loading screen, shows the title screen, then starts the office
 // scene, the HUD, Conversations and the scripted scenes.
-import { blipsBetween, loadAudio } from "./audio";
-import { Conversations, Dialogue, Scenes } from "./dialogue";
-import { tierOf } from "./rules";
-import { loadModels, startOfficeScene } from "./scene";
-import { createStore, hasSave } from "./store";
-import { story } from "./story";
+import { blipsBetween, loadAudio } from "./audio/index";
+import { Conversations, Dialogue, Scenes } from "./dialogue/index";
+import { tierOf } from "./rules/index";
+import { loadModels, startOfficeScene } from "./scene/index";
+import { createStore, hasSave } from "./store/index";
+import { story } from "./story/index";
 import {
   mountDebugPanel,
   mountGameUi,
@@ -14,7 +14,7 @@ import {
   mountTalk,
   type RevealListener,
   showLoadingScreen,
-} from "./ui";
+} from "./ui/index";
 
 const container = document.getElementById("app");
 if (!container) throw new Error("index.html needs an element with id 'app'");

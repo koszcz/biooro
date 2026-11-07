@@ -1,6 +1,6 @@
 import { type Color, DirectionalLight, HemisphereLight, Mesh, MeshStandardMaterial, PointLight, Scene } from "three";
 import { describe, expect, it } from "vitest";
-import type { Tier } from "../rules";
+import type { Tier } from "../rules/index";
 import { createTierLook, type TierSource } from "./tierLook";
 
 // A stand-in for the store: it only emits `tierChanged`.

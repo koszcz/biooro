@@ -13,8 +13,8 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import { type CastId, COLLEAGUE_SPOTS, type Piece, SMART_TOILET } from "../content";
-import type { Tier } from "../rules";
+import { type CastId, COLLEAGUE_SPOTS, type Piece, SMART_TOILET } from "../content/index";
+import type { Tier } from "../rules/index";
 import { createActionStage } from "./actionStage";
 import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
 import { createCast } from "./cast";

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { ColleagueId, TaskId, TaskPlaceId } from "../content";
-import type { OpenTask, TaskChoice } from "../rules";
-import { createStore, type GameStore, type SaveStorage } from "../store";
+import type { ColleagueId, TaskId, TaskPlaceId } from "../content/index";
+import type { OpenTask, TaskChoice } from "../rules/index";
+import { createStore, type GameStore, type SaveStorage } from "../store/index";
 import { type ActionCue, type ActionGoal, type ActionStage, createTaskActions } from "./taskActions";
 
 function memoryStorage(): SaveStorage {

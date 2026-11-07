@@ -1,7 +1,7 @@
 // Task bubbles: speech bubbles over each assigner's head, following them every frame.
 // A crowded person shows their two most urgent bubbles and a "+N more" pill. A group slides in from screen edges.
-import { actionText } from "../locales";
-import type { GameState, OpenTask } from "../rules";
+import { actionText } from "../locales/index";
+import type { GameState, OpenTask } from "../rules/index";
 import { el } from "./dom";
 import { type BubbleGroup, type BubbleOwner, type BubbleView, bubbleGroups, type MorePill } from "./hudView";
 import { slideGroupIn } from "./placement";

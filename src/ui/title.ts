@@ -1,5 +1,5 @@
 // The title screen, which the loading screen turns into: Continue and New game.
-import { titleText } from "../locales";
+import { titleText } from "../locales/index";
 import { button, el } from "./dom";
 
 export type TitleChoice = "continue" | "newGame";

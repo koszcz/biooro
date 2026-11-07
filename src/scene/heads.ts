@@ -1,6 +1,6 @@
 // Screen positions above each person's head, so DOM overlays such as Task bubbles can follow them.
 import { type Camera, type Object3D, Vector3 } from "three";
-import type { CastId } from "../content";
+import type { CastId } from "../content/index";
 
 /** Anyone a Task bubble can float over. */
 export type HeadOwner = CastId | "intern";

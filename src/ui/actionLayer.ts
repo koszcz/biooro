@@ -1,7 +1,7 @@
 // Labels over people's heads while Task actions play: the tag over the Intern, "✨ looks done" sparkles,
 // hand-off speech bubbles and the Pressure floats. Looks follow prototype variant J.
-import { ASSIGNER_NAMES, actionText, HAND_OFF_LINES } from "../locales";
-import type { ColleagueId } from "../rules";
+import { ASSIGNER_NAMES, actionText, HAND_OFF_LINES } from "../locales/index";
+import type { ColleagueId } from "../rules/index";
 import type { ActionTag, Float } from "./acting";
 import type { HeadLocator } from "./bubbles";
 import { el } from "./dom";

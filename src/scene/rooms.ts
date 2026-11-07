@@ -23,8 +23,8 @@ import {
   ROOMS,
   type RoomId,
   SMART_TOILET,
-} from "../content";
-import { officeSigns } from "../locales";
+} from "../content/index";
+import { officeSigns } from "../locales/index";
 
 const FULL_HEIGHT = 1.3;
 const INNER_STUB = 0.5;

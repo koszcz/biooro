@@ -11,7 +11,7 @@ import {
   type Object3D,
   RingGeometry,
 } from "three";
-import { type Cell, INTERN_START, type TaskClip } from "../content";
+import { type Cell, INTERN_START, type TaskClip } from "../content/index";
 import { INTERN_MODEL, type ModelLibrary } from "./models";
 import { addVest } from "./outfit";
 import { Walker } from "./walker";

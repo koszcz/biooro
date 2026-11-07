@@ -1,7 +1,7 @@
 // Mounts the playable HUD: Task bubbles, the Task choice popover, gauges, hour blocks and the day card.
-import type { CastId } from "../content";
-import type { ColleagueId } from "../rules";
-import type { GameStore, StoreEventType } from "../store";
+import type { CastId } from "../content/index";
+import type { ColleagueId } from "../rules/index";
+import type { GameStore, StoreEventType } from "../store/index";
 import { createActing } from "./acting";
 import { ACTION_CSS, createActionLayer } from "./actionLayer";
 import { createBubbles, type HeadLocator } from "./bubbles";
