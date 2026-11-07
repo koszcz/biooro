@@ -21,11 +21,16 @@ import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
 import { createCast } from "./cast";
 import { createFloor, FLOOR_DEPTH, FLOOR_WIDTH } from "./floor";
 import { buildFurniture } from "./furniture";
+import { createHeadLocator, type HeadLocator } from "./heads";
 import { createIntern, type Intern } from "./intern";
 import type { ModelLibrary } from "./models";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
 import { createTierLook, type TierSource } from "./tierLook";
+
+function mapValues<K extends string, V, W>(record: Readonly<Record<K, V>>, map: (value: V) => W): Record<K, W> {
+  return Object.fromEntries(Object.entries<V>(record).map(([key, value]) => [key, map(value)])) as Record<K, W>;
+}
 
 const TARGET_RING = "#ff2bd6";
 
@@ -87,7 +92,7 @@ export function startOfficeScene(
   models: ModelLibrary,
   store: TierSource,
   startTier: Tier,
-): void {
+): { headAt: HeadLocator } {
   const scene = new Scene();
   const floor = createFloor();
   const furniture = buildFurniture(models);
@@ -149,4 +154,6 @@ export function startOfficeScene(
     renderer.render(scene, camera);
   });
   Object.assign(window, { __office: { scene, camera, intern, cast, walkTo } });
+  const roots = { intern: intern.root, ...mapValues(cast, (person) => person.root) };
+  return { headAt: createHeadLocator(roots, camera, renderer.domElement) };
 }
