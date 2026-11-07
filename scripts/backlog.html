@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biooro backlog</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #f6f4ef; --panel: #fff; --ink: #24211c; --muted: #6f685d; --line: #e2ddd2;
+    --accent: #e8792b; --teal: #2a8c8c; --manila: #c9a24a;
+    --frontier: #2a8c8c; --claimed: #e8792b; --blocked: #9a9184; --resolved: #5b8c3a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1b1a17; --panel: #25231f; --ink: #ece7dc; --muted: #a39b8d; --line: #3a372f; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); }
+  header { padding: 20px 24px 12px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .sub a { color: inherit; }
+  .destination { margin: 8px 0 0; max-width: 80ch; }
+  .progress { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 12px 0 4px; background: var(--line); max-width: 640px; }
+  .progress span { display: block; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+  nav { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 24px; }
+  nav button, nav select, nav input { font: inherit; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); cursor: pointer; }
+  nav input { cursor: text; min-width: 220px; }
+  nav button.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  .board { display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 14px; padding: 0 24px 32px; }
+  @media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
+  .col h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; margin: 4px 0 2px; display: flex; align-items: center; gap: 6px; }
+  .col p.hint { margin: 0 0 10px; font-size: 12px; color: var(--muted); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; cursor: pointer; }
+  .card:hover, .card:focus { outline: 2px solid var(--c); outline-offset: -1px; }
+  .card .n { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 4px; }
+  .card .t { font-weight: 600; }
+  .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 12px; }
+  .tag { padding: 1px 7px; border-radius: 10px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+  .tag.err { color: #c0392b; border-color: #c0392b; }
+  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+  .doc { max-width: 860px; margin: 0 auto; padding: 0 24px 48px; }
+  #drawer { position: fixed; inset: 0 0 0 auto; width: min(760px, 100%); background: var(--panel); border-left: 1px solid var(--line); box-shadow: -8px 0 24px rgba(0,0,0,.12); transform: translateX(100%); transition: transform .2s; overflow-y: auto; z-index: 10; }
+  #drawer.open { transform: none; }
+  #drawer .bar { position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--line); padding: 10px 20px; display: flex; gap: 10px; align-items: center; }
+  #drawer .bar .grow { flex: 1; }
+  #drawer .bar a, #drawer .bar button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; cursor: pointer; }
+  #drawer .content { padding: 4px 24px 40px; }
+  .md h1 { font-size: 22px; } .md h2 { font-size: 18px; margin-top: 1.6em; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  .md a { color: var(--teal); }
+  .md code { background: var(--bg); padding: 1px 4px; border-radius: 4px; font-size: 90%; }
+  .md pre { background: var(--bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+  .md pre code { padding: 0; }
+  .md table { border-collapse: collapse; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
+  .md blockquote { margin-left: 0; padding-left: 12px; border-left: 3px solid var(--line); color: var(--muted); }
+  .rel { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 13px; margin: 10px 0; }
+  .rel a { text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">Backlog</h1>
+  <div class="sub" id="built"></div>
+  <p class="destination md" id="destination"></p>
+  <div class="progress" id="progress"></div>
+  <div class="legend" id="legend"></div>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<aside id="drawer" aria-hidden="true">
+  <div class="bar">
+    <span class="grow" id="drawer-status"></span>
+    <a id="drawer-source" target="_blank" rel="noopener">View on GitHub</a>
+    <button id="drawer-close" aria-label="Close">Close ✕</button>
+  </div>
+  <div class="content">
+    <div class="rel" id="drawer-rel"></div>
+    <div class="md" id="drawer-body"></div>
+  </div>
+</aside>
+<script>
+const DATA = /*DATA*/null;
+
+const COLUMNS = [
+  { key: "frontier", label: "Ready to start", hint: "Open, and nothing blocks it." },
+  { key: "claimed", label: "In progress", hint: "Someone is working on it." },
+  { key: "blocked", label: "Waiting", hint: "Open, but waits on other tickets." },
+  { key: "resolved", label: "Done", hint: "Answered and recorded in the map." },
+];
+const COLOR = Object.fromEntries(COLUMNS.map(c => [c.key, `var(--${c.key})`]));
+const LABEL = Object.fromEntries(COLUMNS.map(c => [c.key, c.label]));
+const state = { effort: DATA.efforts[0]?.slug, view: "board", type: "", query: "" };
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const effort = () => DATA.efforts.find(e => e.slug === state.effort);
+const ticket = n => effort().tickets.find(t => t.number === n);
+const blobUrl = path => `https://github.com/${DATA.repo}/blob/main/${path}`;
+const date = iso => iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "";
+
+// Point links in rendered Markdown at the page itself, or at GitHub for other files.
+function fixLinks(root, fromDir) {
+  root.querySelectorAll("a[href]").forEach(a => {
+    const href = a.getAttribute("href");
+    if (/^([a-z]+:|#)/i.test(href)) { a.target = "_blank"; a.rel = "noopener"; return; }
+    const url = new URL(href, `https://x/${fromDir}/`);
+    const path = url.pathname.slice(1);
+    const base = `.scratch/${state.effort}/`;
+    const issue = path.match(/^\.scratch\/([^/]+)\/issues\/(\d{2})-[^/]+\.md$/);
+    if (issue && issue[1] === state.effort) { a.href = `#${state.effort}/${issue[2]}`; return; }
+    if (path === base + "spec.md" || path === base + "map.md") { a.href = `#${state.effort}/${path.slice(base.length, -3)}`; return; }
+    a.href = blobUrl(path); a.target = "_blank"; a.rel = "noopener";
+  });
+}
+
+function render(md, fromDir) {
+  const div = document.createElement("div");
+  div.innerHTML = marked.parse(md);
+  fixLinks(div, fromDir);
+  return div.innerHTML;
+}
+
+function header() {
+  const e = effort();
+  $("title").textContent = e.title.replace(/^Map:\s*/, "");
+  document.title = `${$("title").textContent} · Backlog`;
+  $("built").innerHTML = `Built from commit <a href="https://github.com/${DATA.repo}/commit/${esc(DATA.commit)}">${esc(DATA.commit)}</a> · last change ${esc(date(DATA.built))}`;
+  $("destination").innerHTML = e.destination ? render(e.destination, `.scratch/${e.slug}`) : "";
+  const total = e.tickets.length || 1;
+  const counts = Object.fromEntries(COLUMNS.map(c => [c.key, e.tickets.filter(t => t.column === c.key).length]));
+  $("progress").innerHTML = COLUMNS.slice().reverse().map(c =>
+    `<span style="width:${100 * counts[c.key] / total}%;background:${COLOR[c.key]}" title="${c.label}: ${counts[c.key]}"></span>`).join("");
+  $("legend").innerHTML = `<span><b>${counts.resolved} of ${e.tickets.length}</b> done</span>` + COLUMNS.map(c =>
+    `<span><i class="dot" style="background:${COLOR[c.key]}"></i>${c.label}: ${counts[c.key]}</span>`).join("");
+}
+
+function nav() {
+  const e = effort();
+  const types = [...new Set(e.tickets.map(t => t.type))].sort();
+  const views = [["board", "Board"], ...["map", "spec"].filter(d => e.docs[d + ".md"]).map(d => [d, d[0].toUpperCase() + d.slice(1)])];
+  $("nav").innerHTML =
+    (DATA.efforts.length > 1 ? `<select id="effort">${DATA.efforts.map(x => `<option value="${x.slug}" ${x.slug === e.slug ? "selected" : ""}>${esc(x.slug)}</option>`).join("")}</select>` : "") +
+    views.map(([k, l]) => `<button data-view="${k}" class="${state.view === k ? "on" : ""}">${l}</button>`).join("") +
+    (state.view === "board" ? `
+      <select id="type" aria-label="Filter by type"><option value="">All types</option>${types.map(t => `<option ${t === state.type ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>
+      <input id="query" type="search" placeholder="Search tickets" value="${esc(state.query)}">` : "");
+  $("nav").querySelectorAll("[data-view]").forEach(b => b.onclick = () => go(b.dataset.view === "board" ? `#${e.slug}` : `#${e.slug}/${b.dataset.view}`));
+  $("effort")?.addEventListener("change", ev => go(`#${ev.target.value}`));
+  $("type")?.addEventListener("change", ev => { state.type = ev.target.value; board(); });
+  $("query")?.addEventListener("input", ev => { state.query = ev.target.value; board(); });
+}
+
+function card(t) {
+  const meta = [`<span class="tag">${esc(t.type)}</span>`];
+  if (t.waitsOn.length) meta.push(`<span class="tag">waits on ${t.waitsOn.join(", ")}</span>`);
+  if (t.blocks.length && t.column !== "resolved") meta.push(`<span class="tag">unblocks ${t.blocks.join(", ")}</span>`);
+  if (t.errors.length) meta.push(`<span class="tag err" title="${esc(t.errors.join("\n"))}">header problem</span>`);
+  return `<div class="card" tabindex="0" style="--c:${COLOR[t.column]}" data-n="${t.number}">
+    <span class="n">${t.number}</span><span class="t">${esc(t.title)}</span><div class="meta">${meta.join("")}</div></div>`;
+}
+
+function board() {
+  const q = state.query.trim().toLowerCase();
+  const shown = effort().tickets.filter(t =>
+    (!state.type || t.type === state.type) && (!q || (t.number + " " + t.body).toLowerCase().includes(q)));
+  $("main").innerHTML = `<div class="board">${COLUMNS.map(c => {
+    let list = shown.filter(t => t.column === c.key);
+    if (c.key === "resolved") list = list.slice().reverse();
+    return `<section class="col"><h2><i class="dot" style="background:${COLOR[c.key]}"></i>${c.label} (${list.length})</h2>
+      <p class="hint">${c.hint}</p>${list.map(card).join("") || `<div class="empty">None</div>`}</section>`;
+  }).join("")}</div>`;
+  $("main").querySelectorAll(".card").forEach(el => {
+    const open = () => go(`#${state.effort}/${el.dataset.n}`);
+    el.onclick = open;
+    el.onkeydown = ev => { if (ev.key === "Enter") open(); };
+  });
+}
+
+function doc(name) {
+  $("main").innerHTML = `<div class="doc md">${render(effort().docs[name + ".md"], `.scratch/${state.effort}`)}</div>`;
+}
+
+function chip(n) {
+  const t = ticket(n);
+  return t ? `<a class="tag" style="border-color:${COLOR[t.column]}" href="#${state.effort}/${n}" title="${esc(LABEL[t.column])}">${n} ${esc(t.title)}</a>` : `<span class="tag err">${n} missing</span>`;
+}
+
+function drawer(n) {
+  const t = ticket(n);
+  if (!t) return closeDrawer();
+  const path = `.scratch/${state.effort}/issues/${t.file}`;
+  $("drawer-status").innerHTML = `<i class="dot" style="background:${COLOR[t.column]}"></i>${LABEL[t.column]} · ${esc(t.type)}${t.updated ? " · changed " + esc(date(t.updated)) : ""}`;
+  $("drawer-source").href = blobUrl(path);
+  $("drawer-rel").innerHTML =
+    (t.blockedBy.length ? `<span>Needs:</span>${t.blockedBy.map(chip).join("")}` : "") +
+    (t.blocks.length ? `<span>Unblocks:</span>${t.blocks.map(chip).join("")}` : "");
+  // The status bar already shows the header fields, so drop them from the body.
+  const body = t.body.replace(/^(Type|Status|Blocked by):.*\n?/gm, "");
+  $("drawer-body").innerHTML = render(body,`.scratch/${state.effort}/issues`);
+  $("drawer").classList.add("open");
+  $("drawer").setAttribute("aria-hidden", "false");
+  $("drawer").scrollTop = 0;
+}
+
+function closeDrawer() {
+  $("drawer").classList.remove("open");
+  $("drawer").setAttribute("aria-hidden", "true");
+}
+
+function go(hash) { location.hash = hash; }
+
+// Routes: #effort, #effort/map, #effort/spec, #effort/NN (ticket over the board).
+function route() {
+  const [slug, part] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (slug && DATA.efforts.some(e => e.slug === slug)) state.effort = slug;
+  const isTicket = /^\d{2}$/.test(part || "");
+  const view = part === "map" || part === "spec" ? part : (isTicket ? state.view : "board");
+  state.view = view;
+  header(); nav();
+  view === "board" ? board() : doc(view);
+  isTicket ? drawer(part) : closeDrawer();
+}
+
+$("drawer-close").onclick = () => go(state.view === "board" ? `#${state.effort}` : `#${state.effort}/${state.view}`);
+document.addEventListener("keydown", ev => { if (ev.key === "Escape" && $("drawer").classList.contains("open")) $("drawer-close").click(); });
+window.addEventListener("hashchange", route);
+if (!DATA.efforts.length) document.body.innerHTML = "<p style='padding:24px'>No efforts found under .scratch/.</p>";
+else route();
+</script>
+</body>
+</html>
