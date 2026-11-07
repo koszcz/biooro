@@ -51,10 +51,11 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [Conversation interface](issues/24-conversation-interface.md): click a person to talk. The Intern walks up first. Lines are Faction-coloured speech bubbles over the speaker, revealed at 45 characters a second. Choices are numbered bubbles over the Intern, with effects hidden. "…" badges show who can still talk, and brush-offs are short fading bubbles. Scripted scenes add letterbox bars.
 - [Survivability and the scripted week](issues/25-survivability-and-the-scripted-week.md): ignored Fallout now costs Performance 3, so faking everything gets the Intern fired. Other numbers stay. Naive policies are fired, and a mixed policy survives at Sanity 1. Late fakes stay free, and Conversations should net zero. Vitest holds three scripted weeks with exact asserts. No "Retry yesterday" trap was found.
 - [How Task choices play out](issues/27-how-task-choices-play-out.md): every Task has a Task place, with the Intern's desk as the default. The Intern walks there and plays a clip. Hours drain during the clip, input is locked, and Pressures change when it finishes. Sabotage shows a tag only the player sees. A delegated Colleague walks off and works on their own.
+- [Fold the open decisions into the spec](issues/26-fold-the-open-decisions-into-the-spec.md): the [spec](spec.md) is final with no open decisions. Eight small contradictions became fixes, such as dropping Wiola's tier variant and making the onboarding use up Ryszard's Monday Conversation.
 
 ## Not yet specified
 
-- Nothing. Every known gap is a ticket. The last one, [Fold the open decisions into the spec](issues/26-fold-the-open-decisions-into-the-spec.md), finishes the spec.
+- Nothing. The way to the destination is clear: the [spec](spec.md) is final.
 
 ## Out of scope
 
