@@ -86,11 +86,7 @@ export class Scenes {
     store.on("dayStarted", () => this.queueOnboarding());
     store.on("fired", ({ pressure }) => this.enqueue({ kind: "firing", pressure }));
     store.on("weekSurvived", ({ variant }) => this.enqueue({ kind: "survival", variant }));
-    // The Friday audit has no event. On Friday, the end-of-day steps run in the same command that spends
-    // the last hour, so the phase is "audit" once that command returns.
-    store.on("hoursChanged", ({ hoursLeft }) => {
-      if (hoursLeft === 0) queueMicrotask(() => this.queueAudit());
-    });
+    store.on("auditStarted", () => this.queueAudit());
   }
 
   /** Resolves when every queued scene has played, including scenes queued while it waits. */
@@ -100,8 +96,6 @@ export class Scenes {
       do {
         waited = this.queue;
         await waited;
-        // The audit is queued in a microtask after the command that reached it.
-        await Promise.resolve();
       } while (waited !== this.queue);
     })();
   }

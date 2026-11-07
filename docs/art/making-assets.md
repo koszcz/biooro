@@ -14,7 +14,7 @@ Use this guide when you build or restyle any 3D asset that the Kenney kits lack.
 
 ## Kit materials
 
-All kit materials have roughness 1, metalness 0, no glow, and no texture. Values are linear RGB.
+All kit materials have roughness 1, metalness 0, no glow, and no texture. Values are linear RGB. Two assets may glow (see "Approved glow exceptions").
 
 | Material | Linear RGB | Use for |
 | --- | --- | --- |
@@ -32,6 +32,17 @@ All kit materials have roughness 1, metalness 0, no glow, and no texture. Values
 | `plant` | 0.182, 0.821, 0.576 | Leaves |
 | `lamp` | 1, 0.914, 0.588 | Lamp shades |
 | `glass` | 0.698, 0.827, 0.769 | Glass, blended (`transparent`) |
+
+## Approved glow exceptions
+
+Only these two assets may glow. They mark the Smart range, and their glow is part of the tier look in the spec. Every other asset follows the "no glow" rule.
+
+| Asset | Code | What glows |
+| --- | --- | --- |
+| The Smart toilet's red LED | `smartToiletLed()` in `src/scene/rooms.ts` | An emissive red that follows the tier: off when Mundane, a faint glow when Odd, pulsing red when Wrong. `src/scene/tierLook.ts` sets it. |
+| The "SMART RANGE" sign by the Smart toilet | `sign()` with `glow: true` in `src/scene/rooms.ts` | The sign's own text texture, used as its emissive map, at a steady strength. |
+
+Do not add glow to any other asset without the user's approval. When the user approves one, add it to this table.
 
 ## Why the first printer stood out
 

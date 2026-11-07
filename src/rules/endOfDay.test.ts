@@ -51,6 +51,12 @@ describe("endDay and answerAudit on Friday", () => {
     expect(state.phase).toEqual({ kind: "audit" });
     expect(state.pressures).toEqual({ performance: 6, launchTeam: 5, paperTrail: 5, sanity: 6 });
     expect(events.map((event) => event.type)).not.toContain("dayEnded");
+    expect(events.at(-1)).toEqual({ type: "auditStarted" });
+  });
+
+  it("does not start the audit after a Firing", () => {
+    const { events } = endDay(fridayEvening({ paperTrail: 1 }));
+    expect(events.map((event) => event.type)).not.toContain("auditStarted");
   });
 
   it("fires before the audit when the end-of-day steps drop a Pressure to 0", () => {

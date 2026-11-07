@@ -219,7 +219,7 @@ Sources: [The week](issues/08-the-week.md) and [End-of-day order and Firing prio
 7. New Tasks arrive from today's Task slots. The strange Task swap uses the tier from step 2. Each Task fires `taskAssigned`.
 8. The game takes the day-start snapshot and autosaves.
 9. `dayStarted` fires.
-10. On Monday only, the onboarding scene plays.
+10. On Monday only, the onboarding scene plays. From Tuesday, the day card shows instead (see "The day card").
 
 ### End-of-day steps
 
@@ -237,7 +237,7 @@ During the day, a Firing happens straight after the Task choice or Ink choice th
 1. The 5 Task hours run out, or the Intern goes home.
 2. End-of-day steps 1 to 3 run.
 3. The Firing check runs.
-4. The Friday audit scene plays, and its answer applies its effect.
+4. `auditStarted` fires. The Friday audit scene plays, and its answer applies its effect.
 5. The Firing check runs again.
 6. If the Intern is not fired, the game autosaves, `dayEnded` fires, then `weekSurvived` fires, and the survival scene plays.
 
@@ -291,6 +291,7 @@ Each morning, take as many slots as new Tasks arrive, in this order:
 
 - If the Intern is not fired by the end of Friday, one Friday-evening scene plays.
 - It has three variants: Launch Team goodwill higher, Paper Trail goodwill higher, or both equal.
+- After it, the game shows the "You survived the week" card (see "After the week").
 
 ## 6. Screen and interface
 
@@ -401,11 +402,25 @@ Scripted scenes:
 - Lines and choices use the same bubbles, reveal and keys as a Conversation.
 - If the main speaker is in the room (Pan Zbigniew at the onboarding and at the Performance Firing), the Intern first walks beside them, and the two face each other.
 
+### The day card
+
+- From Tuesday, each morning ends with a full-screen day card. It shows the weekday name, such as "Tuesday", and a "Start the day" button.
+- The card covers the office. The hour blocks and Task bubbles hide, and any open popover closes.
+- The player presses "Start the day" to close the card and play the day.
+- The card also shows after a retry that restores Tuesday or a later day. Continue does not show it.
+- On Monday, the onboarding title card stands in for the day card.
+- A morning Firing shows the Firing screen instead (see "After a Firing").
+
 ### After a Firing
 
 - After the Firing scene, the screen offers a retry button and "Start over".
 - The retry button reads "Retry this day" after a Firing during the day, at the end of the day or at the Friday audit.
 - It reads "Retry yesterday" after a morning Firing.
+
+### After the week
+
+- After the survival scene, a full-screen card says "You survived the week". Its only button is "Start over", which starts a new game.
+- The save is already gone at this point, so the title screen offers only New game (see "Slots and loading").
 
 ## 7. Look and art
 
@@ -537,8 +552,15 @@ The UI, scene and dialogue folders change state only through these store command
 | `goHome()` | UI | Sets the hours left to 0 and runs the end-of-day steps. |
 | `startConversation(person, scripted)` | dialogue | Emits `conversationStarted`. |
 | `endConversation(inkStateJson)` | dialogue | Marks the Colleague as talked today, stores the Ink state JSON, autosaves and emits `conversationEnded`. |
+| `adjust(pressure, delta)` | dialogue | Ink's `adjust()`. Changes one Pressure at once. In a Colleague Conversation, a drop never takes it below 1. |
+| `setFlag(name)` | dialogue | Ink's `set_flag()`. Sets a story flag. |
+| `escalate()` | dialogue | Ink's `escalate()`. Adds 1 Escalation. |
+| `checkFiring(inkStateJson)` | dialogue | The Firing check after each Ink choice. A Firing ends the Conversation, autosaves and emits `fired`. |
+| `answerAudit(answer)` | dialogue | Applies the Friday audit answer after the audit scene ends, runs the second Firing check and autosaves. |
 | `retry()`, `startOver()` | UI | Restore the snapshot, or start a new game. |
+| `[REPLACE_STATE](state)` | debug panel | Development only. Swaps the whole `GameState`, autosaves and emits `tierChanged` and `hoursChanged` so the screen redraws. Only `src/store/debug.ts` can call it. |
 
+- `adjust`, `setFlag`, `escalate` and `checkFiring` need a Conversation or scripted scene in progress. They never autosave.
 - A click on a person goes to `src/scene/`. The scene walks the Intern there, then asks `src/dialogue/` to start the Conversation.
 
 ### Events
@@ -559,12 +581,14 @@ The store applies each rule result, then emits its events. Every subscriber reac
 | `taskActionFinished` | Task | The scene finishes the action | UI |
 | `conversationStarted` | person, scripted or not | A Conversation or scripted scene starts | UI, scene |
 | `conversationEnded` | person | A Conversation or scripted scene ends | UI, scene |
+| `auditStarted` | none | Friday's end-of-day steps finish without a Firing | dialogue |
 | `dayEnded` | day | The end-of-day steps finish | UI, audio |
 | `fired` | winning Pressure, retry kind | The Firing check finds a Pressure at 0 | UI, audio, dialogue |
 | `weekSurvived` | survival variant | Friday ends without a Firing | dialogue, store |
 
 - `taskActionStarted` locks input and starts the walk, clip and hour drain. `taskActionFinished` unlocks input.
 - `conversationStarted` locks input. `conversationEnded` unlocks it.
+- `auditStarted` starts the Friday audit scene. On Continue, a save in the audit phase replays the scene without the event.
 
 ### The Ink bridge
 

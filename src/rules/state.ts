@@ -69,6 +69,7 @@ export type GameEvent =
   | { type: "falloutArrived"; task: OpenTask }
   | { type: "taskAssigned"; task: OpenTask }
   | { type: "dayStarted"; day: number }
+  | { type: "auditStarted" }
   | { type: "dayEnded"; day: number }
   | { type: "weekSurvived"; variant: SurvivalVariant };
 
