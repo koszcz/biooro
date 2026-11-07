@@ -58,7 +58,8 @@ function fakeStage(walkSeconds = 0) {
 }
 
 function setUp(walkSeconds = 0) {
-  const store = createStore(memoryStorage());
+  const storage = memoryStorage();
+  const store = createStore(storage);
   store.startOver();
   const fake = fakeStage(walkSeconds);
   const cues: ActionCue[] = [];
@@ -71,7 +72,7 @@ function setUp(walkSeconds = 0) {
       actions.update(seconds);
     }
   };
-  return { store, actions, cues, finished, log: fake.log, tick };
+  return { storage, store, actions, cues, finished, log: fake.log, tick };
 }
 
 const openTask = (id: TaskId, extra: Partial<OpenTask> = {}): OpenTask => ({ id, fallout: false, ...extra });
@@ -216,5 +217,27 @@ describe("Task actions in the office", () => {
     expect(fired).toEqual([]);
     tick(1);
     expect(fired).toEqual(["performance"]);
+  });
+
+  it("holds the end of the day until the action finishes", () => {
+    const { store, tick } = setUp();
+    const ended: number[] = [];
+    store.on("dayEnded", (event) => ended.push(event.day));
+    Object.assign(store.state, { hoursLeft: 1 });
+    choose(store, openTask("mon-anyone"), "fake");
+    expect(ended).toEqual([]);
+    tick(1);
+    expect(ended).toEqual([1]);
+  });
+
+  it("loads the finished result when the game reloads during an action", () => {
+    const { storage, store } = setUp();
+    const task = store.state.openTasks[0];
+    store.chooseTask(task, "do");
+    const reloaded = createStore(storage);
+    expect(reloaded.continueGame()).toBe(true);
+    expect(reloaded.state.openTasks).not.toContainEqual(task);
+    expect(reloaded.state.pressures).toEqual(store.state.pressures);
+    expect(reloaded.state.hoursLeft).toBe(store.state.hoursLeft);
   });
 });
