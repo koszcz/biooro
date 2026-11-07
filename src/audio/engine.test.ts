@@ -92,6 +92,20 @@ describe("createAudio", () => {
     expect(played()).toContain("bubble");
   });
 
+  it("plays the Task bubble sound when a Fallout Task arrives", () => {
+    const { store, played } = setup();
+    store.emit({ type: "falloutArrived", task: {} as never });
+    expect(played()).toEqual(["bubble"]);
+  });
+
+  it("plays the Task choice sound when the action resolves, not when it starts", () => {
+    const { store, played } = setup();
+    store.emit({ type: "taskActionStarted", task: {} as never, choice: "fake", hours: 1 });
+    expect(played()).toEqual([]);
+    store.emit({ type: "taskResolved", task: {} as never, choice: "fake" });
+    expect(played()).toEqual(["choice-fake"]);
+  });
+
   it("starts the music variants and the hum looping", () => {
     const { ctx } = setup();
     const looping = ctx.sources.filter((s) => s.loop && s.started).map((s) => (s.buffer as { id: string }).id);

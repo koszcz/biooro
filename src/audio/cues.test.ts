@@ -6,10 +6,11 @@ const task = { id: "t", slot: 0 } as never;
 describe("cueFor", () => {
   it("picks a sound for each moment the spec lists", () => {
     expect(cueFor({ type: "taskAssigned", task })).toBe("bubble");
-    expect(cueFor({ type: "taskActionStarted", task, choice: "do", hours: 1 })).toBe("choice-do");
-    expect(cueFor({ type: "taskActionStarted", task, choice: "fake", hours: 1 })).toBe("choice-fake");
-    expect(cueFor({ type: "taskActionStarted", task, choice: "delegate", hours: 1 })).toBe("choice-delegate");
-    expect(cueFor({ type: "taskActionStarted", task, choice: "sabotage", hours: 1 })).toBe("choice-sabotage");
+    expect(cueFor({ type: "falloutArrived", task })).toBe("bubble");
+    expect(cueFor({ type: "taskResolved", task, choice: "do" })).toBe("choice-do");
+    expect(cueFor({ type: "taskResolved", task, choice: "fake" })).toBe("choice-fake");
+    expect(cueFor({ type: "taskResolved", task, choice: "delegate", colleague: "wiola" })).toBe("choice-delegate");
+    expect(cueFor({ type: "taskResolved", task, choice: "sabotage" })).toBe("choice-sabotage");
     expect(cueFor({ type: "fired", pressure: "sanity", retry: "day" } as never)).toBe("fired");
     expect(cueFor({ type: "dayEnded", day: 2 })).toBe("day-end");
   });
@@ -21,6 +22,7 @@ describe("cueFor", () => {
 
   it("stays quiet for other events", () => {
     expect(cueFor({ type: "hoursChanged", hoursLeft: 3 })).toBeUndefined();
+    expect(cueFor({ type: "taskActionStarted", task, choice: "do", hours: 1 })).toBeUndefined();
   });
 });
 

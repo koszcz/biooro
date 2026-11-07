@@ -9,8 +9,9 @@ export type MusicLevels = Readonly<Record<"clean" | "odd" | "wrong", number>>;
 export function cueFor(event: StoreEvent): SoundId | undefined {
   switch (event.type) {
     case "taskAssigned":
+    case "falloutArrived":
       return "bubble";
-    case "taskActionStarted":
+    case "taskResolved":
       return `choice-${event.choice}`;
     case "pressureChanged":
       return event.to < event.from ? "pressure-drop" : undefined;
