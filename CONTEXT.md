@@ -31,25 +31,53 @@ _Avoid_: Escalate side, whistleblowers
 ## Work
 
 **Task**:
-A piece of work a Boss assigns to the Intern. The more Tasks the Intern finishes, the more Tasks the Bosses assign.
+A piece of work a Boss or Colleague assigns to the Intern. The more Tasks the Intern finishes, the more Tasks the Bosses assign.
 _Avoid_: Job, assignment, quest, mission
 
+**Task side**:
+The Faction a Task serves, set by whoever assigns it. Some Tasks serve no Faction.
+_Avoid_: Alignment, allegiance
+
+**Fallout**:
+A Task that returns two days after the Intern fakes one. It takes longer than the original.
+_Avoid_: Consequence, penalty, callback
+
+**Break**:
+An hour the Intern spends away from Tasks to recover Sanity.
+_Avoid_: Rest, pause, downtime
+
 **Task choice**:
-How the Intern handles a Task: do it, fake it, delegate it, or sabotage it.
+How the Intern handles a Task: do it, fake it, delegate it, or sabotage it. Doing, faking, and delegating finish the Task. Sabotage does not.
 _Avoid_: Action, option
 
 **Pressure**:
-One of several visible measures of the Intern's standing, such as Boss patience, Colleague goodwill, or sanity. If any Pressure runs out, the Intern is fired.
+One of four visible measures of the Intern's standing: Performance, Launch Team goodwill, Paper Trail goodwill, and Sanity. If any Pressure runs out, the Intern is fired.
 _Avoid_: Meter, stat, health
 
+**Performance**:
+The Pressure that tracks how Pan Zbigniew rates the Intern's output.
+_Avoid_: Boss patience, productivity, score
+
+**Goodwill**:
+The Pressure that tracks how one Faction feels about the Intern. Each Faction has its own goodwill.
+_Avoid_: Reputation, favour, loyalty
+
+**Sanity**:
+The Pressure that tracks how much more of Biooro the Intern can take.
+_Avoid_: Stress, health, morale
+
+**Workday**:
+The fixed number of hours the Intern has each day. Each Task choice spends some of them.
+_Avoid_: Turn, energy, action points
+
 **Firing**:
-The failure state. The Intern loses the job and the run ends.
+The failure state. The Intern loses the job and the run ends. Each Pressure has its own Firing, with its own scene.
 _Avoid_: Game over, death
 
 ## World
 
 **Escalation**:
-The office becoming more absurd over time. It rises each day and rises further with the Intern's choices.
+The office becoming more absurd over time. It rises each day and rises further with choices that stir up the Smart range story. The player never sees it as a number; the office itself shows it.
 _Avoid_: Chaos level, weirdness
 
 **Biooro**:

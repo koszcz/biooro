@@ -31,11 +31,13 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [Company identity](issues/01-company-identity.md): Biooro, a mid-size toilet firm. Mundane tone with a sinister leak. The Intern joins Customer Complaints. The Smart range secretly harvests data, which only writers know.
 - [Isometric office look](issues/02-isometric-office-look.md): a fixed true-isometric camera with clamped wheel zoom and low near-wall stubs. The Kenney kits match at native scale, and Mini Characters has a `sit` clip.
 - [Cast](issues/06-cast.md): the Launch Team (Pan Zbigniew Pogodny, Ryszard Szablon, Wiola Ufna) buries Smart range complaints. The Paper Trail (Pani Halina Teczka, Kamil Przeciek) escalates them. Polish speaking names, English text.
+- [Pressures and Task choices](issues/07-pressures-and-task-choices.md): four Pressures from 0 to 10 (Performance, two Faction goodwills, Sanity). An 8-hour Workday. Deterministic costs per Task choice, two-day Fallout for fakes, and a daily goodwill drain for neutrality.
+- [The week](issues/08-the-week.md): five fixed day beats ending in a Friday Head office audit. Hidden Escalation with three tiers, fixed Task slots per day, four Firing scenes, and three survival variants.
+- [Lock the tech plan](issues/09-lock-the-tech-plan.md): TypeScript owns one pure `GameState`. Ink reads and writes it through seven game functions. Typed events drive the scene and DOM overlays. One `npm run check` enforces file sizes, folder boundaries, and Ink line IDs.
 
 ## Not yet specified
 
 - Character and art direction beyond the single room the look prototype covers.
-- UI for the Pressures and the Task inbox.
 - Audio: music, sound effects, and whether there is any voice.
 - Saving and loading progress.
 - Assembling the final spec document from the resolved tickets.
