@@ -5,11 +5,21 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { FURNITURE, type KitModel } from "../content";
 
-/** Kenney Mini Characters models the office uses. */
-export type CharacterModel = "character-male-c";
+/** Kenney Mini Characters models the office uses. Each person has a different base model. */
+const CHARACTERS = [
+  "character-male-c",
+  "character-male-d",
+  "character-male-a",
+  "character-female-b",
+  "character-female-e",
+  "character-male-f",
+] as const;
+export type CharacterModel = (typeof CHARACTERS)[number];
 export const INTERN_MODEL: CharacterModel = "character-male-c";
 
-const CHARACTERS: readonly CharacterModel[] = [INTERN_MODEL];
+/** Mini Characters accessories the cast wear on their heads. */
+const ACCESSORIES = ["aid-glasses", "aid-sunglasses"] as const;
+export type AccessoryModel = (typeof ACCESSORIES)[number];
 
 const furnitureModels = (): KitModel[] => [
   ...new Set(FURNITURE.flatMap((p) => (p.model === "printer" ? [] : [p.model]))),
@@ -19,7 +29,7 @@ const furnitureModels = (): KitModel[] => [
 export function glbPaths(): string[] {
   return [
     ...furnitureModels().map((name) => `models/furniture/${name}.glb`),
-    ...CHARACTERS.map((name) => `models/characters/${name}.glb`),
+    ...[...CHARACTERS, ...ACCESSORIES].map((name) => `models/characters/${name}.glb`),
   ];
 }
 
@@ -28,6 +38,7 @@ export type Character = { model: Group; clips: AnimationClip[] };
 export type ModelLibrary = {
   furniture(name: KitModel): Object3D;
   character(name: CharacterModel): Character;
+  accessory(name: AccessoryModel): Object3D;
 };
 
 /** Loads every GLB. `onProgress` gets the share loaded so far, from 0 to 1. */
@@ -60,5 +71,6 @@ export async function loadModels(onProgress: (share: number) => void): Promise<M
       const gltf = get(`models/characters/${name}.glb`);
       return { model: cloneSkinned(gltf.scene) as Group, clips: gltf.animations };
     },
+    accessory: (name) => cloneSkinned(get(`models/characters/${name}.glb`).scene),
   };
 }

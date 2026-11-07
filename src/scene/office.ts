@@ -1,13 +1,13 @@
 // Builds the office scene, renders it into the page and wires click-to-walk and the mouse wheel zoom.
 import {
   Clock,
-  Color,
   DirectionalLight,
   HemisphereLight,
   Mesh,
   MeshBasicMaterial,
   type Object3D,
   PCFSoftShadowMap,
+  PointLight,
   Raycaster,
   RingGeometry,
   Scene,
@@ -15,28 +15,34 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
-import type { Piece } from "../content";
+import { type Piece, SMART_TOILET } from "../content";
+import type { Tier } from "../rules";
 import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
+import { createCast } from "./cast";
 import { createFloor, FLOOR_DEPTH, FLOOR_WIDTH } from "./floor";
 import { buildFurniture } from "./furniture";
 import { createIntern, type Intern } from "./intern";
 import type { ModelLibrary } from "./models";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
+import { createTierLook, type TierSource } from "./tierLook";
 
-// The Mundane look from the art direction prototype. The tier ticket changes it.
-const BACKGROUND = "#2b3038";
 const TARGET_RING = "#ff2bd6";
 
-function addLights(scene: Scene): void {
-  scene.add(new HemisphereLight("#fff4e0", "#8a8478", 1.5));
-  const sun = new DirectionalLight("#fff6e6", 2);
+// The tier look sets the colours and strengths of these lights.
+function addLights(scene: Scene) {
+  const hemisphere = new HemisphereLight();
+  const sun = new DirectionalLight();
   sun.position.set(FLOOR_WIDTH * 0.9 - 0.5, 14, FLOOR_DEPTH * 1.3 - 0.5);
   sun.target.position.set((FLOOR_WIDTH - 1) / 2, 0, (FLOOR_DEPTH - 1) / 2);
   sun.castShadow = true;
   sun.shadow.mapSize.set(4096, 4096);
   Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 14, bottom: -14, far: 80 });
-  scene.add(sun, sun.target);
+  // The Smart toilet LED's red glow, in front of the toilet.
+  const ledGlow = new PointLight("#ff2a1a", 0, 3, 2);
+  ledGlow.position.set(SMART_TOILET.col, 0.7, SMART_TOILET.row + 0.7);
+  scene.add(hemisphere, sun, sun.target, ledGlow);
+  return { hemisphere, sun, ledGlow };
 }
 
 function createTargetRing(): Mesh {
@@ -75,15 +81,25 @@ function createWalking(intern: Intern, ring: Mesh) {
   };
 }
 
-export function startOfficeScene(container: HTMLElement, models: ModelLibrary): void {
+/** Starts the office. `store` sends `tierChanged`, and `startTier` is the tier when the office loads. */
+export function startOfficeScene(
+  container: HTMLElement,
+  models: ModelLibrary,
+  store: TierSource,
+  startTier: Tier,
+): void {
   const scene = new Scene();
-  scene.background = new Color(BACKGROUND);
   const floor = createFloor();
   const furniture = buildFurniture(models);
   const intern = createIntern(models);
+  const cast = createCast(models);
+  const people = Object.values(cast);
   const ring = createTargetRing();
-  scene.add(floor, buildRooms(), furniture.group, intern.root, ring);
-  addLights(scene);
+  const rooms = buildRooms();
+  scene.add(floor, rooms, furniture.group, intern.root, ring, ...people.map((p) => p.root));
+  const lights = addLights(scene);
+  const led = rooms.getObjectByName("smartToiletLed") as Mesh;
+  const tierLook = createTierLook({ scene, led, ...lights }, store, startTier);
 
   const centre = new Vector3((FLOOR_WIDTH - 1) / 2, 0, (FLOOR_DEPTH - 1) / 2);
   const camera = createIsoCamera(centre, container.clientWidth / container.clientHeight);
@@ -128,7 +144,9 @@ export function startOfficeScene(container: HTMLElement, models: ModelLibrary): 
   renderer.setAnimationLoop(() => {
     const seconds = Math.min(clock.getDelta(), 0.05);
     intern.update(seconds, clock.elapsedTime);
+    for (const person of people) person.update(seconds, clock.elapsedTime);
+    tierLook.update(seconds, clock.elapsedTime);
     renderer.render(scene, camera);
   });
-  Object.assign(window, { __office: { scene, camera, intern, walkTo } });
+  Object.assign(window, { __office: { scene, camera, intern, cast, walkTo } });
 }
