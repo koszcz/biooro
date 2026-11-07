@@ -1,7 +1,5 @@
 // English text for the title screen and the title cards of the scripted scenes. Placeholder wording for review.
-
-type Pressure = "performance" | "launchTeam" | "paperTrail" | "sanity";
-type SurvivalVariant = "launchTeam" | "paperTrail" | "equal";
+import type { Pressure, SurvivalVariant } from "../../rules/index";
 
 export const titleText = {
   gameTitle: "Biooro",

@@ -1,8 +1,6 @@
 // English text for the HUD, Task bubbles, the Task choice popover and the day card.
 import type { Assigner, ColleagueId, Faction } from "../../content/index";
-
-type Pressure = "performance" | "launchTeam" | "paperTrail" | "sanity";
-type TaskChoice = "do" | "fake" | "delegate" | "sabotage";
+import type { Pressure, TaskChoice } from "../../rules/index";
 
 /** The short gauge labels from the spec's "Pressures and hours" section. */
 export const GAUGE_LABELS: Record<Pressure, string> = {
@@ -13,12 +11,9 @@ export const GAUGE_LABELS: Record<Pressure, string> = {
 };
 
 /** One effect chip per Pressure, such as "+1 Perf". `change` already carries its sign. */
-export const EFFECT_CHIPS: Record<Pressure, (change: string) => string> = {
-  performance: (change) => `${change} Perf`,
-  launchTeam: (change) => `${change} Launch`,
-  paperTrail: (change) => `${change} Paper`,
-  sanity: (change) => `${change} Sanity`,
-};
+export const EFFECT_CHIPS = Object.fromEntries(
+  Object.entries(GAUGE_LABELS).map(([pressure, label]) => [pressure, (change: string) => `${change} ${label}`]),
+) as Record<Pressure, (change: string) => string>;
 
 export const TASK_CHOICE_LABELS: Record<TaskChoice, string> = {
   do: "Do it",

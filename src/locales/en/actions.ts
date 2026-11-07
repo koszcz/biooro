@@ -1,7 +1,6 @@
 // English text for Task actions in the office: the tag over the Intern, sparkles, hand-off lines and floats.
 import type { ColleagueId } from "../../content/index";
-
-type Pressure = "performance" | "launchTeam" | "paperTrail" | "sanity";
+import type { Pressure } from "../../rules/index";
 
 export const actionText = {
   /** Before the title of the Task whose action is playing. */
