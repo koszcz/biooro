@@ -10,8 +10,9 @@
     "check:lint": "biome check .",
     "check:types": "tsc",
     "check:test": "vitest run",
-    "check:ink": "echo 'Ink compile: no Ink files yet. The Ink bridge ticket adds this check.'",
-    "check:line-ids": "echo 'Line ID check: no Ink files yet. A later ticket adds this check.'",
+    "check:ink": "node --experimental-strip-types --no-warnings scripts/ink.ts",
+    "check:line-ids": "node --experimental-strip-types --no-warnings scripts/line-ids.ts",
+    "ink:ids": "node --experimental-strip-types --no-warnings scripts/line-ids.ts --fix",
     "check:size": "node --experimental-strip-types --no-warnings scripts/check-file-size.ts",
     "check:deps": "depcruise --config .dependency-cruiser.cjs src",
     "check:audio": "echo 'Audio check: no audio manifest yet. The audio ticket adds this check.'"
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "easystarjs": "^0.4.4",
+    "inkjs": "^2.4.0",
     "three": "^0.187.0"
   },
   "devDependencies": {
