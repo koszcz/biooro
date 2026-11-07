@@ -2,3 +2,4 @@
 export type { HeadLocator, HeadOwner, ScreenPoint } from "./heads";
 export { loadModels, type ModelLibrary } from "./models";
 export { type Office, type OfficeEvents, startOfficeScene } from "./office";
+export type { ActionCue } from "./taskActions";

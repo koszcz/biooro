@@ -23,6 +23,8 @@ export interface Popover {
   openList(over: BubbleOwner): void;
   /** Whose popover is open, or null. */
   readonly owner: BubbleOwner | null;
+  /** Whose Task list the open Task came from, or null when it did not come from a list. */
+  readonly listOwner: BubbleOwner | null;
   close(): void;
   readonly isOpen: boolean;
   /** Redraws the content, or closes when the Task is no longer open. */
@@ -149,6 +151,9 @@ export function createPopover(root: HTMLElement, headAt: HeadLocator, actions: P
     },
     get owner() {
       return current?.over ?? null;
+    },
+    get listOwner() {
+      return current?.fromList ? current.over : null;
     },
     open(task, over) {
       current = { task, over, fromList: false };

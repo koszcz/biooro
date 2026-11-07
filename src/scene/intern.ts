@@ -11,7 +11,7 @@ import {
   type Object3D,
   RingGeometry,
 } from "three";
-import { type Cell, INTERN_START } from "../content";
+import { type Cell, INTERN_START, type TaskClip } from "../content";
 import { INTERN_MODEL, type ModelLibrary } from "./models";
 import { addVest } from "./outfit";
 import { Walker } from "./walker";
@@ -22,7 +22,8 @@ const STRIPE = "#ffffff";
 export const SEAT_LIFT = 0.13;
 const ARROW_HEIGHT = 1.1;
 
-export type Pose = "idle" | "walk" | "sit";
+/** A Kenney Mini Characters clip: standing, walking, sitting, a Task place clip or a nod. */
+export type Pose = "idle" | "walk" | "sit" | "emote-yes" | TaskClip;
 
 export type Intern = {
   root: Group;

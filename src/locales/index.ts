@@ -1,5 +1,6 @@
 // String tables for every line the player reads.
 
+export { actionText, HAND_OFF_LINES, PRESSURE_FLOATS } from "./en/actions";
 export {
   ASSIGNER_NAMES,
   DELEGATE_NOTES,

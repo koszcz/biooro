@@ -1,5 +1,6 @@
 // Task bubbles: speech bubbles over each assigner's head, following them every frame.
 // A crowded person shows their two most urgent bubbles and a "+N more" pill. A group slides in from screen edges.
+import { actionText } from "../locales";
 import type { GameState, OpenTask } from "../rules";
 import { el } from "./dom";
 import { type BubbleGroup, type BubbleOwner, type BubbleView, bubbleGroups, type MorePill } from "./hudView";
@@ -14,14 +15,18 @@ export type HeadLocator = (owner: BubbleOwner) => ScreenPoint;
 const STACK_GAP = 12;
 
 export interface Bubbles {
-  /** `openFor` is whose popover is open, or null. Everyone else's bubbles fade. */
-  render(state: GameState, enabled: boolean, openFor: BubbleOwner | null): void;
+  /**
+   * `openFor` is whose popover is open, or null. Everyone else's bubbles fade.
+   * While a Task action plays, every bubble dims and `busy` shows "⏳" before its title.
+   */
+  render(state: GameState, enabled: boolean, openFor: BubbleOwner | null, busy?: OpenTask | null): void;
   /** Moves each bubble over its person's head. Call it every frame. */
   follow(): void;
 }
 
-function taskBubble(view: BubbleView, onOpen: (task: OpenTask, over: BubbleOwner) => void): HTMLElement {
-  const node = el("div", `hud-bubble${view.fallout ? " fallout" : ""}`, view.fallout ? `⚠ ${view.text}` : view.text);
+function taskBubble(view: BubbleView, busy: boolean, onOpen: (task: OpenTask, over: BubbleOwner) => void): HTMLElement {
+  const text = view.fallout ? `⚠ ${view.text}` : view.text;
+  const node = el("div", `hud-bubble${view.fallout ? " fallout" : ""}`, busy ? `${actionText.busy} ${text}` : text);
   node.style.setProperty("--c", SIDE_COLOURS[view.border]);
   node.dataset.task = view.task.id;
   node.addEventListener("click", (event) => {
@@ -53,10 +58,13 @@ export function createBubbles(
   let placed: { node: HTMLElement; over: BubbleOwner }[] = [];
 
   return {
-    render(state, enabled, openFor) {
+    render(state, enabled, openFor, busy) {
+      layer.classList.toggle("dim", Boolean(busy));
+      const isBusy = (task: OpenTask) =>
+        busy?.id === task.id && busy.fallout === task.fallout && busy.strange === task.strange;
       const groups = state.phase.kind === "workday" ? bubbleGroups(state) : [];
       placed = groups.flatMap((group) => {
-        const nodes = group.bubbles.map((view) => taskBubble(view, onOpen));
+        const nodes = group.bubbles.map((view) => taskBubble(view, isBusy(view.task), onOpen));
         if (group.pill) nodes.push(pillBubble(group, group.pill, onList));
         return nodes.map((node) => {
           node.style.pointerEvents = enabled ? "auto" : "none";

@@ -16,7 +16,14 @@ export type Pointer = {
   onFloorClick(listener: (ray: Raycaster) => void): void;
 };
 
-export function createPointer(canvas: HTMLElement, camera: Camera, people: Object3D[], events: LockEvents): Pointer {
+/** `busy` locks the office as well, for example while a Task action plays. */
+export function createPointer(
+  canvas: HTMLElement,
+  camera: Camera,
+  people: Object3D[],
+  events: LockEvents,
+  busy: () => boolean = () => false,
+): Pointer {
   const ray = new Raycaster();
   const point = new Vector2();
   const aim = (event: PointerEvent) => {
@@ -48,13 +55,16 @@ export function createPointer(canvas: HTMLElement, camera: Camera, people: Objec
     locked = false;
   });
   canvas.addEventListener("pointermove", (event) => {
-    if (locked) return;
+    if (locked || busy()) {
+      hover(undefined);
+      return;
+    }
     aim(event);
     hover(personUnder(ray, people));
   });
   canvas.addEventListener("pointerleave", () => hover(undefined));
   canvas.addEventListener("pointerdown", (event) => {
-    if (locked) return;
+    if (locked || busy()) return;
     aim(event);
     const person = personUnder(ray, people);
     if (person) for (const listener of clicks) listener(person);

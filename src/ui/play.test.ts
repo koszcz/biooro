@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createStore, type SaveStorage } from "../store";
+import { createActing } from "./acting";
 import { taskChoiceViews } from "./choices";
 import { createPlay } from "./play";
 
@@ -14,17 +15,20 @@ function memoryStorage(): SaveStorage {
 
 function newPlay() {
   const store = createStore(memoryStorage());
+  const play = createPlay(store, createActing(store));
   store.startOver();
-  return { store, play: createPlay(store) };
+  return { store, play };
 }
 
 describe("createPlay", () => {
-  it("resolves a Task choice at once", () => {
+  it("starts a Task choice and leaves the finish to the scene", () => {
     const { store, play } = newPlay();
     const finished: string[] = [];
     store.on("taskActionFinished", (event) => finished.push(event.task.id));
     const task = store.state.openTasks[0];
     play.pick(task, taskChoiceViews(store.state, task)[0]);
+    expect(finished).toEqual([]);
+    store.finishTaskAction();
     expect(finished).toEqual(["mon-zbigniew"]);
     expect(store.state.hoursLeft).toBe(5);
     expect(store.state.pressures.performance).toBe(7);
@@ -48,7 +52,10 @@ describe("createPlay", () => {
 
   it("goes home at once when no Tasks are open", () => {
     const { store, play } = newPlay();
-    for (const task of [...store.state.openTasks]) play.pick(task, taskChoiceViews(store.state, task)[1]);
+    for (const task of [...store.state.openTasks]) {
+      play.pick(task, taskChoiceViews(store.state, task)[1]);
+      store.finishTaskAction();
+    }
     expect(play.goHome()).toBe("done");
     expect(store.state.day).toBe(2);
   });
@@ -61,8 +68,10 @@ describe("createPlay", () => {
       const state = store.state;
       const task = state.openTasks[0];
       const pick = task && taskChoiceViews(state, task).find((view) => view.locked === null && view.rows === undefined);
-      if (task && pick) play.pick(task, pick);
-      else if (state.hoursLeft > 0 && state.pressures.sanity < 10) play.takeBreak();
+      if (task && pick) {
+        play.pick(task, pick);
+        store.finishTaskAction();
+      } else if (state.hoursLeft > 0 && state.pressures.sanity < 10) play.takeBreak();
       else play.goHome({ confirmed: true });
     }
     expect(days).toEqual([2, 3, 4, 5]);

@@ -18,7 +18,7 @@ const dialogue = new Dialogue(store, story);
 // in the middle of a Conversation replay it from its start. The HUD draws a loaded save when it mounts.
 const continued = store.continueGame(dialogue.loadInk);
 const office = startOfficeScene(container, models, store, tierOf(store.state.escalation));
-mountGameUi(container, store, office.headAt);
+mountGameUi(container, store, office.headAt, office.onActionCue);
 const talk = mountTalk(container, office, store);
 const conversations = new Conversations(store, dialogue, office, talk.view);
 talk.connect((person) => conversations.availability(person));

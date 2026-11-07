@@ -18,6 +18,8 @@ export interface HudLook {
   confirming: boolean;
   /** True for the render right after `goodwillRevealed`, so the goodwill gauges pop in. */
   revealGoodwill: boolean;
+  /** True while a Task action plays. Break and "Go home" are disabled. */
+  locked?: boolean;
 }
 
 export interface Hud {
@@ -88,9 +90,10 @@ export function createHud(root: HTMLElement, actions: HudActions): Hud {
     render(state, look) {
       const workday = state.phase.kind === "workday";
       renderPreview(state, look.preview, look.revealGoodwill);
-      goHomeButton.disabled = !workday;
+      goHomeButton.disabled = !workday || Boolean(look.locked);
+      if (look.locked) breakButton.disabled = true;
       confirm.hidden = !(workday && look.confirming);
-      empty.hidden = !(workday && state.openTasks.length === 0);
+      empty.hidden = !(workday && state.openTasks.length === 0) || Boolean(look.locked);
     },
   };
 }
