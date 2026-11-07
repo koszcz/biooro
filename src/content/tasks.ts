@@ -102,5 +102,22 @@ export function taskById(id: TaskId): Task {
   return TASKS[id];
 }
 
+export type ColleagueId = "ryszard" | "wiola" | "kamil";
+
+/** What a Colleague does with a delegated Task. */
+export type Handling = "fakes" | "doesProperly" | "escalates";
+
+export interface Colleague {
+  name: string;
+  faction: Faction;
+  handling: Handling;
+}
+
+export const COLLEAGUES: Record<ColleagueId, Colleague> = {
+  ryszard: { name: "Ryszard", faction: "launchTeam", handling: "fakes" },
+  wiola: { name: "Wiola", faction: "launchTeam", handling: "doesProperly" },
+  kamil: { name: "Kamil", faction: "paperTrail", handling: "escalates" },
+};
+
 /** Why a Task choice or Break is locked. The locales hold the text the player reads. */
-export type LockedReason = "notEnoughHours" | "alreadyFaked";
+export type LockedReason = "notEnoughHours" | "alreadyFaked" | "ryszardAlreadyFaked" | `${ColleagueId}DoesntTrust`;

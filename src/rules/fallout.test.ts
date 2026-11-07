@@ -58,6 +58,12 @@ describe("Task choices on a Fallout Task", () => {
     expect(taskChoiceLockedReason(workday(3, { openTasks: [fallout] }), fallout, "fake")).toBe("alreadyFaked");
   });
 
+  it("Delegate it to Ryszard is locked because he already faked it", () => {
+    const state = workday(3, { openTasks: [fallout] });
+    expect(taskChoiceLockedReason(state, fallout, "delegate", "ryszard")).toBe("ryszardAlreadyFaked");
+    expect(taskChoiceLockedReason(state, fallout, "delegate", "wiola")).toBeNull();
+  });
+
   it("Sabotage it follows the normal row and creates no Fallout", () => {
     const { state } = applyTaskChoice(workday(3, { openTasks: [fallout] }), fallout, "sabotage");
     expect(state.pressures).toEqual({ performance: 5, launchTeam: 4, paperTrail: 7, sanity: 7 });

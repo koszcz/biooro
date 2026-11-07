@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { TASK_SLOTS, TASKS, taskById } from "./index";
+import { COLLEAGUES, TASK_SLOTS, TASKS, taskById } from "./index";
+
+describe("Colleagues", () => {
+  it("match the spec's cast table and delegation rules", () => {
+    expect(COLLEAGUES).toEqual({
+      ryszard: { name: "Ryszard", faction: "launchTeam", handling: "fakes" },
+      wiola: { name: "Wiola", faction: "launchTeam", handling: "doesProperly" },
+      kamil: { name: "Kamil", faction: "paperTrail", handling: "escalates" },
+    });
+  });
+});
 
 describe("Task slots", () => {
   it("match the spec's Task slots table, with each assigner's Task side", () => {

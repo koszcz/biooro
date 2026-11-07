@@ -1,6 +1,6 @@
 # Delegation
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 02
 
 ## What to build
@@ -23,3 +23,7 @@ Add "Delegate it" to the rules, so the Intern can hand a Task to Ryszard, Wiola 
 ## Spec
 
 - [4. Game rules](../../intern-game/spec.md#4-game-rules): "Delegating" and "Helping a Faction".
+
+## Comments
+
+Built on branch ticket-03, merged into intern-game-build at c8ace99. Not built here: the "Ryszard already faked this once" lock on Fallout Tasks, which belongs with ticket 04's Fallout limits.
