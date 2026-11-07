@@ -1,3 +1,4 @@
+// Tests for store.ts: chooseTask and finishTaskAction. store.test.ts and the other store.*.test.ts files hold the rest.
 import { describe, expect, it } from "vitest";
 import type { StoreEvent } from "./events";
 import { FakeStorage } from "./fakeStorage";
