@@ -51,8 +51,12 @@ An hour the Intern spends away from Tasks to recover Sanity.
 _Avoid_: Rest, pause, downtime
 
 **Conversation**:
-A talk between the Intern and a Boss or Colleague, from its first line to its last. A Conversation that is cut off midway counts as never held.
+A talk between the Intern and a Boss or Colleague, from its first line to its last. A Conversation that is cut off midway counts as never held. Each Colleague offers one Conversation per day. Bosses offer none outside scripted scenes.
 _Avoid_: Chat, dialogue, talk
+
+**Brush-off**:
+The one line a Boss or Colleague says when the Intern clicks them and they have no Conversation to offer. It changes nothing.
+_Avoid_: Bark, idle line, dismissal
 
 **Task choice**:
 How the Intern handles a Task: do it, fake it, delegate it, or sabotage it. Every Task choice closes the Task. Doing, faking, and delegating finish it. Sabotage closes it without finishing it.

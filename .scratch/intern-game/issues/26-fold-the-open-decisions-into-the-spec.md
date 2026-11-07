@@ -20,3 +20,4 @@ Done when the spec has no open decisions and someone can build the slice from it
 ## Comments
 
 - From [End-of-day order and Firing priority](22-end-of-day-order-and-firing-priority.md): Escalation is always at least 5 on Friday morning, so the tier is always Wrong when the survival scene plays. The "tier variant of Wiola's final line" can never vary. Decide whether it reads Escalation instead, or drop the variant. The new "Go home" button also needs a place in the UI section.
+- From [How often the Intern can talk](23-how-often-the-intern-can-talk.md): the "Content to write" table needs 14 Colleague Conversations and 15 brush-off lines (one per cast member per Escalation tier). The Ink bridge section needs the per-Conversation caps and the rule that `adjust()` from a Conversation never goes below 1.

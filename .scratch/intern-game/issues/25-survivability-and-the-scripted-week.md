@@ -28,3 +28,4 @@ Sources: [The week](08-the-week.md), [Pressures and Task choices](07-pressures-a
 ## Comments
 
 - From [End-of-day order and Firing priority](22-end-of-day-order-and-firing-priority.md): a "Go home" button ends the day early and loses the leftover hours. Choices that cost more hours than are left are locked. Leftover hours can no longer become free Sanity through Breaks unless the policy chooses them. On Friday the end-of-day steps run before the audit.
+- From [How often the Intern can talk](23-how-often-the-intern-can-talk.md): each Colleague offers one Conversation per day. Each Conversation may change one Pressure by at most 1, never Performance, and never below 1. Talking can therefore add up to 3 points a day to Sanity or goodwill. Check the policies both with and without these gains, and decide whether the scripted week holds Conversations.

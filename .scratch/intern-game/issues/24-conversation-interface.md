@@ -19,3 +19,7 @@ No ticket decides this. Build a rough prototype in `prototype/pressures-ui` to r
 - How the limit from [How often the Intern can talk](23-how-often-the-intern-can-talk.md) shows on screen.
 
 Sources: [Pressures and Task inbox UI](11-pressures-and-inbox-ui.md), [Isometric office look](02-isometric-office-look.md), [Audio](14-audio.md).
+
+## Comments
+
+- From [How often the Intern can talk](23-how-often-the-intern-can-talk.md): each Colleague offers one Conversation per day, and Bosses have none outside scripted scenes. After the limit, and always for a Boss, a click shows a one-line brush-off with no choices. Decide where brush-offs appear and how the screen shows that a Colleague's Conversation is used up.
