@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createStore, type Person, type SaveStorage, type StoreEvent } from "../store/index";
+import type { CastId } from "../content/index";
+import { createStore, type SaveStorage, type StoreEvent } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import { Conversations, type Speaker, type TalkStage, type TalkView } from "./conversations";
@@ -17,7 +18,7 @@ function memoryStorage(): SaveStorage {
 class FakeView implements TalkView {
   readonly shown: string[] = [];
   readonly brushOffs: string[] = [];
-  readonly approached: Person[] = [];
+  readonly approached: CastId[] = [];
   onSay: (speaker: Speaker, text: string) => void = () => {};
 
   constructor(private readonly pick = 0) {}
@@ -32,11 +33,11 @@ class FakeView implements TalkView {
     return this.pick;
   }
 
-  brushOff(person: Person, text: string): void {
+  brushOff(person: CastId, text: string): void {
     this.brushOffs.push(`${person}: ${text}`);
   }
 
-  approach(person: Person): void {
+  approach(person: CastId): void {
     this.approached.push(person);
   }
 }
@@ -47,12 +48,12 @@ class FakeStage implements TalkStage {
   /** Each walk waits for this before the Intern arrives. */
   arrival: Promise<void> = Promise.resolve();
 
-  async walkBeside(person: Person): Promise<void> {
+  async walkBeside(person: CastId): Promise<void> {
     this.moves.push(`walk to ${person}`);
     await this.arrival;
   }
 
-  faceEachOther(person: Person): () => void {
+  faceEachOther(person: CastId): () => void {
     this.moves.push(`face ${person}`);
     return () => this.moves.push(`${person} turns back`);
   }

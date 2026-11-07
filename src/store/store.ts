@@ -1,6 +1,6 @@
 // The game store: the only way other folders change state. It applies rule results, autosaves and emits events.
 
-import { COLLEAGUES } from "../content/index";
+import { type CastId, COLLEAGUES } from "../content/index";
 import {
   type AuditAnswer,
   adjustPressure,
@@ -25,9 +25,9 @@ import {
   taskChoiceHours,
   tierOf,
 } from "../rules/index";
-import { Emitter, type Listener, type Person, type StoreEvent, type StoreEventType } from "./events";
+import { Emitter, type Listener, type StoreEvent, type StoreEventType } from "./events";
 
-function isColleague(person: Person): person is ColleagueId {
+function isColleague(person: CastId): person is ColleagueId {
   return person in COLLEAGUES;
 }
 
@@ -50,7 +50,7 @@ interface TaskAction {
 
 export class GameStore {
   private action: TaskAction | null = null;
-  private conversation: { person: Person; scripted: boolean } | null = null;
+  private conversation: { person: CastId; scripted: boolean } | null = null;
   private current: GameState = newGame();
   private inkStateJson: string | null = null;
   private snapshot: DayStartSnapshot | null = null;
@@ -158,7 +158,7 @@ export class GameStore {
   }
 
   /** Emits `conversationStarted`. The store does not autosave until the Conversation ends. */
-  startConversation(person: Person, scripted: boolean): void {
+  startConversation(person: CastId, scripted: boolean): void {
     this.conversation = { person, scripted };
     this.emitter.emit({ type: "conversationStarted", person, scripted });
   }
@@ -210,7 +210,7 @@ export class GameStore {
     return true;
   }
 
-  private inConversation(): { person: Person; scripted: boolean } {
+  private inConversation(): { person: CastId; scripted: boolean } {
     if (!this.conversation) throw new Error("Ink writes need a Conversation in progress.");
     return this.conversation;
   }

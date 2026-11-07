@@ -1,6 +1,7 @@
 // Plays the scripted scenes the game starts: the Monday onboarding, the four Firings, the Friday audit and survival.
+import type { CastId } from "../content/index";
 import type { AuditAnswer, Pressure, SurvivalVariant } from "../rules/index";
-import type { GameStore, Person } from "../store/index";
+import type { GameStore } from "../store/index";
 import type { Dialogue, DialogueChoice } from "./bridge";
 import { playDialogue, type TalkStage, type TalkView } from "./conversations";
 
@@ -22,12 +23,12 @@ export const ONBOARDED_FLAG = "onboarded";
 interface SceneSpec {
   knot: string;
   /** The scene's main person. Lines without a speaker tag are theirs. */
-  person: Person;
+  person: CastId;
   /** True when the main speaker is in the room, so the Intern walks beside them first. */
   walkUp: boolean;
 }
 
-const FIRING_PEOPLE: Record<Pressure, Person> = {
+const FIRING_PEOPLE: Record<Pressure, CastId> = {
   performance: "zbigniew",
   launchTeam: "ryszard",
   paperTrail: "halina",
@@ -35,7 +36,7 @@ const FIRING_PEOPLE: Record<Pressure, Person> = {
   sanity: "zbigniew",
 };
 
-const SURVIVAL_PEOPLE: Record<SurvivalVariant, Person> = {
+const SURVIVAL_PEOPLE: Record<SurvivalVariant, CastId> = {
   launchTeam: "zbigniew",
   paperTrail: "halina",
   // Nobody wins. Every line carries #speaker:intern.

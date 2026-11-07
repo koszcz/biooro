@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import type { CastId } from "../content/index";
 import type { GameState } from "../rules/index";
-import { createStore, type Person, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import type { Speaker, TalkStage, TalkView } from "./conversations";
@@ -39,11 +40,11 @@ class FakeView implements TalkView {
 class FakeStage implements TalkStage {
   readonly moves: string[] = [];
 
-  async walkBeside(person: Person): Promise<void> {
+  async walkBeside(person: CastId): Promise<void> {
     this.moves.push(`walk to ${person}`);
   }
 
-  faceEachOther(person: Person): () => void {
+  faceEachOther(person: CastId): () => void {
     this.moves.push(`face ${person}`);
     return () => this.moves.push(`${person} turns back`);
   }
