@@ -1,5 +1,7 @@
 // The one serialisable GameState object and the events rule functions return.
-import type { Faction, TaskId } from "../content/index";
+import type { ColleagueId, Faction, TaskId } from "../content/index";
+
+export type { ColleagueId };
 
 /** The four Pressures, in Firing priority order. */
 export const PRESSURES = ["performance", "launchTeam", "paperTrail", "sanity"] as const;
@@ -11,9 +13,8 @@ export const PRESSURE_START = 6;
 export const WORKDAY_HOURS = 8;
 
 export type Tier = "mundane" | "odd" | "wrong";
-export type TaskChoice = "do" | "fake" | "sabotage";
+export type TaskChoice = "do" | "fake" | "delegate" | "sabotage";
 export type RetryKind = "thisDay" | "yesterday";
-export type ColleagueId = "ryszard" | "wiola" | "kamil";
 
 /** One entry in the open list. A Fallout Task returns with the same Task ID. */
 export interface OpenTask {
@@ -51,7 +52,7 @@ export type GameEvent =
   | { type: "hoursChanged"; hoursLeft: number }
   | { type: "pressureChanged"; pressure: Pressure; from: number; to: number }
   | { type: "tierChanged"; tier: Tier }
-  | { type: "taskResolved"; task: OpenTask; choice: TaskChoice }
+  | { type: "taskResolved"; task: OpenTask; choice: TaskChoice; colleague?: ColleagueId }
   | { type: "fired"; pressure: Pressure; retry: RetryKind };
 
 export interface RuleResult {
