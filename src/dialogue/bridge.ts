@@ -1,0 +1,177 @@
+// Runs Ink knots with inkjs and binds the seven game functions to the store.
+import { Story } from "inkjs";
+import { PRESSURES, type Pressure, tierOf } from "../rules/index";
+import type { GameStore, Person } from "../store/index";
+import { ConversationCaps } from "./caps";
+
+export interface DialogueLine {
+  text: string;
+  tags: string[];
+  /** The line's `#id:` tag, without the `id:`. */
+  id: string | null;
+}
+
+export interface DialogueChoice {
+  index: number;
+  text: string;
+  id: string | null;
+}
+
+export interface DialogueOptions {
+  /** Throw when a Colleague Conversation breaks a Conversation cap. On in development and tests. */
+  strict?: boolean;
+}
+
+function idOf(tags: string[]): string | null {
+  const tag = tags.find((name) => name.startsWith("id:"));
+  return tag ? tag.slice("id:".length).trim() : null;
+}
+
+function toPressure(name: unknown): Pressure {
+  const pressure = PRESSURES.find((known) => known === name);
+  if (!pressure) throw new Error(`Ink named an unknown Pressure: ${String(name)}.`);
+  return pressure;
+}
+
+export class Dialogue {
+  private readonly story: Story;
+  private readonly strict: boolean;
+  /** The Ink state JSON the story last matched in the store. */
+  private knownInkState: string | null = null;
+  private caps: ConversationCaps | null = null;
+  private running = false;
+
+  constructor(
+    private readonly store: GameStore,
+    storyJson: string | Record<string, unknown>,
+    options: DialogueOptions = {},
+  ) {
+    this.story = new Story(typeof storyJson === "string" ? storyJson : JSON.stringify(storyJson));
+    this.strict = options.strict ?? import.meta.env.DEV;
+    this.bindReads();
+    this.bindWrites();
+  }
+
+  /** True from `start()` until the Conversation ends or a Firing ends it. */
+  get active(): boolean {
+    return this.running;
+  }
+
+  /** Checks a saved Ink state for `GameStore.continueGame`. Throws if Ink cannot load it. */
+  readonly loadInk = (inkStateJson: string | null): void => {
+    if (inkStateJson === null) return;
+    new Story(this.story.ToJson() ?? "").state.LoadJson(inkStateJson);
+  };
+
+  /** Starts a Conversation or scripted scene at `knot`. Caps apply only when `scripted` is false. */
+  start(person: Person, knot: string, scripted: boolean): void {
+    if (this.running) throw new Error("A Conversation is already running.");
+    this.syncInkState();
+    this.story.ChoosePathString(knot);
+    this.caps = scripted ? null : new ConversationCaps(knot);
+    this.running = true;
+    this.store.startConversation(person, scripted);
+  }
+
+  get canContinue(): boolean {
+    return this.running && this.story.canContinue;
+  }
+
+  get choices(): DialogueChoice[] {
+    if (!this.running || this.story.canContinue) return [];
+    return this.story.currentChoices.map((choice) => ({
+      index: choice.index,
+      text: choice.text,
+      id: idOf(choice.tags ?? []),
+    }));
+  }
+
+  /** Runs to the next line with text, and skips empty ones. Each write applies at once. */
+  continue(): DialogueLine {
+    if (!this.canContinue) throw new Error("The Conversation has no next line.");
+    let line = this.step();
+    while (this.running && line.text === "" && this.story.canContinue) line = this.step();
+    return line;
+  }
+
+  /** Runs one line, then the Firing check. The end of the knot ends the Conversation. */
+  private step(): DialogueLine {
+    const line = this.nextLine();
+    const inkState = this.story.state.toJson();
+    if (this.store.checkFiring(inkState)) this.finish(inkState);
+    else if (!this.story.canContinue && this.story.currentChoices.length === 0) {
+      this.store.endConversation(inkState);
+      this.finish(inkState);
+    }
+    return line;
+  }
+
+  choose(index: number): void {
+    if (!this.running || this.story.canContinue) throw new Error("There is no choice to make now.");
+    this.story.ChooseChoiceIndex(index);
+  }
+
+  /** Reads every line of a knot outside a Conversation, such as a brush-off. Its writes throw. */
+  readLines(knot: string): DialogueLine[] {
+    if (this.running) throw new Error("A Conversation is already running.");
+    this.syncInkState();
+    this.story.ChoosePathString(knot);
+    const lines: DialogueLine[] = [];
+    while (this.story.canContinue) {
+      const line = this.nextLine();
+      if (line.text !== "") lines.push(line);
+    }
+    if (this.story.currentChoices.length > 0) throw new Error(`Knot "${knot}" offers choices outside a Conversation.`);
+    return lines;
+  }
+
+  private nextLine(): DialogueLine {
+    const text = (this.story.Continue() ?? "").trim();
+    const tags = this.story.currentTags ?? [];
+    return { text, tags, id: idOf(tags) };
+  }
+
+  private finish(inkState: string): void {
+    this.knownInkState = inkState;
+    this.running = false;
+    this.caps = null;
+  }
+
+  /** Loads the store's Ink state when it differs from the story's, such as after a retry or a load. */
+  private syncInkState(): void {
+    const saved = this.store.inkState;
+    if (saved === this.knownInkState) return;
+    if (saved === null) this.story.ResetState();
+    else this.story.state.LoadJson(saved);
+    this.knownInkState = saved;
+  }
+
+  private bindReads(): void {
+    const store = this.store;
+    this.story.BindExternalFunction("pressure", (name: unknown) => store.state.pressures[toPressure(name)], true);
+    this.story.BindExternalFunction("tier", () => tierOf(store.state.escalation), true);
+    this.story.BindExternalFunction("flag", (name: unknown) => store.state.flags.includes(String(name)), true);
+    this.story.BindExternalFunction("day", () => store.state.day, true);
+  }
+
+  private bindWrites(): void {
+    this.story.BindExternalFunction(
+      "adjust",
+      (name: unknown, delta: unknown) => {
+        const pressure = toPressure(name);
+        if (this.strict) this.caps?.adjust(pressure, Number(delta));
+        this.store.adjust(pressure, Number(delta));
+      },
+      false,
+    );
+    this.story.BindExternalFunction("set_flag", (name: unknown) => this.store.setFlag(String(name)), false);
+    this.story.BindExternalFunction(
+      "escalate",
+      () => {
+        if (this.strict) this.caps?.escalate();
+        this.store.escalate();
+      },
+      false,
+    );
+  }
+}

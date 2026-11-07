@@ -1,6 +1,6 @@
 # Ink pipeline and bridge
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 05
 
 ## What to build
@@ -27,3 +27,7 @@ Let Ink stories run in the game and talk to the store.
 - [10. Tech plan](../../intern-game/spec.md#10-tech-plan): "The Ink bridge".
 - [4. Game rules](../../intern-game/spec.md#4-game-rules): "Conversations".
 - [11. Writing](../../intern-game/spec.md#11-writing): "Files" and "Translation-safe rules".
+
+## Comments
+
+Built on branch ticket-11, merged into intern-game-build at a937a29. Also built ticket 05's leftover: a Firing ends the Conversation, saves Ink state, then emits `fired`. Choices where the spec is silent: added Ink write commands `adjust`, `setFlag`, `escalate`, `checkFiring(inkStateJson)`; the Firing check runs after every Ink line because Ink applies writes on the next line; empty Ink lines are skipped; `readLines(knot)` serves brush-offs and throws on writes; a choice's `#id:` goes inside its brackets; Ink names Pressures by code name such as "launchTeam". store.ts is near the 300-line limit.

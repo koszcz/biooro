@@ -3,17 +3,23 @@
 import { COLLEAGUES } from "../content/index";
 import {
   type AuditAnswer,
+  adjustPressure,
   answerAudit,
   applyBreak,
   applyTaskChoice,
   type ColleagueId,
+  checkFiring,
   endDay,
+  escalate,
   type GameEvent,
   type GameState,
   goHome,
   newGame,
   type OpenTask,
+  PRESSURE_MIN,
+  type Pressure,
   type RuleResult,
+  setFlag,
   startDay,
   type TaskChoice,
   taskChoiceHours,
@@ -168,6 +174,50 @@ export class GameStore {
     this.inkStateJson = inkStateJson;
     this.autosave();
     this.emitter.emit({ type: "conversationEnded", person });
+  }
+
+  /** Ink's `adjust()`. In a Colleague Conversation, a drop never takes a Pressure below 1. */
+  adjust(pressure: Pressure, delta: number): void {
+    const floor = this.inConversation().scripted ? PRESSURE_MIN : 1;
+    this.apply(adjustPressure(this.current, pressure, delta, floor));
+  }
+
+  /** Ink's `set_flag()`. */
+  setFlag(name: string): void {
+    this.inConversation();
+    this.apply(setFlag(this.current, name));
+  }
+
+  /** Ink's `escalate()`. */
+  escalate(): void {
+    this.inConversation();
+    this.apply(escalate(this.current));
+  }
+
+  /**
+   * The Firing check after each Ink choice. A Firing ends the Conversation with this Ink state,
+   * autosaves and emits `fired`. Returns true when the Intern is fired.
+   */
+  checkFiring(inkStateJson: string): boolean {
+    this.inConversation();
+    if (this.current.phase.kind !== "workday") return false;
+    const result = checkFiring(this.current, "thisDay");
+    if (result.events.length === 0) return false;
+    this.current = result.state;
+    this.endConversation(inkStateJson);
+    this.emitAll(result);
+    return true;
+  }
+
+  private inConversation(): { person: Person; scripted: boolean } {
+    if (!this.conversation) throw new Error("Ink writes need a Conversation in progress.");
+    return this.conversation;
+  }
+
+  /** Applies a rule result and emits its events at once. Inside a Conversation, this never saves. */
+  private apply(result: RuleResult): void {
+    this.current = result.state;
+    this.emitAll(result);
   }
 
   /** Applies the Friday audit answer. A finished week removes the save, so Continue goes away. */

@@ -2,8 +2,9 @@
 export { type AuditAnswer, answerAudit, endDay, survivalVariant } from "./endOfDay";
 export { tierOf } from "./escalation";
 export { FALLOUT_DELAY_DAYS, FALLOUT_DO_HOURS, queueFallout } from "./fallout";
+export { adjustPressure, escalate, setFlag } from "./inkWrites";
 export { startDay } from "./morning";
-export { firingPressure } from "./pressures";
+export { checkFiring, firingPressure } from "./pressures";
 export {
   type ColleagueId,
   FRIDAY,
