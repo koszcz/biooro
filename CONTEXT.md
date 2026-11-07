@@ -87,7 +87,7 @@ The Pressure that tracks how much more of Biooro the Intern can take.
 _Avoid_: Stress, health, morale
 
 **Workday**:
-The fixed number of hours the Intern has each day. Each Task choice spends some of them.
+The fixed number of hours the Intern has each day. Each Task choice spends some of them. The Workday ends when the hours run out or when the Intern goes home early. Leftover hours are lost.
 _Avoid_: Turn, energy, action points
 
 **Firing**:

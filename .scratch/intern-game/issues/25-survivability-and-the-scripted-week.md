@@ -24,3 +24,7 @@ Do this:
 6. Check that "Retry yesterday" can always save the run. After a morning Firing, the player replays the previous day from its snapshot. Confirm that some sequence of Task choices and Breaks on that day keeps Sanity above 0 the next morning. See [Retry after a morning Firing](17-retry-after-a-morning-firing.md).
 
 Sources: [The week](08-the-week.md), [Pressures and Task choices](07-pressures-and-task-choices.md), [Lock the tech plan](09-lock-the-tech-plan.md), [Retry after a morning Firing](17-retry-after-a-morning-firing.md).
+
+## Comments
+
+- From [End-of-day order and Firing priority](22-end-of-day-order-and-firing-priority.md): a "Go home" button ends the day early and loses the leftover hours. Choices that cost more hours than are left are locked. Leftover hours can no longer become free Sanity through Breaks unless the policy chooses them. On Friday the end-of-day steps run before the audit.

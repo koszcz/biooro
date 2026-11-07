@@ -16,3 +16,7 @@ Do this:
 - Check the whole spec again for contradictions. Open a new ticket for any real decision.
 
 Done when the spec has no open decisions and someone can build the slice from it without asking anything.
+
+## Comments
+
+- From [End-of-day order and Firing priority](22-end-of-day-order-and-firing-priority.md): Escalation is always at least 5 on Friday morning, so the tier is always Wrong when the survival scene plays. The "tier variant of Wiola's final line" can never vary. Decide whether it reads Escalation instead, or drop the variant. The new "Go home" button also needs a place in the UI section.

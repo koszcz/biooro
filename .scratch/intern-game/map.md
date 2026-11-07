@@ -46,6 +46,7 @@ A spec for the vertical slice plus a locked tech plan. The slice covers one in-g
 - [What sabotage does to a Task](issues/19-what-sabotage-does-to-a-task.md): sabotage closes the Task for good. It is handled but not finished, so it never rolls over, never returns, and adds nothing to Task growth.
 - [Task choices on a Fallout Task](issues/20-task-choices-on-a-fallout-task.md): a Fallout Task cannot be faked or given to Ryszard. Doing, delegating, and sabotage work as normal. If it is unhandled at the end of its arrival day, it costs Performance 2 and Escalation 1, then expires.
 - [What helps a Faction](issues/21-what-helps-a-faction.md): a Task choice helps whichever Faction the real work serves. Faking and Ryszard help nobody, and Wiola helps the Task side. Kamil always helps the Paper Trail: he does its Tasks and flips unsided ones. Fallout uses the same table.
+- [End-of-day order and Firing priority](issues/22-end-of-day-order-and-firing-priority.md): fixed morning and end-of-day step lists with one Firing check at the end of the night. Friday runs the end-of-day steps before the audit. Ties go Performance, Launch Team, Paper Trail, Sanity. A "Go home" button ends the day early.
 
 ## Not yet specified
 
