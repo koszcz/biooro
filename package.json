@@ -1,0 +1,35 @@
+{
+  "name": "biooro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "npm run check:lint && npm run check:types && npm run check:test && npm run check:ink && npm run check:line-ids && npm run check:size && npm run check:deps && npm run check:audio",
+    "check:lint": "biome check .",
+    "check:types": "tsc",
+    "check:test": "vitest run",
+    "check:ink": "echo 'Ink compile: no Ink files yet. The Ink bridge ticket adds this check.'",
+    "check:line-ids": "echo 'Line ID check: no Ink files yet. A later ticket adds this check.'",
+    "check:size": "node --experimental-strip-types --no-warnings scripts/check-file-size.ts",
+    "check:deps": "depcruise --config .dependency-cruiser.cjs src",
+    "check:audio": "echo 'Audio check: no audio manifest yet. The audio ticket adds this check.'"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "dependencies": {
+    "easystarjs": "^0.4.4",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.6",
+    "@types/node": "^26.6.6",
+    "@types/three": "^0.187.0",
+    "dependency-cruiser": "^16.10.4",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.6",
+    "vitest": "^4.1.12"
+  }
+}

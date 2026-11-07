@@ -8,7 +8,7 @@ index.html, that holds every effort, its map, its spec, and its tickets.
 It needs only the Python standard library. The page renders the Markdown
 in the browser.
 
-The GitHub Pages workflow in .github/workflows/backlog.yml runs this
+The GitHub Pages workflow in .github/workflows/pages.yml runs this
 script on every push to main, so the published page stays current.
 """
 import json
