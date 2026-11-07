@@ -111,6 +111,10 @@ export function mountTalk(
       brushOff = el;
       setTimeout(() => layer.remove(el), BRUSH_OFF_MS);
     },
+    approach(person) {
+      // The marks clear it when the Conversation ends.
+      container.dataset.conversation = person;
+    },
   };
 
   return { view, connect };

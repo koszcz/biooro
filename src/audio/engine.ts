@@ -91,7 +91,14 @@ export function createAudio(store: AudioStore, ctx: SoundContext, buffers: Buffe
     silenced = false;
     fade();
   });
-  for (const type of ["taskAssigned", "falloutArrived", "taskResolved", "pressureChanged", "fired", "dayEnded"] as const) {
+  for (const type of [
+    "taskAssigned",
+    "falloutArrived",
+    "taskResolved",
+    "pressureChanged",
+    "fired",
+    "dayEnded",
+  ] as const) {
     store.on(type, (event) => {
       const cue = cueFor(event);
       if (cue) play(cue);

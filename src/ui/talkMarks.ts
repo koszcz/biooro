@@ -11,8 +11,8 @@ const BADGE_LIFT = -6;
 const HOVER_DROP = 8;
 
 /**
- * Mounts the marks. While a Conversation runs, the container carries `data-conversation` with the
- * partner's ID, so other overlays can hide or fade their own elements.
+ * Mounts the marks. From the click until a Conversation ends, the container carries `data-conversation` with the
+ * partner's ID, so other overlays can hide or fade their own elements. The marks clear it when it ends.
  * Returns a function that connects the marks to whatever knows who still has a Conversation today.
  */
 export function mountTalkMarks(

@@ -192,7 +192,11 @@ export function startOfficeScene(
     onPersonClick: pointer.onPersonClick,
     onPersonHover: pointer.onPersonHover,
     onFrame: (listener) => frameListeners.push(listener),
-    walkBeside: (person) => new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve)),
+    walkBeside: (person) => {
+      // The Conversation starts on arrival, so the walk locks the office itself.
+      pointer.lock();
+      return new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve));
+    },
     faceEachOther: (person) => faceEachOther(person, cast, intern),
   };
 }

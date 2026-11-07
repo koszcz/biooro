@@ -16,11 +16,13 @@ export interface TalkView {
   /** Shows the choices and resolves with the index the player picks. */
   choose(choices: readonly string[]): Promise<number>;
   brushOff(person: Person, text: string): void;
+  /** Locks the overlays while the Intern walks to `person` for a Conversation. `conversationEnded` unlocks them. */
+  approach(person: Person): void;
 }
 
 /** The office side of a Conversation. */
 export interface TalkStage {
-  /** Walks the Intern to the first free cell beside the person. */
+  /** Walks the Intern to the first free cell beside the person. Clicks on the office do nothing until the Conversation ends. */
   walkBeside(person: Person): Promise<void>;
   /** Turns the two to face each other. Returns a function that turns the person back. */
   faceEachOther(person: Person): () => void;
@@ -68,7 +70,7 @@ export class Conversations {
     return "talk";
   }
 
-  /** Starts the Conversation at the click, so input locks during the walk. It resolves when it ends. */
+  /** Locks input at the click and walks the Intern over. The Conversation starts on arrival. Resolves when it ends. */
   async click(person: Person): Promise<void> {
     if (this.running || this.dialogue.active || this.store.state.phase.kind !== "workday") return;
     if (this.availability(person) !== "talk" || !isColleague(person)) {
@@ -78,9 +80,11 @@ export class Conversations {
     }
     this.running = true;
     try {
-      this.dialogue.start(person, conversationKnot(person, this.store.state.day), false);
+      const knot = conversationKnot(person, this.store.state.day);
+      this.view.approach(person);
       await this.stage.walkBeside(person);
       const turnBack = this.stage.faceEachOther(person);
+      this.dialogue.start(person, knot, false);
       await playDialogue(this.dialogue, this.view, person);
       turnBack();
     } finally {

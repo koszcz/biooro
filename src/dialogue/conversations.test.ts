@@ -17,6 +17,7 @@ function memoryStorage(): SaveStorage {
 class FakeView implements TalkView {
   readonly shown: string[] = [];
   readonly brushOffs: string[] = [];
+  readonly approached: Person[] = [];
   onSay: (speaker: Speaker, text: string) => void = () => {};
 
   constructor(private readonly pick = 0) {}
@@ -34,14 +35,21 @@ class FakeView implements TalkView {
   brushOff(person: Person, text: string): void {
     this.brushOffs.push(`${person}: ${text}`);
   }
+
+  approach(person: Person): void {
+    this.approached.push(person);
+  }
 }
 
 /** A stage that records each walk and turn. */
 class FakeStage implements TalkStage {
   readonly moves: string[] = [];
+  /** Each walk waits for this before the Intern arrives. */
+  arrival: Promise<void> = Promise.resolve();
 
   async walkBeside(person: Person): Promise<void> {
     this.moves.push(`walk to ${person}`);
+    await this.arrival;
   }
 
   faceEachOther(person: Person): () => void {
@@ -103,6 +111,22 @@ describe("talking to a Colleague", () => {
     };
     await talk.click("wiola");
     expect(events.at(-1)).toEqual({ type: "conversationEnded", person: "wiola" });
+  });
+
+  it("locks the overlay at the click, and starts the Conversation only when the Intern arrives", async () => {
+    const { view, stage, events, talk } = setUp();
+    let arrive = () => {};
+    stage.arrival = new Promise((resolve) => {
+      arrive = resolve;
+    });
+    const talking = talk.click("wiola");
+    await Promise.resolve();
+    expect(view.approached).toEqual(["wiola"]);
+    expect(events).toEqual([]);
+
+    arrive();
+    await talking;
+    expect(events[0]).toEqual({ type: "conversationStarted", person: "wiola", scripted: false });
   });
 
   it("is busy from the click until the Conversation ends", async () => {

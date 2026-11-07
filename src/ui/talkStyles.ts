@@ -63,11 +63,13 @@ export const TALK_CSS = `
 export const FLOAT_DURATION_MS = FLOAT_MS;
 
 /**
- * While a Conversation runs, the container carries `data-conversation`. The partner's Task bubbles hide,
- * everyone else's fade to 25% and ignore clicks, and Break and "Go home" are disabled. The gauges stay.
+ * From the click on a Colleague until the Conversation ends, the container carries `data-conversation`.
+ * The partner's Task bubbles hide, everyone else's fade to 25% and ignore clicks, and Break and "Go home" are
+ * disabled. An open popover hides until `conversationStarted` closes it. The gauges stay.
  */
 export const CONVERSATION_FOCUS_CSS = `
 [data-conversation] .hud-bubble{opacity:.25!important;pointer-events:none!important}
+[data-conversation] .hud-pop{display:none}
 [data-conversation] .hud-hours button,[data-conversation] .hud-confirm button{pointer-events:none!important;opacity:.45}
 ${Object.keys(PERSON_COLOURS)
   .map((id) => `[data-conversation="${id}"] .hud-bubble[data-over="${id}"]{display:none}`)

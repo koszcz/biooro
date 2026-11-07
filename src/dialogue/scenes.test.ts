@@ -32,6 +32,8 @@ class FakeView implements TalkView {
   }
 
   brushOff(): void {}
+
+  approach(): void {}
 }
 
 class FakeStage implements TalkStage {
@@ -92,6 +94,15 @@ describe("the Monday onboarding", () => {
     expect(stage.moves).toEqual(["walk to zbigniew", "face zbigniew", "zbigniew turns back"]);
     expect(view.shown[0]).toMatch(/^zbigniew: /);
     expect(store.state.flags).toContain("onboarded");
+  });
+
+  it("starts the scene only once the Intern stands beside Pan Zbigniew", async () => {
+    const { store, stage, scenes } = setUp();
+    store.on("conversationStarted", () => stage.moves.push("scene starts"));
+    store.startOver();
+    await scenes.settled;
+
+    expect(stage.moves.slice(0, 3)).toEqual(["walk to zbigniew", "face zbigniew", "scene starts"]);
   });
 });
 

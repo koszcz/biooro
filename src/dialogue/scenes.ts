@@ -149,9 +149,10 @@ export class Scenes {
     this.openFrame(scene);
     const { knot, person, walkUp } = sceneSpec(scene);
     let answer: AuditAnswer | undefined;
-    this.dialogue.start(person, knot, true);
+    // The frame already locks input, so the scene starts once the Intern arrives.
     if (walkUp) await this.stage.walkBeside(person);
     const turnBack = walkUp ? this.stage.faceEachOther(person) : undefined;
+    this.dialogue.start(person, knot, true);
     await playDialogue(this.dialogue, this.view, person, (choice) => {
       answer ??= auditAnswerOf(choice);
     });
