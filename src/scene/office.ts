@@ -111,10 +111,7 @@ export type Office = {
   faceEachOther(person: CastId): () => void;
 };
 
-/**
- * Starts the office. `store` sends `tierChanged` and the Task actions, which the scene finishes.
- * `startTier` is the tier when the office loads.
- */
+/** Starts the office at `startTier`. `store` sends `tierChanged` and the Task actions, which the scene finishes. */
 export function startOfficeScene(
   container: HTMLElement,
   models: ModelLibrary,
@@ -164,7 +161,7 @@ export function startOfficeScene(
   const actions = createTaskActions(store, stage, (cue) => {
     for (const listener of cueListeners) listener(cue);
   });
-  // Input is also locked while a Task action plays.
+  // Input is also locked while a Task action plays, and from the walk to a Conversation until it ends.
   const pointer = createPointer(renderer.domElement, camera, hitTargets, store, () => actions.playing);
   pointer.onFloorClick((ray) => {
     const hit = ray.intersectObjects([...furniture.chairs, floor], true)[0];
@@ -193,7 +190,6 @@ export function startOfficeScene(
     onPersonHover: pointer.onPersonHover,
     onFrame: (listener) => frameListeners.push(listener),
     walkBeside: (person) => {
-      // The Conversation starts on arrival, so the walk locks the office itself.
       pointer.lock();
       return new Promise((resolve) => walkTo({ beside: COLLEAGUE_SPOTS[person].cell }, resolve));
     },
