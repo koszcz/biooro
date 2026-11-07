@@ -17,3 +17,7 @@ This is a single-context repo, with one `CONTEXT.md` and `docs/adr/` at the root
 ### Prototypes
 
 Before you read prototype code or check a prototype in the browser, read `prototype/README.md`.
+
+### 3D assets
+
+Before you build or restyle any 3D asset, read `docs/art/making-assets.md`.
