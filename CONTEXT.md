@@ -51,8 +51,16 @@ A talk between the Intern and a Boss or Colleague, from its first line to its la
 _Avoid_: Chat, dialogue, talk
 
 **Task choice**:
-How the Intern handles a Task: do it, fake it, delegate it, or sabotage it. Doing, faking, and delegating finish the Task. Sabotage does not.
+How the Intern handles a Task: do it, fake it, delegate it, or sabotage it. Every Task choice closes the Task. Doing, faking, and delegating finish it. Sabotage closes it without finishing it.
 _Avoid_: Action, option
+
+**Handled**:
+A Task the Intern has made any Task choice on. A handled Task is closed. A Task left open at the end of a day is unhandled.
+_Avoid_: Done, resolved
+
+**Finished**:
+A Task the Intern did, faked, or delegated. Only finished Tasks make the Bosses assign more. A sabotaged Task is handled but not finished.
+_Avoid_: Completed, done
 
 **Pressure**:
 One of four visible measures of the Intern's standing: Performance, Launch Team goodwill, Paper Trail goodwill, and Sanity. If any Pressure runs out, the Intern is fired.

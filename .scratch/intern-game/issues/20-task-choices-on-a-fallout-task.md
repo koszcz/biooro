@@ -20,3 +20,7 @@ Decide:
 - Whether an ignored Fallout Task rolls over.
 
 Source: [Pressures and Task choices](07-pressures-and-task-choices.md).
+
+## Comments
+
+- From [What sabotage does to a Task](19-what-sabotage-does-to-a-task.md): sabotage closes a Task without finishing it, and it never rolls over or returns. Decide whether a sabotaged Fallout Task follows the same rule.
