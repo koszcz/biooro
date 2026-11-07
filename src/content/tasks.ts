@@ -74,9 +74,33 @@ export const TASK_SLOTS: Record<Weekday, readonly TaskId[]> = {
   5: ["fri-zbigniew", "fri-halina", "fri-wiola", "fri-ryszard"],
 };
 
+/**
+ * A strange Task replaces the last slot used on its day. It keeps that slot's assigner and Task side,
+ * so it names only its own Task place.
+ */
+export interface StrangeTask {
+  place: TaskPlaceId;
+}
+
+// Each strange Task starts at the Intern's desk. The "Task wording" ticket sets the real places.
+export const STRANGE_TASKS = {
+  "tue-strange": { place: "desk" },
+  "wed-strange": { place: "desk" },
+  "thu-strange": { place: "desk" },
+} as const satisfies Record<string, StrangeTask>;
+
+export type StrangeTaskId = keyof typeof STRANGE_TASKS;
+
+/** The days with a strange Task. */
+export const STRANGE_TASK_BY_DAY: Partial<Record<Weekday, StrangeTaskId>> = {
+  2: "tue-strange",
+  3: "wed-strange",
+  4: "thu-strange",
+};
+
 export function taskById(id: TaskId): Task {
   return TASKS[id];
 }
 
 /** Why a Task choice or Break is locked. The locales hold the text the player reads. */
-export type LockedReason = "notEnoughHours";
+export type LockedReason = "notEnoughHours" | "alreadyFaked";

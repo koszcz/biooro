@@ -1,6 +1,12 @@
 // English Task wording, keyed by Task ID. The type checker fails if a Task has no wording.
 // These are placeholders. The "Task wording" ticket writes the real lines.
-import type { TaskId } from "../../content/index";
+import type { StrangeTaskId, TaskId } from "../../content/index";
+
+export const STRANGE_TASK_WORDING: Record<StrangeTaskId, string> = {
+  "tue-strange": "Placeholder: Tuesday's strange Smart range Task.",
+  "wed-strange": "Placeholder: Wednesday's strange Smart range complaint.",
+  "thu-strange": "Placeholder: Thursday's strange Smart range Task.",
+};
 
 export const TASK_WORDING: Record<TaskId, string> = {
   "mon-zbigniew": "Placeholder: Pan Zbigniew's Monday Task.",

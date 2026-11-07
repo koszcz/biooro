@@ -1,6 +1,7 @@
 // "Do it", "Fake it" and "Sabotage it": hours, effects, help and locks for one Task choice.
 import { type Faction, type LockedReason, taskById } from "../content/index";
 import { addEscalation } from "./escalation";
+import { FALLOUT_DO_HOURS, queueFallout } from "./fallout";
 import { adjustPressures, checkFiring, type PressureDeltas } from "./pressures";
 import type { GameEvent, GameState, OpenTask, RuleResult, TaskChoice } from "./state";
 
@@ -39,9 +40,15 @@ function outcomeOf(side: Faction | null, choice: TaskChoice): ChoiceOutcome {
 }
 
 /** Why a Task choice is locked, or `null` when the Intern can make it. */
-export function taskChoiceLockedReason(state: GameState, _task: OpenTask, choice: TaskChoice): LockedReason | null {
-  if (TASK_CHOICE_HOURS[choice] > state.hoursLeft) return "notEnoughHours";
+export function taskChoiceLockedReason(state: GameState, task: OpenTask, choice: TaskChoice): LockedReason | null {
+  if (task.fallout && choice === "fake") return "alreadyFaked";
+  if (taskChoiceHours(task, choice) > state.hoursLeft) return "notEnoughHours";
   return null;
+}
+
+/** The hours a Task choice costs. "Do it" on a Fallout Task takes 4 hours. */
+export function taskChoiceHours(task: OpenTask, choice: TaskChoice): number {
+  return task.fallout && choice === "do" ? FALLOUT_DO_HOURS : TASK_CHOICE_HOURS[choice];
 }
 
 function isSameTask(a: OpenTask, b: OpenTask): boolean {
@@ -57,7 +64,7 @@ export function applyTaskChoice(state: GameState, task: OpenTask, choice: TaskCh
   if (reason !== null) throw new Error(`Task choice ${choice} is locked: ${reason}.`);
 
   const outcome = outcomeOf(taskById(task.id).side, choice);
-  const hoursLeft = state.hoursLeft - TASK_CHOICE_HOURS[choice];
+  const hoursLeft = state.hoursLeft - taskChoiceHours(task, choice);
   const events: GameEvent[] = [{ type: "hoursChanged", hoursLeft }];
   let next: GameState = {
     ...state,
@@ -70,6 +77,7 @@ export function applyTaskChoice(state: GameState, task: OpenTask, choice: TaskCh
         : state.helpedToday,
   };
 
+  if (choice === "fake") next = queueFallout(next, task);
   const pressures = adjustPressures(next, outcome.deltas);
   // One Task choice adds at most 1 Escalation: sabotage, or any help to the Paper Trail.
   const escalates = choice === "sabotage" || outcome.helps === "paperTrail";
