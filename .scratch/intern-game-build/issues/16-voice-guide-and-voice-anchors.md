@@ -15,7 +15,7 @@ You write one voice anchor scene for each of the five cast members. Agents canno
 ## Done when
 
 - [x] `docs/writing/voice.md` exists, with one sheet per cast member.
-- [ ] All five anchors exist and compile, with `#id:` tags on every line.
+- [x] All five anchors exist and compile, with `#id:` tags on every line.
 
 ## Spec
 
@@ -25,3 +25,4 @@ You write one voice anchor scene for each of the five cast members. Agents canno
 
 - 2026-11-08, agent: Step 1 is done. `docs/writing/voice.md` holds the tone rules, a Factions summary, the Conversation rules and one sheet per cast member. Lines that the spec does not state are marked _(draft)_ for you to keep, change or remove. Steps 2 to 4 are yours.
 - 2026-11-08, agent: The user approved the character sheets as drafted. I removed the _(draft)_ markers. Step 2 is done. Steps 3 and 4 remain.
+- 2026-11-08, agent: At the user's request, I drafted the five voice anchors as `<person>_voice_anchor` knots and linked each from its sheet. This bends the spec rule that the user writes them. `src/dialogue/anchors.test.ts` plays every anchor on every choice path at every tier. The user still has to rewrite or approve each anchor. Until then, tickets 18, 19 and 21 stay blocked.
