@@ -1,6 +1,6 @@
 #!/bin/sh
-# Makes the placeholder sound files in public/audio/ with ffmpeg. Run it once by hand, then commit the files.
-# The game never runs this. Replace the files with CC0 Kenney sounds when you download them.
+# Makes the placeholder music and office hum in public/audio/ with ffmpeg. Run it once by hand, then commit the files.
+# The game never runs this. Replace these files with CC0 sounds when you find a muzak loop and a hum.
 set -e
 out="$(dirname "$0")/../public/audio"
 mkdir -p "$out"
@@ -27,15 +27,4 @@ f -i "$out/music-clean.wav" -af "asetrate=22050*1.06,aresample=22050,highpass=f=
 f -f lavfi -i "aevalsrc=0.12*sin(2*PI*100*t)+0.06*sin(2*PI*200*t)+0.03*sin(2*PI*50*t):d=4:s=22050" \
   -af "afade=t=in:d=0.1,afade=t=out:st=3.9:d=0.1" $r "$out/hum.wav"
 
-# Short cues: tone(expression, seconds, filter, name).
-tone() { f -f lavfi -i "aevalsrc=$1:d=$2:s=22050" -af "$3" $r "$out/$4.wav"; }
-tone "0.4*sin(2*PI*880*t)" 0.15 "afade=t=out:st=0.05:d=0.1" bubble
-tone "0.4*sin(2*PI*520*t)" 0.12 "afade=t=out:st=0.03:d=0.09" choice-do
-tone "0.4*sin(2*PI*390*t)" 0.12 "afade=t=out:st=0.03:d=0.09" choice-fake
-tone "0.4*sin(2*PI*660*t)" 0.12 "afade=t=out:st=0.03:d=0.09" choice-delegate
-tone "0.4*sin(2*PI*290*t)" 0.12 "afade=t=out:st=0.03:d=0.09" choice-sabotage
-tone "0.4*sin(2*PI*(500-300*t)*t)" 0.4 "afade=t=out:st=0.2:d=0.2" pressure-drop
-tone "0.5*sin(2*PI*(220-100*t)*t)" 0.9 "afade=t=out:st=0.5:d=0.4" fired
-tone "0.35*sin(2*PI*392*t)*lt(t\,0.3)+0.35*sin(2*PI*523*t)*gte(t\,0.3)" 0.8 "afade=t=out:st=0.5:d=0.3" day-end
-tone "0.5*sin(2*PI*400*t)" 0.05 "afade=t=out:st=0.02:d=0.03" blip
 rm -r "$tmp"
