@@ -20,3 +20,7 @@ You write one voice anchor scene for each of the five cast members. Agents canno
 ## Spec
 
 - [11. Writing](../../intern-game/spec.md#11-writing): "Who writes what" and "Files".
+
+## Comments
+
+- 2026-11-08, agent: Step 1 is done. `docs/writing/voice.md` holds the tone rules, a Factions summary, the Conversation rules and one sheet per cast member. Lines that the spec does not state are marked _(draft)_ for you to keep, change or remove. Steps 2 to 4 are yours.
