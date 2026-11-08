@@ -20,6 +20,13 @@ INCLUDE main.ink
     Do not ask about the launch. #id:test.test_colleague_conversation.6
 - -> END
 
+// Lines for each speaker tag. Untagged lines belong to the Conversation partner.
+=== test_speakers ===
+Morning. #id:test.test_speakers.1
+Morning, Wiola. #speaker:intern #id:test.test_speakers.2
+Head office thanks you for your attendance. #speaker:headOffice #id:test.test_speakers.3
+-> END
+
 // A brush-off: one line for the current tier, with no choices and no writes.
 === test_brush_off ===
 { tier():

@@ -1,26 +1,78 @@
-// Ryszard's Conversations and brush-off. Placeholders until the Colleague Conversations ticket writes them.
+// Ryszard's Conversations and brush-off.
 // His Monday Conversation is the onboarding, so his first knot is for Tuesday.
 // A line tagged #speaker:intern is the Intern's. A line tagged #speaker:headOffice is Head office's.
 // Every other line is the Conversation partner's.
+// Reads kamil_log_signed and binder_four_taken from Kamil's Tuesday and Thursday.
 
 === ryszard_day2 ===
--> ryszard_placeholder
-=== ryszard_day3 ===
--> ryszard_placeholder
-=== ryszard_day4 ===
--> ryszard_placeholder
-=== ryszard_day5 ===
--> ryszard_placeholder
-
-=== ryszard_placeholder ===
-Placeholder: Ryszard offers you a template. #id:ryszard.ryszard_placeholder.1
-Placeholder: I will think about it. #speaker:intern #id:ryszard.ryszard_placeholder.2
-* [Placeholder: Take the template. #id:ryszard.ryszard_placeholder.3]
+Pani Halina wants every complaint on a shelf. Pan Zbigniew wants them gone. I want lunch. #id:ryszard.ryszard_day2.1
+Nineteen years. Here's the secret. A closed case is a happy case. #id:ryszard.ryszard_day2.2
+{ tier():
+- "wrong": Template 4. "Thank you for your patience. We are aware of you." Good for everything. #id:ryszard.ryszard_day2.3
+- "odd": Template 4. Good for most things. Not the ones about the seat knowing your name. #id:ryszard.ryszard_day2.4
+- else: Template 4. "Thank you for your patience." Good for everything. #id:ryszard.ryszard_day2.5
+}
+* [Show me the shortcut. #id:ryszard.ryszard_day2.6]
     ~ adjust("launchTeam", 1)
-    Placeholder: Ryszard approves. #id:ryszard.ryszard_placeholder.4
-* [Placeholder: Write it yourself. #id:ryszard.ryszard_placeholder.5]
+    Copy, paste, close. Don't scroll down. Scrolling is where the trouble is. #id:ryszard.ryszard_day2.7
+* [Shouldn't we read them first? #id:ryszard.ryszard_day2.8]
+    ~ adjust("launchTeam", -1)
+    That's how Kamil started. Now look at him. Eats on a staircase. #id:ryszard.ryszard_day2.9
+- -> END
+
+=== ryszard_day3 ===
+Thirty Smart range cases, Template 12. I'll have them closed by coffee. #id:ryszard.ryszard_day3.1
+{ tier() == "wrong":
+    "Dear valued customer. Yes, it heard that. Your case has been resolved." #id:ryszard.ryszard_day3.2
+    Funny. Nobody asked it anything. #id:ryszard.ryszard_day3.3
+- else:
+    Hm. This one says the seat answered back. There's no template for answering back. #id:ryszard.ryszard_day3.4
+    Anyway. Have you tried the new soup? #id:ryszard.ryszard_day3.5
+}
+* [Let's get lunch. #id:ryszard.ryszard_day3.6]
+    ~ adjust("sanity", 1)
+    Good. Soup first. Cases after. Cases are patient. #id:ryszard.ryszard_day3.7
+* [What else does the case say? #id:ryszard.ryszard_day3.8]
     ~ adjust("sanity", -1)
-    Placeholder: Ryszard shrugs. #id:ryszard.ryszard_placeholder.6
+    { tier() == "wrong":
+        It says your name. Twice. Template 12 covers that. Closed. #id:ryszard.ryszard_day3.9
+    - else:
+        Four pages. I read the first line by accident. I won't do that again. #id:ryszard.ryszard_day3.10
+    }
+- -> END
+
+=== ryszard_day4 ===
+I'm up for case closure of the year. Three awards. This would be four. #id:ryszard.ryszard_day4.1
+You can second me. It's one signature. Nobody reads the form. #id:ryszard.ryszard_day4.2
+{ flag("kamil_log_signed"):
+    I hear you signed Kamil's log. Bad habit. Sign mine and it cancels out. #id:ryszard.ryszard_day4.3
+}
+{ tier() == "wrong":
+    Category: cases closed without opening. I've been doing that one since before it existed. #id:ryszard.ryszard_day4.4
+- else:
+    Pani Halina has a form like this too. Hers is the dangerous kind. #id:ryszard.ryszard_day4.5
+}
+* [I'll sign your nomination. #id:ryszard.ryszard_day4.6]
+    ~ adjust("launchTeam", 1)
+    That's the spirit. We regret any inconvenience. Mostly we don't. #id:ryszard.ryszard_day4.7
+* [Pani Halina asked me to sign something too. #id:ryszard.ryszard_day4.8]
+    ~ adjust("launchTeam", -1)
+    Then you've got a choice. I've never made one. Look how I turned out. #id:ryszard.ryszard_day4.9
+- -> END
+
+=== ryszard_day5 ===
+Head office audit. Template 1. "No issues found." Nineteen years and it's never been wrong. #id:ryszard.ryszard_day5.1
+"No issues found. No issues found. Your body has been heard." #id:ryszard.ryszard_day5.2 #note:"Your body has been heard" echoes the mission statement, "Listening to your body". Keep the echo.
+That last bit's new. Someone updated the template. Wasn't me. #id:ryszard.ryszard_day5.3
+{ flag("binder_four_taken"):
+    Is that Kamil's binder four? Put it in the drawer. The drawer gets shredded at three. #id:ryszard.ryszard_day5.4
+}
+* [Nineteen years. Well done, Ryszard. #id:ryszard.ryszard_day5.5]
+    ~ adjust("launchTeam", 1)
+    Thank you. Two years to retirement. The seat says I'll make it. #id:ryszard.ryszard_day5.6
+* [Does any of this bother you? #id:ryszard.ryszard_day5.7]
+    ~ adjust("sanity", -1)
+    It used to. Then I found a template for that too. #id:ryszard.ryszard_day5.8
 - -> END
 
 === ryszard_brush_off ===

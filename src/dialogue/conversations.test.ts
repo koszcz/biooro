@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 import type { CastId } from "../content/index";
 import { createStore, type SaveStorage, type StoreEvent } from "../store/index";
-import { story } from "../story/index";
+import { story, testStory } from "../story/index";
 import { Dialogue } from "./bridge";
-import { type ConversationStage, Conversations, type ConversationView, type Speaker } from "./conversations";
+import {
+  type ConversationStage,
+  Conversations,
+  type ConversationView,
+  playDialogue,
+  type Speaker,
+} from "./conversations";
 
 function memoryStorage(): SaveStorage {
   const items = new Map<string, string>();
@@ -78,37 +84,42 @@ describe("holding a Conversation with a Colleague", () => {
     await conversations.click("wiola");
 
     expect(stage.moves).toEqual(["walk to wiola", "face wiola", "wiola turns back"]);
-    expect(view.shown).toEqual([
-      "wiola: Placeholder: Wiola says good morning.",
-      "headOffice: Placeholder: Head office sends its regards.",
-      "choices: Placeholder: Thanks, I feel better. | Placeholder: Not now, Wiola.",
-      "intern: Placeholder: Thanks, I feel better.",
-      "wiola: Placeholder: Wiola smiles.",
-    ]);
-    expect(store.state.pressures.sanity).toBe(7);
+    expect(view.shown[0]).toMatch(/^wiola: /);
+    const offered = view.shown.findIndex((shown) => shown.startsWith("choices: "));
+    const [firstChoice] = view.shown[offered].slice("choices: ".length).split(" | ");
+    expect(view.shown[offered + 1]).toBe(`intern: ${firstChoice}`);
+    expect(view.shown.at(-1)).toMatch(/^wiola: /);
     expect(store.state.talkedToday).toEqual(["wiola"]);
   });
 
-  it("gives a line tagged #speaker:intern to the Intern", async () => {
-    const { store, view, conversations } = setUp();
-    store.goHome();
-    await conversations.click("ryszard");
-    expect(view.shown[1]).toBe("intern: Placeholder: I will think about it.");
+  it("gives a line tagged #speaker:intern to the Intern, and one tagged #speaker:headOffice to Head office", async () => {
+    const { store } = setUp();
+    const dialogue = new Dialogue(store, testStory);
+    const view = new FakeView();
+    dialogue.start("wiola", "test_speakers", false);
+    await playDialogue(dialogue, view, "wiola");
+    expect(view.shown).toEqual([
+      "wiola: Morning.",
+      "intern: Morning, Wiola.",
+      "headOffice: Head office thanks you for your attendance.",
+    ]);
   });
 
   it("moves the gauge only after the Intern says the chosen text", async () => {
-    const { store, view, events, conversations } = setUp();
+    const { view, events, conversations } = setUp();
+    // Every choice in Wiola's Monday Conversation moves one gauge.
+    const moved = () => events.filter((event) => event.type === "pressureChanged");
     view.onSay = (speaker) => {
-      if (speaker === "intern") expect(store.state.pressures.sanity).toBe(6);
+      if (speaker === "intern") expect(moved()).toHaveLength(0);
     };
     await conversations.click("wiola");
-    expect(events.filter((event) => event.type === "pressureChanged")).toHaveLength(1);
+    expect(moved()).toHaveLength(1);
   });
 
   it("ends the Conversation only after the last line is read", async () => {
     const { view, events, conversations } = setUp();
-    view.onSay = (_, text) => {
-      if (text === "Placeholder: Wiola smiles.") expect(events.at(-1)?.type).not.toBe("conversationEnded");
+    view.onSay = () => {
+      expect(events.map((event) => event.type)).not.toContain("conversationEnded");
     };
     await conversations.click("wiola");
     expect(events.at(-1)).toEqual({ type: "conversationEnded", person: "wiola" });
@@ -196,27 +207,33 @@ describe("reloading in the middle of a Conversation", () => {
   it("replays it from its start, and its effects apply once", async () => {
     const storage = memoryStorage();
     const first = setUp(storage);
+    const before = { ...first.store.state.pressures };
     // The player reloads while Wiola replies, after the pick has moved the gauge.
+    let opening = "";
     const reload = new Promise<void>((resolve) => {
-      first.view.say = async (_, text) => {
-        if (text !== "Placeholder: Wiola smiles.") return;
+      let picked = false;
+      first.view.say = async (speaker, text) => {
+        opening ||= text;
+        if (speaker === "intern") picked = true;
+        if (!picked || speaker !== "wiola") return;
         resolve();
         await new Promise(() => {});
       };
     });
     void first.conversations.click("wiola");
     await reload;
-    expect(first.store.state.pressures.sanity).toBe(7);
+    const after = { ...first.store.state.pressures };
+    expect(after).not.toEqual(before);
 
     const second = setUp(storage);
-    expect(second.store.state.pressures.sanity).toBe(6);
+    expect(second.store.state.pressures).toEqual(before);
     expect(second.conversations.availability("wiola")).toBe("available");
     await second.conversations.click("wiola");
-    expect(second.view.shown[0]).toBe("wiola: Placeholder: Wiola says good morning.");
-    expect(second.store.state.pressures.sanity).toBe(7);
+    expect(second.view.shown[0]).toBe(`wiola: ${opening}`);
+    expect(second.store.state.pressures).toEqual(after);
 
     const third = setUp(storage);
-    expect(third.store.state.pressures.sanity).toBe(7);
+    expect(third.store.state.pressures).toEqual(after);
     expect(third.store.state.talkedToday).toEqual(["wiola"]);
   });
 });
