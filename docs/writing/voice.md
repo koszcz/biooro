@@ -7,9 +7,9 @@ This guide tells you how every line in the game should sound. Read it before you
 
 A **voice anchor** is a short sample scene, written by the game's author, that sets how one character sounds. Each character sheet below links to that character's anchor.
 
-**Status:** draft. The author still has to correct the character sheets and write the five voice anchors. Until a character's anchor exists, agents must not draft lines for that character. Task wording can start now, because it follows only the tone rules.
+**Status:** the author approved the character sheets on 8 November 2026. The five voice anchors are not written yet. Until a character's anchor exists, agents must not draft lines for that character. Task wording can start now, because it follows only the tone rules.
 
-The rules come from the [intern game spec](../../.scratch/intern-game/spec.md), sections 2, 3, 4 and 11. When this guide and the spec differ, the spec wins. Lines marked _(draft)_ are suggestions that the spec does not state. The author should keep, change or remove each one.
+The rules come from the [intern game spec](../../.scratch/intern-game/spec.md), sections 2, 3, 4 and 11. When this guide and the spec differ, the spec wins.
 
 ## Contents
 
@@ -29,14 +29,14 @@ The rules come from the [intern game spec](../../.scratch/intern-game/spec.md), 
 
 ## Tone rules
 
-1. **Mundane surface, sinister leak.** Every line first reads as ordinary office talk. The "leak" is the strange part underneath: a detail, a word choice or a pause that hints something is wrong. _(draft)_ Never make the line itself openly scary.
+1. **Mundane surface, sinister leak.** Every line first reads as ordinary office talk. The "leak" is the strange part underneath: a detail, a word choice or a pause that hints something is wrong. Never make the line itself openly scary.
 2. **Let the leak grow with Escalation.** Monday feels dull. By Friday the Smart range seems to know things it should not. Use the tier to decide how much leaks (see the next section).
 3. **Keep the office believable.** Characters talk about printers, templates, case numbers, lunch and deadlines. The joke comes from how seriously they treat small things.
 4. **Nobody is noble.** Both Factions cover themselves. Neither side is the good side.
 5. **Head office never appears.** The Bosses fear it. People mention it as something distant. It speaks only in its own bubble at the top of the screen.
 6. **Keep the Smart range secret.** The Smart range secretly collects users' data for Head office. Only writers know this. Every hint must fit this secret, but no line may state it or explain it. Never put the secret in game text or in `CONTEXT.md`.
 7. **Use the mission statement as written.** It is "Biooro. Listening to your body, one flush at a time." Never change its words. Early in the week it sounds like wellness fluff. Later, the same words sound like a threat.
-8. **Write short lines.** Text reveals at 45 characters a second, so long lines feel slow. _(draft)_ Aim for one or two short sentences per speech bubble.
+8. **Write short lines.** Text reveals at 45 characters a second, so long lines feel slow. Aim for one or two short sentences per speech bubble.
 9. **Keep Polish names as they are.** Never translate or explain them. The Intern says "Pan Zbigniew" and "Pani Halina", and uses first names for Colleagues.
 
 ## How the tone changes by tier
@@ -50,7 +50,7 @@ The tier comes from hidden Escalation. In Ink, a line can branch on `tier()`, wh
 | Wrong | 5 or more | The office feels unsafe. | The Smart range seems to watch and listen. The mission statement sounds like a threat. |
 
 - Every run reaches Wrong by Friday morning, so every character needs a Wrong voice.
-- _(draft)_ Change one or two details between tiers. Keep the same character voice.
+- Change one or two details between tiers. Keep the same character voice.
 
 ## The Factions
 
@@ -103,10 +103,10 @@ Every writer follows these rules. A Polish version comes after the slice.
 **Speech habits:**
 
 - He never says a negative word. He turns every bad thing into a good one: a problem is an "opportunity", and a complaint is a "feedback moment".
-- _(draft)_ He sounds warm and encouraging, like a motivational poster.
-- _(draft)_ He praises the Intern for things that should worry them.
+- He sounds warm and encouraging, like a motivational poster.
+- He praises the Intern for things that should worry them.
 
-**Words to avoid:** problem, complaint, fault, broken, bad, wrong, fail. _(draft)_ Also "no".
+**Words to avoid:** problem, complaint, fault, broken, bad, wrong, fail. Also "no".
 
 **By tier:** he grows calmer as things get worse. The calm turns creepier as Escalation rises.
 
@@ -131,12 +131,12 @@ Every writer follows these rules. A Polish version comes after the slice.
 - She records everything "for the file". She often says she is noting what the Intern just said.
 - She fears Head office more than anyone does.
 - She acts as an ally, but she would sell the Intern out to stay clean.
-- _(draft)_ She speaks precisely and formally. She likes dates, times and reference numbers.
-- _(draft)_ She uses passive voice to keep her own name out of things: "It was decided", "Concerns were raised".
+- She speaks precisely and formally. She likes dates, times and reference numbers.
+- She uses passive voice to keep her own name out of things: "It was decided", "Concerns were raised".
 
-**Words to avoid:** _(draft)_ casual slang, "I promise", "trust me" and "off the record". She never admits that she made a decision herself.
+**Words to avoid:** casual slang, "I promise", "trust me" and "off the record". She never admits that she made a decision herself.
 
-**By tier:** _(draft)_
+**By tier:**
 
 - Mundane: dry and bureaucratic. A stickler for forms.
 - Odd: more nervous. She asks the Intern to repeat things so she can write them down.
@@ -152,19 +152,19 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Voice anchor | Not written yet. |
 | Where he speaks | The Monday onboarding, which counts as his Monday Conversation. Conversations from Tuesday to Friday. His Brush-offs and his hand-off line. |
 
-**Wants:** his next "case closure" award. He wins them by closing cases without reading them. _(draft)_ He also wants a quiet life until retirement.
+**Wants:** his next "case closure" award. He wins them by closing cases without reading them. He also wants a quiet life until retirement.
 
 **Speech habits:**
 
 - He has a template reply for everything.
 - He teaches the Intern to fake Tasks.
-- _(draft)_ He talks as if he is reading a template out, with set phrases such as "We regret any inconvenience" and "Your case has been resolved".
-- _(draft)_ He mentions his 19 years and his awards often.
-- _(draft)_ He is tired, but kind in his own lazy way. His advice on faking Tasks sounds friendly and practical.
+- He talks as if he is reading a template out, with set phrases such as "We regret any inconvenience" and "Your case has been resolved".
+- He mentions his 19 years and his awards often.
+- He is tired, but kind in his own lazy way. His advice on faking Tasks sounds friendly and practical.
 
-**Words to avoid:** _(draft)_ He never sounds excited about the Smart range. He never goes into technical detail. He never shows real concern for a customer.
+**Words to avoid:** He never sounds excited about the Smart range. He never goes into technical detail. He never shows real concern for a customer.
 
-**By tier:** _(draft)_
+**By tier:**
 
 - Mundane: a bored old hand with shortcuts for everything.
 - Odd: he admits that some cases do not fit any template. He changes the subject at once.
@@ -180,7 +180,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Voice anchor | Not written yet. |
 | Where she speaks | Conversations from Monday to Friday, her Brush-offs and her hand-off line. |
 
-**Wants:** _(draft)_ for everyone to love the Smart range as much as she does. She wants the launch to succeed because she truly believes in it.
+**Wants:** for everyone to love the Smart range as much as she does. She wants the launch to succeed because she truly believes in it.
 
 **Speech habits:**
 
@@ -188,11 +188,11 @@ Every writer follows these rules. A Polish version comes after the slice.
 - She quotes the mission statement sincerely.
 - She knows small personal things about people and never says how.
 - She is the main channel for the sinister leak. Her personal details carry the hints about the Smart range secret.
-- _(draft)_ She is warm, bubbly and sincere. She means every word.
+- She is warm, bubbly and sincere. She means every word.
 
-**Words to avoid:** _(draft)_ She is never cynical or sarcastic. She never doubts the Smart range. She never explains how she knows things.
+**Words to avoid:** She is never cynical or sarcastic. She never doubts the Smart range. She never explains how she knows things.
 
-**By tier:** _(draft)_
+**By tier:**
 
 - Mundane: a cheerful product fan. Her personal details sound like lucky guesses.
 - Odd: her details get too specific. She seems pleased, not worried, that she knows them.
@@ -208,7 +208,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Voice anchor | Not written yet. |
 | Where he speaks | Conversations from Monday to Friday, his Brush-offs and his hand-off line. |
 
-**Wants:** _(draft)_ for someone to believe him about the Smart range. He wants his warnings on record.
+**Wants:** for someone to believe him about the Smart range. He wants his warnings on record.
 
 **Speech habits:**
 
@@ -216,11 +216,11 @@ Every writer follows these rules. A Polish version comes after the slice.
 - He keeps a binder of printed complaints.
 - He eats lunch in the stairwell.
 - He makes it feel right to escalate complaints, but tiring to listen to him.
-- _(draft)_ He talks too fast and in too much detail. He piles up facts, test numbers and complaint references.
+- He talks too fast and in too much detail. He piles up facts, test numbers and complaint references.
 
-**Words to avoid:** _(draft)_ vague words such as "maybe" or "sort of". He never sounds calm or relaxed.
+**Words to avoid:** vague words such as "maybe" or "sort of". He never sounds calm or relaxed.
 
-**By tier:** _(draft)_
+**By tier:**
 
 - Mundane: a nervous, tiring know-it-all.
 - Odd: his facts start to match what the player has seen. He is harder to dismiss.
@@ -234,11 +234,11 @@ These have no character sheets or voice anchors.
 
 - The Intern addresses Bosses formally and Colleagues by first name.
 - A choice never shows its effect on a Pressure. After the pick, the Intern says the chosen text as a line, so write each choice as something the Intern can say.
-- _(draft)_ Keep the Intern's lines short and neutral, so the player can read their own feelings into them.
+- Keep the Intern's lines short and neutral, so the player can read their own feelings into them.
 
 **Head office** speaks in one bubble at the top centre of the screen.
 
-- _(draft)_ Keep its lines short, impersonal and calm, like an automated notice.
+- Keep its lines short, impersonal and calm, like an automated notice.
 
 ## How to check and submit a draft
 
