@@ -7,7 +7,7 @@ This guide tells you how every line in the game should sound. Read it before you
 
 A **voice anchor** is a short sample scene that sets how one character sounds. The game never plays it. The author writes or approves each one. Each character sheet below links to that character's anchor.
 
-**Status:** the author approved the character sheets on 8 November 2026. An agent drafted the five voice anchors at the author's request. Until the author rewrites or approves a character's anchor, agents must not draft other lines for that character. Task wording can start now, because it follows only the tone rules.
+**Status:** the author approved the character sheets and all five voice anchors on 8 November 2026. Agents may now draft lines for every character. Task wording follows only the tone rules.
 
 The rules come from the [intern game spec](../../.scratch/intern-game/spec.md), sections 2, 3, 4 and 11. When this guide and the spec differ, the spec wins.
 
@@ -95,7 +95,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Role | Boss, Head of Customer Complaints. The Intern's direct Boss. |
 | Faction | Launch Team, as its leader. |
 | Ink file | [`src/story/zbigniew.ink`](../../src/story/zbigniew.ink) |
-| Voice anchor | [`zbigniew_voice_anchor`](../../src/story/zbigniew.ink), drafted by an agent. Waiting for the author's rewrite. |
+| Voice anchor | [`zbigniew_voice_anchor`](../../src/story/zbigniew.ink), approved by the author on 8 November 2026. |
 | Where he speaks | Tasks, the Monday onboarding, the Performance Firing and his Brush-offs. He has no Conversations the Intern can start. |
 
 **Wants:** a smooth Smart range launch and his launch bonus. He wants every complaint to disappear quietly.
@@ -121,7 +121,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Role | Boss, Head of Product Safety. |
 | Faction | Paper Trail, as its leader. |
 | Ink file | [`src/story/halina.ink`](../../src/story/halina.ink) |
-| Voice anchor | [`halina_voice_anchor`](../../src/story/halina.ink), drafted by an agent. Waiting for the author's rewrite. |
+| Voice anchor | [`halina_voice_anchor`](../../src/story/halina.ink), approved by the author on 8 November 2026. |
 | Where she speaks | Tasks, scripted scenes and her Brush-offs. She has no Conversations the Intern can start. |
 
 **Wants:** written proof that she warned Head office. When the Smart range blows up, she wants the blame to land on someone else.
@@ -149,7 +149,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Role | Colleague, Customer Complaints veteran of 19 years. |
 | Faction | Launch Team. |
 | Ink file | [`src/story/ryszard.ink`](../../src/story/ryszard.ink) |
-| Voice anchor | [`ryszard_voice_anchor`](../../src/story/ryszard.ink), drafted by an agent. Waiting for the author's rewrite. |
+| Voice anchor | [`ryszard_voice_anchor`](../../src/story/ryszard.ink), approved by the author on 8 November 2026. |
 | Where he speaks | The Monday onboarding, which counts as his Monday Conversation. Conversations from Tuesday to Friday. His Brush-offs and his hand-off line. |
 
 **Wants:** his next "case closure" award. He wins them by closing cases without reading them. He also wants a quiet life until retirement.
@@ -177,7 +177,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Role | Colleague, Smart range believer. |
 | Faction | Launch Team. |
 | Ink file | [`src/story/wiola.ink`](../../src/story/wiola.ink) |
-| Voice anchor | [`wiola_voice_anchor`](../../src/story/wiola.ink), drafted by an agent. Waiting for the author's rewrite. |
+| Voice anchor | [`wiola_voice_anchor`](../../src/story/wiola.ink), approved by the author on 8 November 2026. |
 | Where she speaks | Conversations from Monday to Friday, her Brush-offs and her hand-off line. |
 
 **Wants:** for everyone to love the Smart range as much as she does. She wants the launch to succeed because she truly believes in it.
@@ -205,7 +205,7 @@ Every writer follows these rules. A Polish version comes after the slice.
 | Role | Colleague, Product Safety tester. |
 | Faction | Paper Trail. |
 | Ink file | [`src/story/kamil.ink`](../../src/story/kamil.ink) |
-| Voice anchor | [`kamil_voice_anchor`](../../src/story/kamil.ink), drafted by an agent. Waiting for the author's rewrite. |
+| Voice anchor | [`kamil_voice_anchor`](../../src/story/kamil.ink), approved by the author on 8 November 2026. |
 | Where he speaks | Conversations from Monday to Friday, his Brush-offs and his hand-off line. |
 
 **Wants:** for someone to believe him about the Smart range. He wants his warnings on record.
