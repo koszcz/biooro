@@ -44,6 +44,14 @@ const isColleague = (person: CastId): person is ColleagueId => person in COLLEAG
 /** The knot of a Colleague's Conversation on a day, such as `wiola_day1`. */
 export const conversationKnot = (colleague: ColleagueId, day: number): string => `${colleague}_day${day}`;
 export const brushOffKnot = (person: CastId): string => `${person}_brush_off`;
+export const handOffKnot = (colleague: ColleagueId): string => `${colleague}_hand_off`;
+
+/** The line a Colleague says when the Intern hands them a Task. */
+export function handOffLine(dialogue: Dialogue, colleague: ColleagueId): DialogueLine {
+  const [line] = dialogue.readLines(handOffKnot(colleague));
+  if (!line) throw new Error(`Knot "${handOffKnot(colleague)}" has no line.`);
+  return line;
+}
 
 export class Conversations {
   private running = false;

@@ -1,10 +1,10 @@
-// Pan Zbigniew's brush-off. A placeholder until the brush-offs ticket writes it.
+// Pan Zbigniew's brush-off.
 
 === zbigniew_brush_off ===
 { tier():
-- "wrong": Placeholder: Pan Zbigniew is busy, in a wrong way. #id:zbigniew.zbigniew_brush_off.1
-- "odd": Placeholder: Pan Zbigniew is busy, in an odd way. #id:zbigniew.zbigniew_brush_off.2
-- else: Placeholder: Pan Zbigniew is busy. #id:zbigniew.zbigniew_brush_off.3
+- "wrong": Back to your desk, friend. Your chair has missed you. It always does. #id:zbigniew.zbigniew_brush_off.1
+- "odd": All fine! Better than fine. Let's keep that between team players. #id:zbigniew.zbigniew_brush_off.2
+- else: Love the initiative! Let's circle back. My calendar is full of wins today. #id:zbigniew.zbigniew_brush_off.3
 }
 -> END
 

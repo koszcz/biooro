@@ -38,13 +38,15 @@ export type ActionCue =
 
 /**
  * Mounts the HUD over `container`. Mount it before the first morning, so it sees Monday's `dayStarted`.
- * `onActionCue` subscribes to the scene's cues for Task actions. `onReveal` hears hand-off lines as they reveal.
+ * `onActionCue` subscribes to the scene's cues for Task actions. `handOffLine` gives a Colleague's hand-off line.
+ * `onReveal` hears hand-off lines as they reveal.
  */
 export function mountGameUi(
   container: HTMLElement,
   store: GameStore,
   headAt: HeadLocator,
   onActionCue: (listener: (cue: ActionCue) => void) => void,
+  handOffLine: (colleague: ColleagueId) => string,
   onReveal?: RevealListener,
 ): void {
   const style = el("style", "", HUD_CSS + ACTION_CSS);
@@ -83,7 +85,7 @@ export function mountGameUi(
       redraw();
     },
   });
-  const labels = createActionLayer(root, headAt, onReveal);
+  const labels = createActionLayer(root, headAt, handOffLine, onReveal);
   const popover = createPopover(root, headAt, {
     pick: (task, pick) => act(() => play.pick(task, pick)),
     preview: (next) => {

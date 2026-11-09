@@ -158,7 +158,7 @@ describe("brush-offs", () => {
     const sanity = store.state.pressures.sanity;
 
     await conversations.click("kamil");
-    expect(view.brushOffs).toEqual(["kamil: Placeholder: Kamil is busy."]);
+    expect(view.brushOffs).toEqual([expect.stringMatching(/^kamil: ./)]);
     expect(stage.moves).toEqual([]);
     expect(store.state.pressures.sanity).toBe(sanity);
   });
@@ -166,7 +166,7 @@ describe("brush-offs", () => {
   it("shows a brush-off for a Boss, and the Intern does not walk", async () => {
     const { view, stage, events, conversations } = setUp();
     await conversations.click("halina");
-    expect(view.brushOffs).toEqual(["halina: Placeholder: Pani Halina is busy."]);
+    expect(view.brushOffs).toEqual([expect.stringMatching(/^halina: ./)]);
     expect(stage.moves).toEqual([]);
     expect(events).toEqual([]);
   });

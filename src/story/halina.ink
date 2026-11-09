@@ -1,10 +1,10 @@
-// Pani Halina's brush-off. A placeholder until the brush-offs ticket writes it.
+// Pani Halina's brush-off.
 
 === halina_brush_off ===
 { tier():
-- "wrong": Placeholder: Pani Halina is busy, in a wrong way. #id:halina.halina_brush_off.1
-- "odd": Placeholder: Pani Halina is busy, in an odd way. #id:halina.halina_brush_off.2
-- else: Placeholder: Pani Halina is busy. #id:halina.halina_brush_off.3
+- "wrong": Your visit has been noted. The file will decide what it meant. #id:halina.halina_brush_off.1
+- "odd": This visit was not scheduled. Say your name again, slowly. For the log. #id:halina.halina_brush_off.2
+- else: Visits are by appointment. Form 7B, at reception. Thank you. #id:halina.halina_brush_off.3
 }
 -> END
 
