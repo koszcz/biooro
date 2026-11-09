@@ -8,7 +8,7 @@ export {
   type ConversationView,
   conversationKnot,
   handOffKnot,
-  handOffLine,
+  readHandOffLine,
   type Speaker,
 } from "./conversations";
 export { ONBOARDED_FLAG, type SceneFrame, type SceneKnot, Scenes, type ScriptedScene, sceneSpec } from "./scenes";

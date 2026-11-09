@@ -1,14 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { type CastId, COLLEAGUES } from "../content/index";
+import { CAST, type CastId, COLLEAGUES } from "../content/index";
 import { type ColleagueId, type GameState, type Tier, tierOf } from "../rules/index";
 import { createStore, FakeStorage, SAVE_KEY } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
-import { type ConversationStage, Conversations, type ConversationView, handOffLine } from "./conversations";
+import { type ConversationStage, Conversations, type ConversationView, readHandOffLine } from "./conversations";
 
 // The short lines every character says outside a full Conversation: brush-offs and hand-off lines.
 
-const CAST: CastId[] = ["zbigniew", "halina", "ryszard", "wiola", "kamil"];
 const COLLEAGUE_IDS = Object.keys(COLLEAGUES) as ColleagueId[];
 const TIERS: Tier[] = ["mundane", "odd", "wrong"];
 /** The lowest Escalation for each tier. */
@@ -77,7 +76,7 @@ describe("brush-offs", () => {
 describe("hand-off lines", () => {
   it.each(COLLEAGUE_IDS)("gives %s one drafted line with an id", (colleague) => {
     const store = storeAt("mundane");
-    const line = handOffLine(new Dialogue(store, story), colleague);
+    const line = readHandOffLine(new Dialogue(store, story), colleague);
     expect(line.id).not.toBeNull();
     expect(line.text).not.toBe("");
     expect(line.text).not.toContain("Placeholder");
@@ -86,13 +85,13 @@ describe("hand-off lines", () => {
   it("gives each Colleague a different line", () => {
     const store = storeAt("mundane");
     const dialogue = new Dialogue(store, story);
-    const texts = COLLEAGUE_IDS.map((colleague) => handOffLine(dialogue, colleague).text);
+    const texts = COLLEAGUE_IDS.map((colleague) => readHandOffLine(dialogue, colleague).text);
     expect(new Set(texts).size).toBe(COLLEAGUE_IDS.length);
   });
 
   it("says the same line at every tier", () => {
     for (const colleague of COLLEAGUE_IDS) {
-      const texts = TIERS.map((tier) => handOffLine(new Dialogue(storeAt(tier), story), colleague).text);
+      const texts = TIERS.map((tier) => readHandOffLine(new Dialogue(storeAt(tier), story), colleague).text);
       expect(new Set(texts).size).toBe(1);
     }
   });

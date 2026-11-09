@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COLLEAGUE_SPOTS, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS, PLACE_SPOTS } from "./office";
+import { CAST, COLLEAGUE_SPOTS, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS, PLACE_SPOTS } from "./office";
 
 const cell = (col: number, row: number) => ({ col, row });
 
@@ -48,5 +48,9 @@ describe("Task places and Colleague spots", () => {
 
   it("has a spot for each of the five cast members", () => {
     expect(Object.keys(COLLEAGUE_SPOTS).sort()).toEqual(["halina", "kamil", "ryszard", "wiola", "zbigniew"].sort());
+  });
+
+  it("lists the five cast members, each once", () => {
+    expect([...CAST].sort()).toEqual(["halina", "kamil", "ryszard", "wiola", "zbigniew"].sort());
   });
 });

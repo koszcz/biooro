@@ -3,7 +3,7 @@ import type { CastId } from "../content/index";
 import type { ColleagueId } from "../rules/index";
 import type { GameStore, StoreEventType } from "../store/index";
 import { createActing } from "./acting";
-import { ACTION_CSS, createActionLayer } from "./actionLayer";
+import { ACTION_CSS, createActionLayer, type HandOffText } from "./actionLayer";
 import { createBubbles, type HeadLocator } from "./bubbles";
 import { createCards } from "./cards";
 import type { RevealListener } from "./conversationText";
@@ -28,7 +28,7 @@ const REDRAW_ON: StoreEventType[] = [
   "weekSurvived",
 ];
 
-export type { BubbleOwner, HeadLocator };
+export type { BubbleOwner, HandOffText, HeadLocator };
 
 /** What the scene tells the HUD while a Task action plays. */
 export type ActionCue =
@@ -38,7 +38,7 @@ export type ActionCue =
 
 /**
  * Mounts the HUD over `container`. Mount it before the first morning, so it sees Monday's `dayStarted`.
- * `onActionCue` subscribes to the scene's cues for Task actions. `handOffLine` gives a Colleague's hand-off line.
+ * `onActionCue` subscribes to the scene's cues for Task actions. `handOffText` gives a Colleague's hand-off line.
  * `onReveal` hears hand-off lines as they reveal.
  */
 export function mountGameUi(
@@ -46,7 +46,7 @@ export function mountGameUi(
   store: GameStore,
   headAt: HeadLocator,
   onActionCue: (listener: (cue: ActionCue) => void) => void,
-  handOffLine: (colleague: ColleagueId) => string,
+  handOffText: HandOffText,
   onReveal?: RevealListener,
 ): void {
   const style = el("style", "", HUD_CSS + ACTION_CSS);
@@ -85,7 +85,7 @@ export function mountGameUi(
       redraw();
     },
   });
-  const labels = createActionLayer(root, headAt, handOffLine, onReveal);
+  const labels = createActionLayer(root, headAt, handOffText, onReveal);
   const popover = createPopover(root, headAt, {
     pick: (task, pick) => act(() => play.pick(task, pick)),
     preview: (next) => {
