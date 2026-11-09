@@ -176,7 +176,7 @@ describe("the Friday audit", () => {
 
   it("applies the answer after the scene, then plays the survival scene", async () => {
     const { store, storage, view, frame, scenes } = setUp(friday({ launchTeam: 6, paperTrail: 6 }));
-    view.pick = "Bury";
+    view.pick = "None worth mentioning";
     store.goHome();
     await scenes.settled;
 
@@ -202,7 +202,7 @@ describe("the Friday audit", () => {
 
   it("runs the second Firing check after the answer", async () => {
     const { store, view, frame, scenes } = setUp(friday({ sanity: 2 }));
-    view.pick = "Deflect";
+    view.pick = "ask Pani Halina";
     store.goHome();
     await scenes.settled;
 
@@ -216,7 +216,7 @@ describe("the Friday audit", () => {
       hoursLeft: 0,
       phase: { kind: "audit" },
     }));
-    view.pick = "Escalate";
+    view.pick = "in writing";
     await scenes.settled;
 
     expect(store.state.phase).toEqual({ kind: "weekSurvived", variant: "paperTrail" });

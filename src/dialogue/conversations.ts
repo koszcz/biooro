@@ -1,5 +1,5 @@
 // Runs a click on a person: a Colleague Conversation, or a brush-off for a used-up Colleague or a Boss.
-import { type CastId, COLLEAGUES } from "../content/index";
+import { type CastId, COLLEAGUE_SPOTS, COLLEAGUES } from "../content/index";
 import type { ColleagueId } from "../rules/index";
 import type { GameStore } from "../store/index";
 import type { Dialogue, DialogueChoice, DialogueLine } from "./bridge";
@@ -28,14 +28,12 @@ export interface ConversationStage {
   faceEachOther(person: CastId): () => void;
 }
 
-const SPEAKER_TAGS: Readonly<Record<string, Speaker>> = {
-  "speaker:intern": "intern",
-  "speaker:headOffice": "headOffice",
-};
+/** `#speaker:intern`, `#speaker:headOffice`, or a cast member such as `#speaker:ryszard` in a scene with two people. */
+const SPEAKERS: readonly Speaker[] = ["intern", "headOffice", ...(Object.keys(COLLEAGUE_SPOTS) as CastId[])];
 
 function speakerOf(line: DialogueLine, partner: CastId): Speaker {
   for (const tag of line.tags) {
-    const speaker = SPEAKER_TAGS[tag.trim()];
+    const speaker = SPEAKERS.find((name) => tag.trim() === `speaker:${name}`);
     if (speaker) return speaker;
   }
   return partner;
