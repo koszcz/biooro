@@ -77,15 +77,15 @@ That last bit's new. Someone updated the template. Wasn't me. #id:ryszard.ryszar
 
 === ryszard_brush_off ===
 { tier():
-- "wrong": Your case has been resolved. Yes, it heard you. We regret any inconvenience. #id:ryszard.ryszard_brush_off.1
-- "odd": Your request has been received. It doesn't fit a template. Anyway. Soup? #id:ryszard.ryszard_brush_off.2
-- else: Your request has been received. Expect a reply in five to seven working days. #id:ryszard.ryszard_brush_off.3
+- "wrong": Your case has been resolved. Before you opened it. #id:ryszard.ryszard_brush_off.1
+- "odd": That one fits no template. Anyway, soup? #id:ryszard.ryszard_brush_off.2
+- else: Request received. Expect a reply in seven working days. #id:ryszard.ryszard_brush_off.3
 }
 -> END
 
 // What Ryszard says when the Intern hands him a Task.
 === ryszard_hand_off ===
-Leave it with me. Your request has been received. #id:ryszard.ryszard_hand_off.1
+Leave it with me. Request received. #id:ryszard.ryszard_hand_off.1
 -> END
 
 // Ryszard's voice anchor. A sample scene from docs/writing/voice.md that the game never starts.

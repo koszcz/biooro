@@ -93,15 +93,15 @@ I made copies. Of everything. They're in the stairwell, step 14. #id:kamil.kamil
 
 === kamil_brush_off ===
 { tier():
-- "wrong": Not here. It can hear. Later. Stairwell. #id:kamil.kamil_brush_off.1
-- "odd": Busy. Batch 4 again. Seventeen seats logged the same voice at 9:14. Same second. #id:kamil.kamil_brush_off.2
-- else: Can't talk. Cross-checking 212 complaint references against batch 4. By hand. Again. #id:kamil.kamil_brush_off.3
+- "wrong": Not near the toilets. Find me in the stairwell. #id:kamil.kamil_brush_off.1
+- "odd": Busy. Seventeen seats rebooted at 9:14, same second. #id:kamil.kamil_brush_off.2
+- else: Can't talk. Cross-checking 212 references with batch 4. #id:kamil.kamil_brush_off.3
 }
 -> END
 
 // What Kamil says when the Intern hands him a Task.
 === kamil_hand_off ===
-Fine. I'll do it properly. Reference, date, time, signature, the lot. #id:kamil.kamil_hand_off.1
+Fine. Reference, date, time, signature. #id:kamil.kamil_hand_off.1
 -> END
 
 // Kamil's voice anchor. A sample scene from docs/writing/voice.md that the game never starts.

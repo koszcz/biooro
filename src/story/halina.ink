@@ -2,9 +2,9 @@
 
 === halina_brush_off ===
 { tier():
-- "wrong": Your visit has been noted. The file will decide what it meant. #id:halina.halina_brush_off.1
-- "odd": This visit was not scheduled. Say your name again, slowly. For the log. #id:halina.halina_brush_off.2
-- else: Visits are by appointment. Form 7B, at reception. Thank you. #id:halina.halina_brush_off.3
+- "wrong": Noted. The file will decide what this visit meant. #id:halina.halina_brush_off.1
+- "odd": This visit was not scheduled. I have noted the time. #id:halina.halina_brush_off.2
+- else: Visits are by appointment. Form 7B, at reception. #id:halina.halina_brush_off.3
 }
 -> END
 

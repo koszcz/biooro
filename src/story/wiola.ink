@@ -105,15 +105,15 @@ Biooro. Listening to your body, one flush at a time. #id:wiola.wiola_day5.4
 
 === wiola_brush_off ===
 { tier():
-- "wrong": Not now, sweetie. You were up at 3:12 last night. Get some rest. #id:wiola.wiola_brush_off.1
-- "odd": Can't chat! Drink some water. You've only had one glass today. #id:wiola.wiola_brush_off.2
-- else: Can't chat, launch stuff! You look like a cinnamon person. Am I right? #id:wiola.wiola_brush_off.3
+- "wrong": Not now, sweetie. You were up at 3:12 last night. #id:wiola.wiola_brush_off.1
+- "odd": Can't chat! You've only had one glass of water today. #id:wiola.wiola_brush_off.2
+- else: Can't chat, launch day! You look like a cinnamon person. #id:wiola.wiola_brush_off.3
 }
 -> END
 
 // What Wiola says when the Intern hands her a Task.
 === wiola_hand_off ===
-Ooh, give it here! Helping is my favourite thing. #id:wiola.wiola_hand_off.1
+Ooh, give it here! I love helping. #id:wiola.wiola_hand_off.1
 -> END
 
 // Wiola's voice anchor. A sample scene from docs/writing/voice.md that the game never starts.

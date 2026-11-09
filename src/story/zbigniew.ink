@@ -2,9 +2,9 @@
 
 === zbigniew_brush_off ===
 { tier():
-- "wrong": Back to your desk, friend. Your chair has missed you. It always does. #id:zbigniew.zbigniew_brush_off.1
-- "odd": All fine! Better than fine. Let's keep that between team players. #id:zbigniew.zbigniew_brush_off.2
-- else: Love the initiative! Let's circle back. My calendar is full of wins today. #id:zbigniew.zbigniew_brush_off.3
+- "wrong": Back to your desk, friend. Your chair has missed you. #id:zbigniew.zbigniew_brush_off.1
+- "odd": All fine. Let's keep that between team players. #id:zbigniew.zbigniew_brush_off.2
+- else: Love the initiative! Let's circle back after lunch. #id:zbigniew.zbigniew_brush_off.3
 }
 -> END
 
