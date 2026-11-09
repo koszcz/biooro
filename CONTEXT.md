@@ -99,7 +99,7 @@ The fixed number of hours the Intern has each day. Each Task choice spends some 
 _Avoid_: Turn, energy, action points
 
 **Firing**:
-The failure state. The Intern loses the job and the run ends. Each Pressure has its own Firing, with its own scene.
+The failure state. When a Pressure runs out, the Intern loses the job and the run ends. The Intern is either fired or walks out. Each Pressure has its own Firing, with its own scene.
 _Avoid_: Game over, death
 
 ## World
