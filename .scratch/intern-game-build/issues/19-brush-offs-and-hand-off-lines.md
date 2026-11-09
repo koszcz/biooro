@@ -1,6 +1,6 @@
 # Brush-offs and hand-off lines
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 09, 12, 16
 
 ## What to build
@@ -25,3 +25,4 @@ Check each draft against `docs/writing/voice.md` and fix any mismatch first.
 ## Comments
 
 - 2026-11-09, agent: I drafted the 15 brush-offs and the 3 hand-off lines. Each brush-off lives in its knot `<person>_brush_off` in `src/story/zbigniew.ink`, `halina.ink`, `ryszard.ink`, `wiola.ink` and `kamil.ink`. Each hand-off line lives in a new knot `<colleague>_hand_off` in `ryszard.ink`, `wiola.ink` and `kamil.ink`. The HUD now reads hand-off lines from Ink through `handOffLine()` in `src/dialogue/conversations.ts`. I removed the placeholder `HAND_OFF_LINES` from `src/locales/en/actions.ts`. `src/dialogue/shortLines.test.ts` checks every brush-off for each person and tier, and every hand-off line. The lines still need your review before they merge.
+- 2026-11-09, agent: A code review shortened lines to fit their display time and fixed voice-guide breaks. The work merged straight into `main`, without a pull request, at the user's request. The user still has to read every line on `main`. The ticket is resolved.

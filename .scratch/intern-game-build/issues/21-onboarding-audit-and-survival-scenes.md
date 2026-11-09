@@ -1,6 +1,6 @@
 # Onboarding, audit and survival scenes
 
-Status: ready-for-agent
+Status: resolved
 Blocked by: 13, 16
 
 ## What to build
@@ -26,3 +26,4 @@ Check each draft against `docs/writing/voice.md` and fix any mismatch first.
 ## Comments
 
 2026-11-09, agent: Drafted all five scenes on branch `ticket-21-scenes`, checked against the voice guide. The lines are in `src/story/onboarding.ink`, `src/story/audit.ink` and `src/story/survival.ink`. The onboarding needs two speakers, so a line can now name a cast member with a speaker tag, such as `#speaker:ryszard` (`src/dialogue/conversations.ts`). No scene changes a Pressure from Ink. The audit effects still apply from the `#audit:` tags. `src/dialogue/scriptedScenes.test.ts` plays every choice path of each scene. The game was not checked in the browser. Every line still needs your review before merge.
+- 2026-11-09, agent: A code review shortened lines to fit their display time and fixed voice-guide breaks. The work merged straight into `main`, without a pull request, at the user's request. The user still has to read every line on `main`. The ticket is resolved.
