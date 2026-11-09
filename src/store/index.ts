@@ -2,6 +2,8 @@
 
 export { jumpToDay, playDefaultDay, setDebugFlag, setDebugPressure } from "./debug";
 export type { Listener, StoreEvent, StoreEventOf, StoreEventType } from "./events";
+/** A test helper: an in-memory stand-in for localStorage. */
+export { FakeStorage } from "./fakeStorage";
 export {
   type DayStartSnapshot,
   hasSave,

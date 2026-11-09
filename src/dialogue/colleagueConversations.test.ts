@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { type ColleagueId, type GameState, PRESSURES, type Pressure, type Tier, tierOf } from "../rules/index";
-import { createStore, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage, SAVE_KEY } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import { conversationKnot } from "./conversations";
@@ -36,18 +36,9 @@ const STORY_FLAGS: string[] = (() => {
   return [...names];
 })();
 
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
-
 /** A store that continues a save on `day`, at the lowest Escalation for `tier`, holding `flags`. */
 function storeOn(day: number, tier: Tier, flags: string[]) {
-  const storage = memoryStorage();
+  const storage = new FakeStorage();
   const seed = createStore(storage);
   seed.startOver();
   const record = JSON.parse(storage.getItem(SAVE_KEY) ?? "");

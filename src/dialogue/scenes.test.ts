@@ -1,20 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { CastId } from "../content/index";
 import type { GameState } from "../rules/index";
-import { createStore, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage, playDefaultDay, SAVE_KEY } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import type { ConversationStage, ConversationView, Speaker } from "./conversations";
 import { type SceneFrame, Scenes, type ScriptedScene } from "./scenes";
-
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
 
 /** A view that reads every line at once. At each choice it picks the one whose text contains `pick`. */
 class FakeView implements ConversationView {
@@ -64,7 +55,7 @@ class FakeFrame implements SceneFrame {
 
 /** Sets up the store, the scenes and fakes. With `state`, it continues a save holding that state. */
 function setUp(state?: (fresh: GameState) => GameState) {
-  const storage = memoryStorage();
+  const storage = new FakeStorage();
   if (state) {
     const seed = createStore(storage);
     seed.startOver();

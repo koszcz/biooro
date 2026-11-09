@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CastId } from "../content/index";
-import { createStore, type SaveStorage, type StoreEvent } from "../store/index";
+import { createStore, FakeStorage, type StoreEvent } from "../store/index";
 import { story, testStory } from "../story/index";
 import { Dialogue } from "./bridge";
 import {
@@ -10,15 +10,6 @@ import {
   playDialogue,
   type Speaker,
 } from "./conversations";
-
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => items.set(key, value),
-    removeItem: (key) => items.delete(key),
-  };
-}
 
 /** A view that reads every line at once and picks `pick` at each choice. It records what it showed. */
 class FakeView implements ConversationView {
@@ -65,7 +56,7 @@ class FakeStage implements ConversationStage {
   }
 }
 
-function setUp(storage = memoryStorage(), pick = 0) {
+function setUp(storage = new FakeStorage(), pick = 0) {
   const store = createStore(storage);
   if (!store.continueGame()) store.startOver();
   const dialogue = new Dialogue(store, story);
@@ -205,7 +196,7 @@ describe("what a click on a person offers", () => {
 
 describe("reloading in the middle of a Conversation", () => {
   it("replays it from its start, and its effects apply once", async () => {
-    const storage = memoryStorage();
+    const storage = new FakeStorage();
     const first = setUp(storage);
     const before = { ...first.store.state.pressures };
     // The player reloads while Wiola replies, after the pick has moved the gauge.

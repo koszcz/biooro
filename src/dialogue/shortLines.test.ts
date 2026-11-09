@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type CastId, COLLEAGUES } from "../content/index";
 import { type ColleagueId, type GameState, type Tier, tierOf } from "../rules/index";
-import { createStore, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage, SAVE_KEY } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import { type ConversationStage, Conversations, type ConversationView, handOffLine } from "./conversations";
@@ -14,18 +14,9 @@ const TIERS: Tier[] = ["mundane", "odd", "wrong"];
 /** The lowest Escalation for each tier. */
 const TIER_ESCALATION: Record<Tier, number> = { mundane: 0, odd: 3, wrong: 5 };
 
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
-
 /** A store that continues a Monday save at `tier`, after the onboarding. */
 function storeAt(tier: Tier) {
-  const storage = memoryStorage();
+  const storage = new FakeStorage();
   const seed = createStore(storage);
   seed.startOver();
   const record = JSON.parse(storage.getItem(SAVE_KEY) ?? "");

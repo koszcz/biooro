@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AuditAnswer, GameState, SurvivalVariant } from "../rules/index";
-import { createStore, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage, SAVE_KEY } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import type { ConversationStage, ConversationView, Speaker } from "./conversations";
@@ -8,15 +8,6 @@ import { type SceneFrame, Scenes } from "./scenes";
 
 // Plays the drafted scripted scenes through the bridge and the scene player: the Monday onboarding,
 // the Friday audit and the three survival scenes. Each test tries every choice path.
-
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
 
 /** A view that takes `path[i]` at the i-th choice point, or the first choice once the path runs out. */
 class PathView implements ConversationView {
@@ -55,7 +46,7 @@ const stage: ConversationStage = {
 
 /** Plays the scene a store starts, with a view that follows `path`. */
 async function play(path: number[], state?: (fresh: GameState) => GameState) {
-  const storage = memoryStorage();
+  const storage = new FakeStorage();
   if (state) {
     const seed = createStore(storage);
     seed.startOver();
