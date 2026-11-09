@@ -62,6 +62,10 @@ _Avoid_: Chat, dialogue, talk
 The one line a Boss or Colleague says when the Intern clicks them and they have no Conversation to offer. It changes nothing.
 _Avoid_: Bark, idle line, dismissal
 
+**Hand-off line**:
+The one line a Colleague says when the Intern delegates a Task to them. Each Colleague has one hand-off line, and it is the same all week. It changes nothing.
+_Avoid_: Delegation line, acceptance line
+
 **Task choice**:
 How the Intern handles a Task: do it, fake it, delegate it, or sabotage it. Every Task choice closes the Task. Doing, faking, and delegating finish it. Sabotage closes it without finishing it.
 _Avoid_: Action, option
