@@ -1,5 +1,5 @@
 // Runs a click on a person: a Colleague Conversation, or a brush-off for a used-up Colleague or a Boss.
-import { type CastId, COLLEAGUES } from "../content/index";
+import { CAST, type CastId, COLLEAGUES } from "../content/index";
 import type { ColleagueId } from "../rules/index";
 import type { GameStore } from "../store/index";
 import type { Dialogue, DialogueChoice, DialogueLine } from "./bridge";
@@ -28,14 +28,12 @@ export interface ConversationStage {
   faceEachOther(person: CastId): () => void;
 }
 
-const SPEAKER_TAGS: Readonly<Record<string, Speaker>> = {
-  "speaker:intern": "intern",
-  "speaker:headOffice": "headOffice",
-};
+/** `#speaker:intern`, `#speaker:headOffice`, or a cast member such as `#speaker:ryszard` in a scene with two people. */
+const SPEAKERS: readonly Speaker[] = ["intern", "headOffice", ...CAST];
 
 function speakerOf(line: DialogueLine, partner: CastId): Speaker {
   for (const tag of line.tags) {
-    const speaker = SPEAKER_TAGS[tag.trim()];
+    const speaker = SPEAKERS.find((name) => tag.trim() === `speaker:${name}`);
     if (speaker) return speaker;
   }
   return partner;
@@ -46,6 +44,15 @@ const isColleague = (person: CastId): person is ColleagueId => person in COLLEAG
 /** The knot of a Colleague's Conversation on a day, such as `wiola_day1`. */
 export const conversationKnot = (colleague: ColleagueId, day: number): string => `${colleague}_day${day}`;
 export const brushOffKnot = (person: CastId): string => `${person}_brush_off`;
+export const handOffKnot = (colleague: ColleagueId): string => `${colleague}_hand_off`;
+
+/** The line a Colleague says when the Intern hands them a Task. */
+export function readHandOffLine(dialogue: Dialogue, colleague: ColleagueId): DialogueLine {
+  const knot = handOffKnot(colleague);
+  const [line] = dialogue.readLines(knot);
+  if (!line) throw new Error(`Knot "${knot}" has no line.`);
+  return line;
+}
 
 export class Conversations {
   private running = false;

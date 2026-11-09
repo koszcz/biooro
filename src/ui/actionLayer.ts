@@ -1,6 +1,6 @@
 // Labels over people's heads while Task actions play: the tag over the Intern, "✨ looks done" sparkles,
 // hand-off speech bubbles and the Pressure floats. Looks follow prototype variant J.
-import { ASSIGNER_NAMES, actionText, HAND_OFF_LINES } from "../locales/index";
+import { ASSIGNER_NAMES, actionText } from "../locales/index";
 import type { ColleagueId } from "../rules/index";
 import type { ActionTag, Float } from "./acting";
 import type { HeadLocator } from "./bubbles";
@@ -10,7 +10,8 @@ import type { BubbleOwner } from "./hudView";
 import { PRESSURE_COLOURS } from "./styles";
 
 const SPARKLE_MS = 1600;
-const SAY_MS = 1800;
+/** How long a hand-off bubble stays up. */
+export const SAY_MS = 1800;
 const FLOAT_MS = 1900;
 const FLOAT_GAP_MS = 250;
 
@@ -47,7 +48,15 @@ export interface ActionLayer {
   follow(): void;
 }
 
-export function createActionLayer(root: HTMLElement, headAt: HeadLocator, onReveal?: RevealListener): ActionLayer {
+/** Gives the text a Colleague says when the Intern hands them a Task. */
+export type HandOffText = (colleague: ColleagueId) => string;
+
+export function createActionLayer(
+  root: HTMLElement,
+  headAt: HeadLocator,
+  handOffText: HandOffText,
+  onReveal?: RevealListener,
+): ActionLayer {
   const layer = el("div", "hud-acts");
   root.append(layer);
   const pinned = new Map<HTMLElement, { over: BubbleOwner; lift: number }>();
@@ -96,7 +105,7 @@ export function createActionLayer(root: HTMLElement, headAt: HeadLocator, onReve
     },
     handOff(colleague) {
       const node = el("div", "hud-say");
-      const text = HAND_OFF_LINES[colleague];
+      const text = handOffText(colleague);
       const body = el("span", "");
       node.append(el("b", "", ASSIGNER_NAMES[colleague]), body);
       pin(node, colleague, LIFT.say, SAY_MS);

@@ -1,17 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { ColleagueId, TaskId, TaskPlaceId } from "../content/index";
 import type { OpenTask, TaskChoice } from "../rules/index";
-import { createStore, type GameStore, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage, type GameStore } from "../store/index";
 import { type ActionCue, type ActionGoal, type ActionStage, createTaskActions } from "./taskActions";
-
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
 
 const goalText = (goal: ActionGoal | "home") => (goal === "home" ? "home" : "place" in goal ? goal.place : goal.person);
 
@@ -58,7 +49,7 @@ function fakeStage(walkSeconds = 0) {
 }
 
 function setUp(walkSeconds = 0) {
-  const storage = memoryStorage();
+  const storage = new FakeStorage();
   const store = createStore(storage);
   store.startOver();
   const fake = fakeStage(walkSeconds);

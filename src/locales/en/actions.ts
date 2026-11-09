@@ -1,5 +1,4 @@
-// English text for Task actions in the office: the tag over the Intern, sparkles, hand-off lines and floats.
-import type { ColleagueId } from "../../content/index";
+// English text for Task actions in the office: the tag over the Intern, sparkles and floats.
 import type { Pressure } from "../../rules/index";
 
 export const actionText = {
@@ -9,15 +8,6 @@ export const actionText = {
   /** The sabotage tag. Only the player sees it. */
   secret: "🤫",
 } as const;
-
-/**
- * Placeholder hand-off lines. The "Brush-offs and hand-off lines" ticket moves them into Ink.
- */
-export const HAND_OFF_LINES: Record<ColleagueId, string> = {
-  ryszard: "Sure. Sure sure sure.",
-  wiola: "On it! Love this for you.",
-  kamil: "Oh, I will handle this.",
-};
 
 /** One float per Pressure change, such as "+1 Performance". `change` already carries its sign. */
 export const PRESSURE_FLOATS: Record<Pressure, (change: string) => string> = {

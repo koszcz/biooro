@@ -1,20 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { CastId } from "../content/index";
 import type { GameState } from "../rules/index";
-import { createStore, playDefaultDay, SAVE_KEY, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage, playDefaultDay, SAVE_KEY } from "../store/index";
 import { story } from "../story/index";
 import { Dialogue } from "./bridge";
 import type { ConversationStage, ConversationView, Speaker } from "./conversations";
 import { type SceneFrame, Scenes, type ScriptedScene } from "./scenes";
-
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
 
 /** A view that reads every line at once. At each choice it picks the one whose text contains `pick`. */
 class FakeView implements ConversationView {
@@ -64,7 +55,7 @@ class FakeFrame implements SceneFrame {
 
 /** Sets up the store, the scenes and fakes. With `state`, it continues a save holding that state. */
 function setUp(state?: (fresh: GameState) => GameState) {
-  const storage = memoryStorage();
+  const storage = new FakeStorage();
   if (state) {
     const seed = createStore(storage);
     seed.startOver();
@@ -176,7 +167,7 @@ describe("the Friday audit", () => {
 
   it("applies the answer after the scene, then plays the survival scene", async () => {
     const { store, storage, view, frame, scenes } = setUp(friday({ launchTeam: 6, paperTrail: 6 }));
-    view.pick = "Bury";
+    view.pick = "None worth mentioning";
     store.goHome();
     await scenes.settled;
 
@@ -202,7 +193,7 @@ describe("the Friday audit", () => {
 
   it("runs the second Firing check after the answer", async () => {
     const { store, view, frame, scenes } = setUp(friday({ sanity: 2 }));
-    view.pick = "Deflect";
+    view.pick = "ask Pani Halina";
     store.goHome();
     await scenes.settled;
 
@@ -216,7 +207,7 @@ describe("the Friday audit", () => {
       hoursLeft: 0,
       phase: { kind: "audit" },
     }));
-    view.pick = "Escalate";
+    view.pick = "in writing";
     await scenes.settled;
 
     expect(store.state.phase).toEqual({ kind: "weekSurvived", variant: "paperTrail" });

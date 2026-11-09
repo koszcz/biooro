@@ -1,12 +1,13 @@
 // Game entry point: loads every GLB behind the loading screen, shows the title screen, then starts the office
 // scene, the HUD, Conversations and the scripted scenes.
 import { blipsBetween, loadAudio } from "./audio/index";
-import { Conversations, Dialogue, Scenes } from "./dialogue/index";
+import { Conversations, Dialogue, readHandOffLine, Scenes } from "./dialogue/index";
 import { tierOf } from "./rules/index";
 import { loadModels, startOfficeScene } from "./scene/index";
 import { createSettings, createStore, hasSave } from "./store/index";
 import { story } from "./story/index";
 import {
+  type HandOffText,
   mountConversations,
   mountDebugPanel,
   mountGameUi,
@@ -31,7 +32,8 @@ const choice = await loading.toTitle({ canContinue: hasSave(window.localStorage)
 const continued = choice === "continue" && store.continueGame(dialogue.loadInk);
 const office = startOfficeScene(container, models, store, tierOf(store.state.escalation));
 const blip: RevealListener = (speaker, text, from, to) => audio.blip(speaker, blipsBetween(text, from, to));
-mountGameUi(container, store, office.headAt, office.onActionCue, blip);
+const handOffText: HandOffText = (colleague) => readHandOffLine(dialogue, colleague).text;
+mountGameUi(container, store, office.headAt, office.onActionCue, handOffText, blip);
 mountMuteButton(container, audio);
 const overlay = mountConversations(container, office, store, blip);
 const conversations = new Conversations(store, dialogue, office, overlay.view);

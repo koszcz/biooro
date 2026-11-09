@@ -1,4 +1,4 @@
-// Ryszard's Conversations and brush-off.
+// Ryszard's Conversations, brush-off and hand-off line.
 // His Monday Conversation is the onboarding, so his first knot is for Tuesday.
 // A line tagged #speaker:intern is the Intern's. A line tagged #speaker:headOffice is Head office's.
 // Every other line is the Conversation partner's.
@@ -77,10 +77,15 @@ That last bit's new. Someone updated the template. Wasn't me. #id:ryszard.ryszar
 
 === ryszard_brush_off ===
 { tier():
-- "wrong": Placeholder: Ryszard is busy, in a wrong way. #id:ryszard.ryszard_brush_off.1
-- "odd": Placeholder: Ryszard is busy, in an odd way. #id:ryszard.ryszard_brush_off.2
-- else: Placeholder: Ryszard is busy. #id:ryszard.ryszard_brush_off.3
+- "wrong": Your case has been resolved. Before you opened it. #id:ryszard.ryszard_brush_off.1
+- "odd": That one fits no template. Anyway, soup? #id:ryszard.ryszard_brush_off.2
+- else: Request received. Expect a reply in seven working days. #id:ryszard.ryszard_brush_off.3
 }
+-> END
+
+// What Ryszard says when the Intern hands him a Task.
+=== ryszard_hand_off ===
+Leave it with me. Request received. #id:ryszard.ryszard_hand_off.1
 -> END
 
 // Ryszard's voice anchor. A sample scene from docs/writing/voice.md that the game never starts.

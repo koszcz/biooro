@@ -1,21 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { GameState } from "../rules/index";
-import { createStore, type SaveStorage } from "../store/index";
+import { createStore, FakeStorage } from "../store/index";
 import { createActing } from "./acting";
 import { taskChoiceViews } from "./choices";
 import { createPlay } from "./play";
 
-function memoryStorage(): SaveStorage {
-  const items = new Map<string, string>();
-  return {
-    getItem: (key) => items.get(key) ?? null,
-    setItem: (key, value) => void items.set(key, value),
-    removeItem: (key) => void items.delete(key),
-  };
-}
-
 function setUp() {
-  const store = createStore(memoryStorage());
+  const store = createStore(new FakeStorage());
   const acting = createActing(store);
   const play = createPlay(store, acting);
   store.startOver();
