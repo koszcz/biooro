@@ -1,4 +1,4 @@
-// Wiola's Conversations and brush-off.
+// Wiola's Conversations, brush-off and hand-off line.
 // A line tagged #speaker:intern is the Intern's. A line tagged #speaker:headOffice is Head office's.
 // Every other line is the Conversation partner's.
 // Flags: doubted_smart_range (set on Wednesday). Reads binder_four_taken from Kamil's Thursday.
@@ -105,10 +105,15 @@ Biooro. Listening to your body, one flush at a time. #id:wiola.wiola_day5.4
 
 === wiola_brush_off ===
 { tier():
-- "wrong": Placeholder: Wiola is busy, in a wrong way. #id:wiola.wiola_brush_off.1
-- "odd": Placeholder: Wiola is busy, in an odd way. #id:wiola.wiola_brush_off.2
-- else: Placeholder: Wiola is busy. #id:wiola.wiola_brush_off.3
+- "wrong": Not now, sweetie. You were up at 3:12 last night. Get some rest. #id:wiola.wiola_brush_off.1
+- "odd": Can't chat! Drink some water. You've only had one glass today. #id:wiola.wiola_brush_off.2
+- else: Can't chat, launch stuff! You look like a cinnamon person. Am I right? #id:wiola.wiola_brush_off.3
 }
+-> END
+
+// What Wiola says when the Intern hands her a Task.
+=== wiola_hand_off ===
+Ooh, give it here! Helping is my favourite thing. #id:wiola.wiola_hand_off.1
 -> END
 
 // Wiola's voice anchor. A sample scene from docs/writing/voice.md that the game never starts.
