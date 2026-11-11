@@ -18,7 +18,7 @@ export interface ConversationOverlay {
 const BUBBLE_LIFT = -26;
 
 /**
- * Reveals `text` at the reveal pace. A click, Space or Enter completes the line, and the next one moves on.
+ * Reveals `text` at the reveal pace. A left click, Space or Enter completes the line, and the next one moves on.
  * Listening starts after the current event, so the click that opened the line never counts.
  */
 function reveal(target: HTMLElement, text: string, onShown?: (from: number, to: number) => void): Promise<void> {
@@ -26,6 +26,8 @@ function reveal(target: HTMLElement, text: string, onShown?: (from: number, to: 
     const line = typeLine(target, text, onShown, () => target.classList.add("done"));
     const press = (event: Event) => {
       if (event instanceof KeyboardEvent && event.key !== " " && event.key !== "Enter") return;
+      // Only the primary button moves the line on. The other buttons pan the camera.
+      if (event instanceof MouseEvent && event.button !== 0) return;
       event.preventDefault();
       event.stopPropagation();
       if (!line.done) return line.complete();

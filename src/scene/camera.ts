@@ -1,4 +1,4 @@
-// The fixed isometric camera. The player can zoom it but never rotate it.
+// The fixed isometric camera. The player can zoom and pan it but never rotate it.
 import { MathUtils, OrthographicCamera, Vector3 } from "three";
 import { FLOOR_DEPTH, FLOOR_WIDTH } from "./floor";
 
@@ -42,8 +42,54 @@ export function resizeCamera(camera: OrthographicCamera, aspect: number): void {
   camera.updateProjectionMatrix();
 }
 
-// Applies one mouse wheel step. A negative deltaY (wheel up) zooms in.
-export function zoomCamera(camera: OrthographicCamera, deltaY: number): void {
+/** A point on the screen in normalised device coordinates: -1 to 1, with +y up. */
+export type ScreenSpot = { x: number; y: number };
+
+const SCREEN_CENTRE: ScreenSpot = { x: 0, y: 0 };
+
+/**
+ * Applies one mouse wheel step. A negative deltaY (wheel up) zooms in.
+ * The floor point under `anchor` stays under it, so the player zooms toward the cursor.
+ */
+export function zoomCamera(camera: OrthographicCamera, deltaY: number, anchor: ScreenSpot = SCREEN_CENTRE): void {
+  const before = screenToPlane(camera, anchor);
   camera.zoom = MathUtils.clamp(camera.zoom * Math.exp(-deltaY * WHEEL_SPEED), MIN_ZOOM, MAX_ZOOM);
   camera.updateProjectionMatrix();
+  const after = screenToPlane(camera, anchor);
+  moveCamera(camera, before.sub(after));
+}
+
+/** Drags the view by `delta`, in normalised device coordinates, so the floor follows the cursor. */
+export function panCamera(camera: OrthographicCamera, delta: ScreenSpot): void {
+  moveCamera(camera, screenToPlane(camera, delta).negate());
+}
+
+// The offset from the view centre to `spot`, in world units, in the plane the camera faces.
+function screenToPlane(camera: OrthographicCamera, spot: ScreenSpot): Vector3 {
+  const right = new Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+  const up = new Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+  const halfWidth = (camera.right - camera.left) / 2 / camera.zoom;
+  const halfHeight = (camera.top - camera.bottom) / 2 / camera.zoom;
+  return right.multiplyScalar(spot.x * halfWidth).addScaledVector(up, spot.y * halfHeight);
+}
+
+// Moves the camera, then keeps the floor point at the view centre on the floor.
+// The player can never lose the office off screen.
+function moveCamera(camera: OrthographicCamera, offset: Vector3): void {
+  const direction = camera.getWorldDirection(new Vector3());
+  const focus = floorPointAhead(camera.position.clone().add(offset), direction);
+  focus.x = MathUtils.clamp(focus.x, -0.5, FLOOR_WIDTH - 0.5);
+  focus.z = MathUtils.clamp(focus.z, -0.5, FLOOR_DEPTH - 0.5);
+  camera.position.copy(focus).addScaledVector(direction, -DISTANCE);
+  camera.updateMatrixWorld();
+}
+
+/** The floor point at the centre of the view. */
+export function cameraFocus(camera: OrthographicCamera): Vector3 {
+  return floorPointAhead(camera.position.clone(), camera.getWorldDirection(new Vector3()));
+}
+
+// Where a ray from `position` along `direction` meets the floor (y = 0).
+function floorPointAhead(position: Vector3, direction: Vector3): Vector3 {
+  return position.addScaledVector(direction, -position.y / direction.y);
 }

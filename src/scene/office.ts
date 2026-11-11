@@ -1,4 +1,4 @@
-// Builds the office scene, renders it into the page and wires click-to-walk, clicks on people and the mouse wheel zoom.
+// Builds the office scene, renders it into the page and wires click-to-walk, clicks on people, the mouse wheel zoom and the drag to pan.
 import {
   Clock,
   DirectionalLight,
@@ -16,7 +16,8 @@ import {
 import { type CastId, COLLEAGUE_SPOTS, type Piece, SMART_TOILET } from "../content/index";
 import type { Tier } from "../rules/index";
 import { createActionStage } from "./actionStage";
-import { createIsoCamera, resizeCamera, zoomCamera } from "./camera";
+import { createIsoCamera, resizeCamera } from "./camera";
+import { wireCameraControls } from "./cameraControls";
 import { createCast } from "./cast";
 import { createFloor, FLOOR_DEPTH, FLOOR_WIDTH } from "./floor";
 import { buildFurniture } from "./furniture";
@@ -146,14 +147,7 @@ export function startOfficeScene(
     renderer.setSize(container.clientWidth, container.clientHeight);
     resizeCamera(camera, container.clientWidth / container.clientHeight);
   });
-  renderer.domElement.addEventListener(
-    "wheel",
-    (event) => {
-      event.preventDefault();
-      zoomCamera(camera, event.deltaY);
-    },
-    { passive: false },
-  );
+  wireCameraControls(renderer.domElement, camera);
 
   const walkTo = createWalking(intern, ring);
   const cueListeners: ((cue: ActionCue) => void)[] = [];

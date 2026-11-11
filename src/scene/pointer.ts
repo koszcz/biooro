@@ -58,6 +58,8 @@ export function createPointer(
     locked = false;
   });
   canvas.addEventListener("pointermove", (event) => {
+    // A right (2) or middle (4) button held down means a camera drag. Leave the cursor alone.
+    if (event.buttons & 6) return;
     if (locked || busy()) {
       hover(undefined);
       return;
@@ -67,7 +69,8 @@ export function createPointer(
   });
   canvas.addEventListener("pointerleave", () => hover(undefined));
   canvas.addEventListener("pointerdown", (event) => {
-    if (locked || busy()) return;
+    // Only the primary button walks and talks. The other buttons pan the camera.
+    if (event.button !== 0 || locked || busy()) return;
     aim(event);
     const person = personUnder(ray, people);
     if (person) for (const listener of clicks) listener(person);
