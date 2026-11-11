@@ -136,7 +136,7 @@ export function startOfficeScene(
   scene.fog = new Fog("#000000", 50, 100);
   const lights = addLights(scene);
   const led = rooms.getObjectByName("smartToiletLed") as Mesh;
-  const tierLook = createTierLook({ scene, led, ...lights }, store, startTier);
+  const tierLook = createTierLook({ scene, led, outsideGrey: outside.grey, ...lights }, store, startTier);
 
   const centre = new Vector3((FLOOR_WIDTH - 1) / 2, 0, (FLOOR_DEPTH - 1) / 2);
   const camera = createIsoCamera(centre, container.clientWidth / container.clientHeight);

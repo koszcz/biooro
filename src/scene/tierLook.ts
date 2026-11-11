@@ -26,6 +26,8 @@ type Palette = {
   /** Where the outside fog starts and ends, measured from the camera, which stands 50 away. The office reaches 59, so the fog starts past it. */
   fogNear: number;
   fogFar: number;
+  /** How much colour drains from the world outside, from 0 to 1. */
+  outsideGrey: number;
 };
 
 export const PALETTES: Readonly<Record<Tier, Palette>> = {
@@ -41,6 +43,7 @@ export const PALETTES: Readonly<Record<Tier, Palette>> = {
     pulse: 0,
     fogNear: 62,
     fogFar: 100,
+    outsideGrey: 0,
   },
   // Slightly greyer and greener. The LED glows faintly.
   odd: {
@@ -54,6 +57,7 @@ export const PALETTES: Readonly<Record<Tier, Palette>> = {
     pulse: 0,
     fogNear: 61,
     fogFar: 90,
+    outsideGrey: 0.35,
   },
   // Greyer, dimmer and sickly green. The LED pulses red.
   wrong: {
@@ -67,6 +71,7 @@ export const PALETTES: Readonly<Record<Tier, Palette>> = {
     pulse: 0.8,
     fogNear: 60,
     fogFar: 78,
+    outsideGrey: 0.75,
   },
 };
 
@@ -86,6 +91,8 @@ export type TierLookParts = {
   led: Mesh;
   /** A small red light beside the LED, so its glow reaches the toilet. */
   ledGlow: PointLight;
+  /** How grey the world outside is. Optional, so tests can leave the outside out. */
+  outsideGrey?: { value: number };
 };
 
 export type TierLook = {
@@ -106,6 +113,7 @@ export function createTierLook(parts: TierLookParts, source: TierSource, startTi
     pulse: target.pulse,
     fogNear: target.fogNear,
     fogFar: target.fogFar,
+    outsideGrey: target.outsideGrey,
   };
   const unsubscribe = source.on("tierChanged", (event) => {
     target = PALETTES[event.tier];
@@ -118,7 +126,7 @@ export function createTierLook(parts: TierLookParts, source: TierSource, startTi
       const share = Math.min(1, seconds * EASE);
       for (const key of ["sky", "ground", "sun", "background"] as const)
         now[key].lerp(goal[key].set(target[key]), share);
-      for (const key of ["skyIntensity", "sunIntensity", "led", "pulse", "fogNear", "fogFar"] as const)
+      for (const key of ["skyIntensity", "sunIntensity", "led", "pulse", "fogNear", "fogFar", "outsideGrey"] as const)
         now[key] += (target[key] - now[key]) * share;
 
       const fog = parts.scene.fog;
@@ -127,6 +135,7 @@ export function createTierLook(parts: TierLookParts, source: TierSource, startTi
         fog.near = now.fogNear;
         fog.far = now.fogFar;
       }
+      if (parts.outsideGrey) parts.outsideGrey.value = now.outsideGrey;
       parts.hemisphere.color.copy(now.sky);
       parts.hemisphere.groundColor.copy(now.ground);
       parts.hemisphere.intensity = now.skyIntensity;

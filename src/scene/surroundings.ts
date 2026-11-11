@@ -9,6 +9,7 @@ import { firstMaterial } from "./instancing";
 import { kitMaterial } from "./kit";
 import type { ModelLibrary } from "./models";
 import { createTraffic } from "./outsideCars";
+import { createOutsideGrey } from "./outsideGrey";
 import { EAST, LOT_NORTH, LOT_SOUTH, PARKING_ROWS, ROAD_SCALE, SOUTH } from "./outsideLayout";
 import type { TierSource } from "./tierLook";
 
@@ -20,6 +21,8 @@ export type Surroundings = {
   group: Group;
   update(seconds: number): void;
   dispose(): void;
+  /** How grey the outside is, from 0 to 1. The tier look eases it. */
+  grey: { value: number };
 };
 
 export function createSurroundings(models: ModelLibrary, store: TierSource, startTier: Tier): Surroundings {
@@ -40,6 +43,9 @@ export function createSurroundings(models: ModelLibrary, store: TierSource, star
   dumpster.scale.setScalar(ROAD_SCALE);
   group.add(dumpster);
   noClicks(group);
+  // The billboard and cars join after this, so they keep their colour in every tier.
+  const grey = createOutsideGrey();
+  grey.apply(group);
 
   const billboard = createBillboard(startTier);
   billboard.root.position.set(EAST + 1.6, 0, LOT_SOUTH - 1.4);
@@ -58,7 +64,7 @@ export function createSurroundings(models: ModelLibrary, store: TierSource, star
     billboard.setTier(event.tier);
     traffic.setTier(event.tier);
   });
-  return { group, update: traffic.update, dispose: unsubscribe };
+  return { group, update: traffic.update, dispose: unsubscribe, grey: grey.amount };
 }
 
 /** A flat rectangle on the ground, painted with one swatch of the road palette. */

@@ -62,6 +62,21 @@ describe("createTierLook", () => {
     expect(parts.hemisphere.color.equals(mundaneSky)).toBe(false);
   });
 
+  it("drains colour from the outside as the tier worsens, easing in", () => {
+    const parts = { ...officeParts(), outsideGrey: { value: 0 } };
+    const { source, emitTier } = fakeStore();
+    const look = createTierLook(parts, source, "mundane");
+    look.update(0.016, 1);
+    expect(parts.outsideGrey.value).toBe(0);
+    emitTier("wrong");
+    look.update(0.05, 1.05);
+    const partway = parts.outsideGrey.value;
+    expect(partway).toBeGreaterThan(0);
+    settle(look);
+    expect(parts.outsideGrey.value).toBeGreaterThan(partway);
+    expect(parts.outsideGrey.value).toBeCloseTo(0.75, 2);
+  });
+
   it("gives the LED a steady faint glow in Odd", () => {
     const parts = officeParts();
     const { source, emitTier } = fakeStore();
