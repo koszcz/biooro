@@ -131,7 +131,7 @@ const COMPLAINTS: Piece[] = [
   blocker("pottedPlant", 7, 0),
   blocker("printer", 0, 2),
   blocker("trashcan", 0, 7),
-  blocker("coatRackStanding", 7, 4),
+  blocker("coatRackStanding", 7, 6),
   blocker("cardboardBoxClosed", 6, 7),
   { model: "cardboardBoxClosed", cell: cell(6, 7), lift: 0.28, turn: 0.4 },
   blocker("cardboardBoxClosed", 7, 7, { turn: 0.2 }),

@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { CAST, COLLEAGUE_SPOTS, isWalkable, OFFICE_COLUMNS, OFFICE_ROWS, PLACE_SPOTS } from "./office";
+import {
+  CAST,
+  COLLEAGUE_SPOTS,
+  CORRIDOR_WALL_ROW,
+  DOORWAYS,
+  isWalkable,
+  OFFICE_COLUMNS,
+  OFFICE_ROWS,
+  PLACE_SPOTS,
+} from "./office";
 
 const cell = (col: number, row: number) => ({ col, row });
 
@@ -23,6 +32,16 @@ describe("the office grid", () => {
       const open = [];
       for (let row = 0; row < 8; row++) if (isWalkable(cell(wallCol, row))) open.push(row);
       expect(open).toEqual([4]);
+    }
+  });
+
+  it("keeps the floor on both sides of every doorway clear of furniture", () => {
+    for (const door of DOORWAYS) {
+      const sides =
+        door.row === CORRIDOR_WALL_ROW
+          ? [cell(door.col, door.row - 1), cell(door.col, door.row + 1)]
+          : [cell(door.col - 1, door.row), cell(door.col + 1, door.row)];
+      for (const side of sides) expect(isWalkable(side), `beside doorway ${door.col},${door.row}`).toBe(true);
     }
   });
 
