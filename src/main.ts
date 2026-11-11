@@ -2,6 +2,7 @@
 // scene, the HUD, Conversations and the scripted scenes.
 import { blipsBetween, loadAudio } from "./audio/index";
 import { Conversations, Dialogue, readHandOffLine, Scenes } from "./dialogue/index";
+import { LANGUAGE, storyLine } from "./locales/index";
 import { tierOf } from "./rules/index";
 import { loadModels, startOfficeScene } from "./scene/index";
 import { createSettings, createStore, hasSave } from "./store/index";
@@ -19,12 +20,13 @@ import {
 
 const container = document.getElementById("app");
 if (!container) throw new Error("index.html needs an element with id 'app'");
+document.documentElement.lang = LANGUAGE;
 
 const loading = showLoadingScreen(container);
 const models = await loadModels((share) => loading.setProgress(share));
 const store = createStore(window.localStorage);
 const audio = await loadAudio(store, createSettings(window.localStorage), import.meta.env.BASE_URL);
-const dialogue = new Dialogue(store, story);
+const dialogue = new Dialogue(store, story, { translate: storyLine });
 // Audio resumes on the first click, so either title screen button unlocks it.
 const choice = await loading.toTitle({ canContinue: hasSave(window.localStorage) });
 // Continuing the save lets a reload in the middle of a Conversation replay it from its start.

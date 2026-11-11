@@ -22,6 +22,8 @@ export interface DialogueChoice {
 export interface DialogueOptions {
   /** Throw when a Colleague Conversation breaks a Conversation cap. On in development and tests. */
   strict?: boolean;
+  /** Replaces each line and choice's English text, such as with its Polish text by id. */
+  translate?: (id: string | null, english: string) => string;
 }
 
 function idOf(tags: string[]): string | null {
@@ -38,6 +40,7 @@ function toPressure(name: unknown): Pressure {
 export class Dialogue {
   private readonly story: Story;
   private readonly strict: boolean;
+  private readonly translate: (id: string | null, english: string) => string;
   /** The Ink state JSON the story last matched in the store. */
   private knownInkState: string | null = null;
   private caps: ConversationCaps | null = null;
@@ -50,6 +53,7 @@ export class Dialogue {
   ) {
     this.story = new Story(typeof storyJson === "string" ? storyJson : JSON.stringify(storyJson));
     this.strict = options.strict ?? import.meta.env.DEV;
+    this.translate = options.translate ?? ((_id, english) => english);
     this.bindReads();
     this.bindWrites();
   }
@@ -81,12 +85,10 @@ export class Dialogue {
 
   get choices(): DialogueChoice[] {
     if (!this.running || this.story.canContinue) return [];
-    return this.story.currentChoices.map((choice) => ({
-      index: choice.index,
-      text: choice.text,
-      tags: choice.tags ?? [],
-      id: idOf(choice.tags ?? []),
-    }));
+    return this.story.currentChoices.map((choice) => {
+      const id = idOf(choice.tags ?? []);
+      return { index: choice.index, text: this.translate(id, choice.text), tags: choice.tags ?? [], id };
+    });
   }
 
   /** Runs to the next line with text, and skips empty ones. Each write applies at once. */
@@ -145,7 +147,8 @@ export class Dialogue {
   private nextLine(): DialogueLine {
     const text = (this.story.Continue() ?? "").trim();
     const tags = this.story.currentTags ?? [];
-    return { text, tags, id: idOf(tags) };
+    const id = idOf(tags);
+    return { text: text === "" ? text : this.translate(id, text), tags, id };
   }
 
   private finish(inkState: string): void {
