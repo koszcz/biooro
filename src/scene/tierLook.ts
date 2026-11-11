@@ -1,8 +1,9 @@
-// The palette by tier and the Smart toilet LED. The store's `tierChanged` event switches them.
+// The palette by tier, the outside fog and the Smart toilet LED. The store's `tierChanged` event switches them.
 // Colours follow prototype/office-look/src/art.ts. Room lighting eases to the new tier and never flickers.
 import {
   Color,
   type DirectionalLight,
+  Fog,
   type HemisphereLight,
   type Mesh,
   type MeshStandardMaterial,
@@ -22,6 +23,9 @@ type Palette = {
   led: number;
   /** How far the LED's glow swings when it pulses. */
   pulse: number;
+  /** Where the outside fog starts and ends, measured from the camera, which stands 50 away. The office reaches 59, so the fog starts past it. */
+  fogNear: number;
+  fogFar: number;
 };
 
 export const PALETTES: Readonly<Record<Tier, Palette>> = {
@@ -35,6 +39,8 @@ export const PALETTES: Readonly<Record<Tier, Palette>> = {
     background: "#2b3038",
     led: 0,
     pulse: 0,
+    fogNear: 62,
+    fogFar: 100,
   },
   // Slightly greyer and greener. The LED glows faintly.
   odd: {
@@ -46,6 +52,8 @@ export const PALETTES: Readonly<Record<Tier, Palette>> = {
     background: "#262c28",
     led: 0.6,
     pulse: 0,
+    fogNear: 61,
+    fogFar: 90,
   },
   // Greyer, dimmer and sickly green. The LED pulses red.
   wrong: {
@@ -57,6 +65,8 @@ export const PALETTES: Readonly<Record<Tier, Palette>> = {
     background: "#1b2620",
     led: 1.8,
     pulse: 0.8,
+    fogNear: 60,
+    fogFar: 78,
   },
 };
 
@@ -94,6 +104,8 @@ export function createTierLook(parts: TierLookParts, source: TierSource, startTi
     sunIntensity: target.sunIntensity,
     led: target.led,
     pulse: target.pulse,
+    fogNear: target.fogNear,
+    fogFar: target.fogFar,
   };
   const unsubscribe = source.on("tierChanged", (event) => {
     target = PALETTES[event.tier];
@@ -106,10 +118,15 @@ export function createTierLook(parts: TierLookParts, source: TierSource, startTi
       const share = Math.min(1, seconds * EASE);
       for (const key of ["sky", "ground", "sun", "background"] as const)
         now[key].lerp(goal[key].set(target[key]), share);
-      for (const key of ["skyIntensity", "sunIntensity", "led", "pulse"] as const)
+      for (const key of ["skyIntensity", "sunIntensity", "led", "pulse", "fogNear", "fogFar"] as const)
         now[key] += (target[key] - now[key]) * share;
 
-      if (parts.scene.fog) parts.scene.fog.color.copy(now.background);
+      const fog = parts.scene.fog;
+      if (fog instanceof Fog) {
+        fog.color.copy(now.background);
+        fog.near = now.fogNear;
+        fog.far = now.fogFar;
+      }
       parts.hemisphere.color.copy(now.sky);
       parts.hemisphere.groundColor.copy(now.ground);
       parts.hemisphere.intensity = now.skyIntensity;

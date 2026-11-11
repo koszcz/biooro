@@ -1,5 +1,6 @@
 // Loads every GLB at boot and hands out copies. Furniture comes from the Kenney Furniture Kit,
-// people from Kenney Mini Characters. The files live in public/models/.
+// people from Kenney Mini Characters, and the world outside from Kenney City Kit Roads, Car Kit and
+// City Kit Commercial. The files live in public/models/.
 import type { AnimationClip, Group, Object3D } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneSkinned } from "three/examples/jsm/utils/SkeletonUtils.js";
@@ -21,6 +22,36 @@ export const INTERN_MODEL: CharacterModel = "character-male-c";
 const ACCESSORIES = ["aid-glasses", "aid-sunglasses"] as const;
 export type AccessoryModel = (typeof ACCESSORIES)[number];
 
+/** The outside models, by kit folder under public/models/. Nothing outside is interactive. */
+export const OUTSIDE_MODELS = {
+  roads: ["road-straight", "road-crossroad", "road-crossing", "light-curved", "dumpster", "traffic-light"],
+  cars: ["sedan", "suv", "van", "hatchback-sports", "taxi", "delivery", "cone"],
+  city: [
+    "building-a",
+    "building-b",
+    "building-c",
+    "building-d",
+    "building-e",
+    "building-f",
+    "building-g",
+    "building-h",
+    "building-i",
+    "building-j",
+    "building-k",
+    "building-l",
+    "building-m",
+    "building-n",
+    "building-skyscraper-a",
+    "building-skyscraper-b",
+    "building-skyscraper-c",
+  ],
+} as const;
+export type OutsideKit = keyof typeof OUTSIDE_MODELS;
+export type OutsideModel<K extends OutsideKit = OutsideKit> = (typeof OUTSIDE_MODELS)[K][number];
+
+const outsidePaths = (): string[] =>
+  Object.entries(OUTSIDE_MODELS).flatMap(([kit, names]) => names.map((name) => `models/${kit}/${name}.glb`));
+
 const furnitureModels = (): KitModel[] => [
   ...new Set(FURNITURE.flatMap((p) => (p.model === "printer" ? [] : [p.model]))),
 ];
@@ -30,6 +61,7 @@ export function glbPaths(): string[] {
   return [
     ...furnitureModels().map((name) => `models/furniture/${name}.glb`),
     ...[...CHARACTERS, ...ACCESSORIES].map((name) => `models/characters/${name}.glb`),
+    ...outsidePaths(),
   ];
 }
 
@@ -39,6 +71,7 @@ export type ModelLibrary = {
   furniture(name: KitModel): Object3D;
   character(name: CharacterModel): Character;
   accessory(name: AccessoryModel): Object3D;
+  outside<K extends OutsideKit>(kit: K, name: OutsideModel<K>): Object3D;
 };
 
 /** Loads every GLB. `onProgress` gets the share loaded so far, from 0 to 1. */
@@ -72,5 +105,6 @@ export async function loadModels(onProgress: (share: number) => void): Promise<M
       return { model: cloneSkinned(gltf.scene) as Group, clips: gltf.animations };
     },
     accessory: (name) => cloneSkinned(get(`models/characters/${name}.glb`).scene),
+    outside: (kit, name) => get(`models/${kit}/${name}.glb`).scene.clone(true),
   };
 }

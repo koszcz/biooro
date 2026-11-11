@@ -25,6 +25,7 @@ function fakeModels(): ModelLibrary & { loaded: CharacterModel[] } {
       glasses.name = name;
       return glasses;
     },
+    outside: () => new Group(),
   };
 }
 

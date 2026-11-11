@@ -2,6 +2,7 @@
 import {
   Clock,
   DirectionalLight,
+  Fog,
   HemisphereLight,
   Mesh,
   MeshBasicMaterial,
@@ -28,7 +29,7 @@ import { addHitTargets, faceEachOther } from "./people";
 import { createPointer, type LockEvents } from "./pointer";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
-import { createFog, createSurroundings } from "./surroundings";
+import { createSurroundings } from "./surroundings";
 import { type ActionCue, type ActionSource, createTaskActions } from "./taskActions";
 import { createTierLook, type TierSource } from "./tierLook";
 
@@ -129,8 +130,10 @@ export function startOfficeScene(
   const hitTargets = addHitTargets(cast);
   const ring = createTargetRing();
   const rooms = buildRooms();
-  scene.add(floor, rooms, furniture.group, intern.root, ring, ...people.map((p) => p.root), createSurroundings());
-  scene.fog = createFog();
+  const outside = createSurroundings(models, store, startTier);
+  scene.add(floor, rooms, furniture.group, intern.root, ring, ...people.map((p) => p.root), outside.group);
+  // The tier look sets the fog's colour and reach.
+  scene.fog = new Fog("#000000", 50, 100);
   const lights = addLights(scene);
   const led = rooms.getObjectByName("smartToiletLed") as Mesh;
   const tierLook = createTierLook({ scene, led, ...lights }, store, startTier);
@@ -174,6 +177,7 @@ export function startOfficeScene(
     intern.update(seconds, clock.elapsedTime);
     for (const person of people) person.update(seconds, clock.elapsedTime);
     tierLook.update(seconds, clock.elapsedTime);
+    outside.update(seconds);
     renderer.render(scene, camera);
     for (const listener of frameListeners) listener();
   });

@@ -14,7 +14,7 @@ export {
   TASK_CHOICE_LABELS,
   WEEKDAY_NAMES,
 } from "./en/hud";
-export { loadingText, officeSigns } from "./en/office";
+export { billboardText, loadingText, officeSigns } from "./en/office";
 export { LOCKED_REASONS } from "./en/reasons";
 export { sceneTitles, titleText } from "./en/scenes";
 export { FALLOUT_WORDING, type ReturningTaskId, STRANGE_TASK_WORDING, TASK_WORDING } from "./en/tasks";

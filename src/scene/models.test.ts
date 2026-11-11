@@ -37,10 +37,12 @@ describe("glbPaths", () => {
       readdirSync(publicPath(`models/${folder}`))
         .filter((f) => f.endsWith(".glb"))
         .map((f) => `models/${folder}/${f}`);
-    expect([...shipped("furniture"), ...shipped("characters")].sort()).toEqual([...glbPaths()].sort());
+    const folders = ["furniture", "characters", "roads", "cars", "city"];
+    expect(folders.flatMap(shipped).sort()).toEqual([...glbPaths()].sort());
   });
 
-  it("ships the colour map the Mini Characters need beside them", () => {
-    expect(existsSync(publicPath("models/characters/Textures/colormap.png"))).toBe(true);
+  it("ships the colour map each textured kit needs beside its models", () => {
+    for (const folder of ["characters", "roads", "cars", "city"])
+      expect(existsSync(publicPath(`models/${folder}/Textures/colormap.png`)), folder).toBe(true);
   });
 });
