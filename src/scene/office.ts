@@ -28,6 +28,7 @@ import { addHitTargets, faceEachOther } from "./people";
 import { createPointer, type LockEvents } from "./pointer";
 import { buildRooms } from "./rooms";
 import { cellAt, planWalk, type WalkGoal } from "./routes";
+import { createFog, createSurroundings } from "./surroundings";
 import { type ActionCue, type ActionSource, createTaskActions } from "./taskActions";
 import { createTierLook, type TierSource } from "./tierLook";
 
@@ -128,7 +129,8 @@ export function startOfficeScene(
   const hitTargets = addHitTargets(cast);
   const ring = createTargetRing();
   const rooms = buildRooms();
-  scene.add(floor, rooms, furniture.group, intern.root, ring, ...people.map((p) => p.root));
+  scene.add(floor, rooms, furniture.group, intern.root, ring, ...people.map((p) => p.root), createSurroundings());
+  scene.fog = createFog();
   const lights = addLights(scene);
   const led = rooms.getObjectByName("smartToiletLed") as Mesh;
   const tierLook = createTierLook({ scene, led, ...lights }, store, startTier);

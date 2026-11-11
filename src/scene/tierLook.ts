@@ -109,6 +109,7 @@ export function createTierLook(parts: TierLookParts, source: TierSource, startTi
       for (const key of ["skyIntensity", "sunIntensity", "led", "pulse"] as const)
         now[key] += (target[key] - now[key]) * share;
 
+      if (parts.scene.fog) parts.scene.fog.color.copy(now.background);
       parts.hemisphere.color.copy(now.sky);
       parts.hemisphere.groundColor.copy(now.ground);
       parts.hemisphere.intensity = now.skyIntensity;
